@@ -699,7 +699,7 @@ textarea.w-select {
     max-width: 728px;
   }
   .w-hidden-main {
-    display: inherit !important;
+    display: block !important;
   }
   .w-hidden-medium {
     display: none !important;
@@ -749,7 +749,7 @@ textarea.w-select {
 @media screen and (max-width: 767px) {
   .w-hidden-main,
   .w-hidden-medium {
-    display: inherit !important;
+    display: block !important;
   }
   .w-hidden-small {
     display: none !important;
@@ -808,7 +808,7 @@ textarea.w-select {
   .w-hidden-main,
   .w-hidden-medium,
   .w-hidden-small {
-    display: inherit !important;
+    display: block !important;
   }
   .w-hidden-tiny {
     display: none !important;
@@ -1821,7 +1821,7 @@ textarea.w-select {
 body {
   margin: 0;
   min-height: 100%;
-  background-color: #fff;
+  background-color: #0a0a0a;
   font-family: "Neue Montreal", sans-serif;
   color: #0a0a0a;
   font-size: 1.5vw;
@@ -1881,11 +1881,11 @@ h5 {
 .body {
   background-image: linear-gradient(
     to right top,
-    #c33764,
-    #a62a6f,
-    #822675,
-    #572676,
-    #1d2671
+    #0a0a2e,
+    #12123d,
+    #1a1a4e,
+    #2d1b69,
+    #5e2ced
   );
 }
 .load {
@@ -1914,7 +1914,7 @@ h5 {
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
-  background-color: #0a0a0a;
+  background-color: transparent;
 }
 .load.hometoggler {
   display: none;
@@ -1995,6 +1995,7 @@ h5 {
   top: 0;
   right: 0;
   bottom: 0;
+  z-index: 2;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -2334,7 +2335,7 @@ h5 {
   grid-template-columns: 1fr 1fr;
   -ms-grid-rows: auto auto;
   grid-template-rows: auto auto;
-  background-color: #0a0a0a;
+  background-color: transparent;
 }
 .m-head {
   padding-top: 0.5vw;
@@ -2350,7 +2351,7 @@ h5 {
 }
 .m-head:hover {
   letter-spacing: -0.01em;
-  color: #c33764;
+  color: #7c3aed;
 }
 .menu-li {
   margin-left: 2vw;
@@ -2438,9 +2439,15 @@ h5 {
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: -1;
+  z-index: 1;
   width: 100%;
   height: 100vh;
+  pointer-events: none;
+}
+.webglholder canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .sound {
   position: absolute;
@@ -2670,7 +2677,7 @@ h5 {
   -webkit-transform-origin: 50% 50%;
   -ms-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
-  color: #c33764;
+  color: #7c3aed;
   font-size: 7.5vw;
   line-height: 6.6vw;
   text-align: left;
@@ -2727,7 +2734,7 @@ h5 {
   -webkit-transform-origin: 50% 50%;
   -ms-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
-  color: #c33764;
+  color: #7c3aed;
   font-size: 7.5vw;
   line-height: 6.6vw;
   text-align: left;
@@ -5985,7 +5992,7 @@ html.w-mod-js [data-ix="text-0-2"] {
     top: 0;
     right: 0;
     bottom: 0;
-    z-index: 9999999999;
+    z-index: 9999;
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;

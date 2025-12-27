@@ -43,13 +43,13 @@ matCapsUrls.forEach((url) => {
   matCaps.push(loader.load(url));
 });
 
-let colorPool = [new THREE.Color(0x822675)];
+let colorPool = [new THREE.Color(0x5e2ced)];
 const GUIObj = {
   SLICE_NUMBER: SLICE_NUMBER,
-  sliceThickness: 0.57,
-  noiseSpeed: 4.3,
-  noiseDetail: 30,
-  noiseRoof: 2.3,
+  sliceThickness: 0.45,
+  noiseSpeed: 2.5,
+  noiseDetail: 25,
+  noiseRoof: 1.8,
   noiseDepth: 0,
   noiseShadow: -0.8,
   noiseOffset: 2,
@@ -219,12 +219,14 @@ class ThreeScene {
 
       child.material.uniforms.u_color.value = colorPool[n];
 
-      if (soundReactor.audio == undefined) return;
+      if (soundReactor.audio == undefined || !soundReactor.fdata) return;
+      const highFreqIdx = Math.min(500, soundReactor.fdata.length - 1);
+      const lowFreqIdx = Math.min(10, soundReactor.fdata.length - 1);
       child.material.uniforms.u_nDet.value =
-        GUIObj.noiseDetail + soundReactor.fdata[500] * GUIObj.highFreqIntensity;
+        GUIObj.noiseDetail + (soundReactor.fdata[highFreqIdx] || 0) * GUIObj.highFreqIntensity;
       child.material.uniforms.u_nRoof.value =
-        GUIObj.noiseRoof - soundReactor.fdata[10] * GUIObj.lowFreqIntensity;
-      if (soundReactor.audio > 0 && !myAudio.paused) {
+        GUIObj.noiseRoof - (soundReactor.fdata[lowFreqIdx] || 0) * GUIObj.lowFreqIntensity;
+      if (soundReactor.audio && !soundReactor.audio.paused) {
         soundActor = 1;
       } else {
         soundActor = 0.2;

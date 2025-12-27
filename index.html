@@ -7,7 +7,7 @@
 >
   <head>
     <meta charset="utf-8" />
-    <title>Jeet Ramoliya - Frontend Dev.</title>
+    <title>Yusuf — Creative Developer</title>
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link rel="stylesheet" href="./css/style.css" />
     <script type="text/javascript">
@@ -250,6 +250,7 @@
         }
 
         update() {
+          if (!this.analyser) return;
           this.analyser.getByteFrequencyData(this.fdata);
         }
 
@@ -277,7 +278,7 @@
 
         unsubscribe(name) {
           this.callbacks.forEach((item, i) => {
-            if (item.name == name) this.callbacks.splice(i, i + 1);
+            if (item.name == name) this.callbacks.splice(i, 1);
           });
         }
 
@@ -403,9 +404,9 @@
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.min.js"></script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://threejs.org/examples/js/libs/fflate.min.js"></script>
-    <script src="https://rawcdn.githack.com/mrdoob/three.js/350f0a021943d6fa1d039a7c14c303653daa463f/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.6.9/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/loaders/FBXLoader.js"></script>
     <style>
       .l-head {
         -webkit-text-stroke: 0.8px #e5e3dc;
@@ -430,11 +431,11 @@
     style="
       background-image: linear-gradient(
         to right top,
-        #c33764,
-        #a62a6f,
-        #822675,
-        #572676,
-        #1d2671
+        #0a0a2e,
+        #12123d,
+        #1a1a4e,
+        #2d1b69,
+        #5e2ced
       );
     "
     class="body"
@@ -480,13 +481,13 @@
             class="l-inner"
           >
             <div href="#" class="text-wrap">
-              <h2 class="text-stroke">JEET.</h2>
+              <h2 class="text-stroke">YUSUF.</h2>
               <h2
                 data-w-id="b0944d6f-35a7-5546-be9d-2d2725bebcc3"
                 style="width: 0%"
                 class="text-fill"
               >
-                JEET.
+                YUSUF.
               </h2>
             </div>
           </figure>
@@ -504,7 +505,7 @@
             "
             class="l-head"
           >
-            frontend
+            creative
           </h2>
         </div>
         <div class="l-item">
@@ -540,7 +541,7 @@
             "
             class="l-head"
           >
-            and creative
+            from Kazakhstan
           </h2>
         </div>
         <div class="l-item">
@@ -560,13 +561,13 @@
             class="l-inner-2"
           >
             <div href="#" class="text-wrap-2">
-              <h2 class="text-stroke-2">ui & ux</h2>
+              <h2 class="text-stroke-2">16 y.o.</h2>
               <h2
                 data-w-id="68fc1a32-709d-822f-092d-96a1e8b833d1"
                 style="width: 0%"
                 class="text-fill-2"
               >
-                ui & ux
+                16 y.o.
               </h2>
             </div>
           </figure>
@@ -615,12 +616,12 @@
         targetcolor="#0D0D0D"
         rel="noopener"
         aria-label="logo"
-        href="/"
+        href="./index.html"
         aria-current="page"
         class="nav-logo pagelink w-inline-block w--current"
       >
         <div class="logo w-embed">
-          <img src="./logo.png" alt="error" />
+          <img src="./logo.svg" alt="Y" />
         </div>
       </a>
       <div class="nav-trigger">
@@ -724,7 +725,7 @@
                         top: calc(3.5vw + 0.1vw);
                         bottom: 0;
                         left: 0;
-                        background-color: #c33764;
+                        background-color: #7c3aed;
                         transform-origin: bottom right;
                         transition: transform 0.35s ease-out;
                       }
@@ -745,7 +746,7 @@
                         top: calc(6vh + 0.1vh);
                         bottom: 0;
                         left: 0;
-                        background-color: #c33764;
+                        background-color: #7c3aed;
                         transform-origin: bottom right;
                         transition: transform 0.35s ease-out;
                       }
@@ -823,7 +824,7 @@
               "
               class="h-head"
             >
-              PURity
+              WEB
             </h2>
           </div>
           <div
@@ -840,7 +841,7 @@
             "
             class="h-block hb-side"
           >
-            <h2 class="h-head">oddity</h2>
+            <h2 class="h-head">experiences</h2>
           </div>
         </div>
       </div>
@@ -866,16 +867,17 @@
               x="0"
               y="0"
               version="1.1"
-              viewBox="0 0 92 177"
+              viewBox="0 0 100 177"
               xml:space="preserve"
             >
               <defs />
+              <!-- Decorative Y letter -->
               <path
-                d="M51.8,81.1c0,28.6-13.3,59.7-30.3,59.7c-9.3,0-15.9-10.7-15.9-29.7c0-28.4,13.3-59.6,30.2-59.6 C45,51.5,51.8,62.2,51.8,81.1z M16,97.6c-0.8,7.1-1.3,13.5-1.3,19.3c0,15.1,3.7,20.4,7.8,20.4c9.3,0,15.9-20,19-42.7 c0.8-7.1,1.3-13.5,1.3-19.3C42.8,60,39,54.8,35,54.8C25.7,54.8,19.1,74.7,16,97.6z"
+                d="M5 10 C10 8, 15 12, 18 20 L42 75 C44 80, 46 82, 50 82 C54 82, 56 80, 58 75 L82 20 C85 12, 90 8, 95 10 C100 12, 101 18, 98 26 L70 90 C66 100, 58 108, 54 112 L54 155 C54 162, 56 166, 60 168 C56 172, 52 174, 50 174 C48 174, 44 172, 40 168 C44 166, 46 162, 46 155 L46 112 C42 108, 34 100, 30 90 L2 26 C-1 18, 0 12, 5 10 Z"
                 class="st1"
               />
               <path
-                d="M61.1,55.9h-5.5l0.2-1.1l5.7-1.8h0.2l2.6-15.9c2.6-15.1,8-29.7,19.5-29.7c2.6,0,4.4,0.6,5,1.1l-1.8,9.7h-0.5 c-0.5-1.1-1.5-2.8-2.6-4.7s-2.4-2.9-4.2-2.9c-3.4,0-5.4,4.2-5.5,12.5c-0.2,4.1-0.8,11.2-2.6,22.9l-1.1,7h10.4l-0.8,2.9H69.9 l-14.1,85.7c-2.6,15.1-8,29.9-19.5,29.9c-2.4,0-4.5-0.6-5.2-1.1l1.9-9.7h0.5c0.8,2.4,3.4,7.6,6.8,7.6c3.4,0,5.5-4.2,5.7-12.5 c0.2-4.1,1-12.2,2.4-22.7L61.1,55.9z"
+                d="M15 18 C13 20, 13 24, 15 30 L40 88 C42 94, 46 98, 50 98 C54 98, 58 94, 60 88 L85 30 C87 24, 87 20, 85 18 C83 16, 79 18, 76 24 L54 78 C52 82, 51 84, 50 84 C49 84, 48 82, 46 78 L24 24 C21 18, 17 16, 15 18 Z"
                 class="st1"
               />
             </svg>
@@ -910,7 +912,7 @@
               "
               class="h-head"
             >
-              design
+              landing
             </h1>
           </div>
           <div
@@ -927,7 +929,7 @@
             "
             class="h-block hb-side2"
           >
-            <h1 class="h-head">sound</h1>
+            <h1 class="h-head">pages</h1>
           </div>
         </div>
       </div>
@@ -951,7 +953,7 @@
           "
           class="h-quote"
         >
-          &quot;welcome to my world &quot;
+          &quot;building creative web experiences&quot;
         </div>
       </div>
       <div
@@ -1017,8 +1019,8 @@
           </svg>
         </div>
       </div>
-      <div style="filter: invert(0%)" class="webglholder"></div>
     </div>
+    <div style="filter: invert(0%)" class="webglholder"></div>
     <div class="cookie-c">
       <div class="cookie-t">
         This website use
@@ -1650,7 +1652,7 @@
         });
       }
     </script>
-    <script src="./javascript/webglball/index.js"></script>
     <script src="./javascript/webglball/shaders.js"></script>
+    <script src="./javascript/webglball/index.js"></script>
   </body>
 </html>

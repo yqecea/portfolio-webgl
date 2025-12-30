@@ -1,17 +1,21 @@
 /**
  * main.js - Application Entry Point
  * 
- * Bootstraps all managers and starts the global animation loop.
- * This replaces the inline scripts in the legacy index.html.
+ * Bootstraps all managers:
+ * - MobileFix: MOBILE ONLY - handles scroll, gradient, animations
+ * - WebGLApp: 3D sphere (both mobile and desktop)
+ * - Menu: Burger menu (both mobile and desktop)
+ * 
+ * IMPORTANT: Desktop behavior is NOT modified by this module.
  */
 import loop from './core/Loop.js';
-import ScrollManager from './core/ScrollManager.js';
+import MobileFix from './core/MobileFix.js';
 import WebGLApp from './webgl/WebGLApp.js';
 import Menu from './ui/Menu.js';
 
 class App {
     constructor() {
-        this.scrollManager = null;
+        this.mobileFix = null;
         this.webglApp = null;
         this.menu = null;
     }
@@ -19,21 +23,34 @@ class App {
     init() {
         console.log('[App] Initializing...');
 
-        // Initialize ScrollManager (Critical Mobile Fix)
-        this.scrollManager = new ScrollManager();
-        loop.subscribe('scrollUpdate', () => this.scrollManager.update());
-        console.log('[App] ScrollManager initialized');
+        // Check if on mobile
+        const isMobile = window.innerWidth <= 991 ||
+            /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-        // Initialize WebGL Sphere
-        this.webglApp = new WebGLApp();
-        this.webglApp.init();
-        console.log('[App] WebGLApp initialized');
+        // Initialize MobileFix (ONLY on mobile - handles scroll, gradient, animations)
+        if (isMobile) {
+            this.mobileFix = new MobileFix();
+            console.log('[App] MobileFix initialized (mobile only)');
+        } else {
+            console.log('[App] Desktop detected, MobileFix skipped');
+        }
 
-        // Initialize Menu
-        this.menu = new Menu();
-        console.log('[App] Menu initialized');
+        // Initialize WebGL Sphere (both mobile and desktop, if container exists)
+        const webglContainer = document.querySelector('.webglholder');
+        if (webglContainer) {
+            this.webglApp = new WebGLApp();
+            this.webglApp.init();
+            console.log('[App] WebGLApp initialized');
+        }
 
-        // Start the animation loop
+        // Initialize Menu (both mobile and desktop)
+        const menuContainer = document.querySelector('.burgercontainer');
+        if (menuContainer) {
+            this.menu = new Menu();
+            console.log('[App] Menu initialized');
+        }
+
+        // Start the animation loop (for WebGL)
         loop.start();
         console.log('[App] Loop started');
     }

@@ -79,28 +79,30 @@ export default class MobileFix {
     }
 
     /**
-     * FIX 1: Gradient Banding
-     * Adds a subtle noise overlay to break up gradient bands
+     * FIX 1: Gradient Banding + Number Scaling
+     * - Adds VERY subtle noise overlay (doesn't change colors)
+     * - Scales numbers to fit on mobile screen
      */
     fixGradientBanding() {
-        // Create noise SVG data URL
+        // Create very subtle noise SVG - much lower opacity
         const noiseSVG = `
             <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
                 <filter id="noise">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/>
+                    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
                     <feColorMatrix type="saturate" values="0"/>
                 </filter>
-                <rect width="100%" height="100%" filter="url(#noise)" opacity="0.04"/>
+                <rect width="100%" height="100%" filter="url(#noise)" opacity="0.02"/>
             </svg>
         `;
         const noiseDataURL = `url("data:image/svg+xml,${encodeURIComponent(noiseSVG)}")`;
 
-        // Apply noise overlay to body
+        // Apply ONLY noise overlay - NO gradient changes
         const style = document.createElement('style');
-        style.id = 'mobile-gradient-fix';
+        style.id = 'mobile-fixes-css';
         style.textContent = `
             @media (max-width: 991px) {
-                body::before {
+                /* Very subtle noise - doesn't darken anything */
+                body::after {
                     content: '';
                     position: fixed;
                     top: 0;
@@ -108,42 +110,64 @@ export default class MobileFix {
                     width: 100%;
                     height: 100%;
                     pointer-events: none;
-                    z-index: 9999;
+                    z-index: 1;
                     background: ${noiseDataURL};
-                    opacity: 0.3;
+                    opacity: 0.15;
+                    mix-blend-mode: overlay;
                 }
                 
-                /* Smoother gradient with more color stops */
-                body {
-                    background: linear-gradient(
-                        180deg,
-                        #1a1a2e 0%,
-                        #1a1a2e 5%,
-                        #16162a 10%,
-                        #161628 15%,
-                        #151526 20%,
-                        #141424 25%,
-                        #131322 30%,
-                        #121220 35%,
-                        #11111e 40%,
-                        #10101c 45%,
-                        #0f0f1a 50%,
-                        #0e0e18 55%,
-                        #0d0d16 60%,
-                        #0c0c14 65%,
-                        #0b0b12 70%,
-                        #0a0a10 75%,
-                        #09090e 80%,
-                        #08080c 85%,
-                        #07070a 90%,
-                        #060608 95%,
-                        #050506 100%
-                    ) !important;
+                /* Number scaling - auto-fit to screen */
+                .p-numb {
+                    font-size: clamp(40vw, 50vw, 60vw) !important;
+                    line-height: 0.9 !important;
+                    white-space: nowrap !important;
+                }
+                
+                .p-numb-w {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                    overflow: visible !important;
+                }
+                
+                /* Section content scaling */
+                .p-col {
+                    min-width: 100vw !important;
+                    width: 100vw !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    padding: 5vw !important;
+                }
+                
+                .p-inner {
+                    width: 100% !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    text-align: center !important;
+                }
+                
+                .p-block {
+                    text-align: center !important;
+                }
+                
+                .p-title {
+                    font-size: clamp(6vw, 8vw, 10vw) !important;
+                    line-height: 1.2 !important;
+                    text-align: center !important;
+                }
+                
+                .p-client {
+                    font-size: clamp(3vw, 4vw, 5vw) !important;
+                    text-align: center !important;
                 }
             }
         `;
         document.head.appendChild(style);
-        console.log('[MobileFix] Gradient banding fix applied');
+        console.log('[MobileFix] Gradient banding + number scaling applied');
     }
 
     /**

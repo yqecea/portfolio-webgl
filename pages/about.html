@@ -1411,17 +1411,20 @@
             ),
             b.closePath(),
             b.stroke(),
-            // Position clickable areas to match burger circle visual position
+            // Position clickable areas using left/top from physical burger position
+            // Using 'left' instead of 'right' avoids drift from scrollbar-induced window.innerWidth variance
             (s.style = `
             width: ${(2 * i.burgerRad) / dpi}px;
             height: ${(2 * i.burgerRad) / dpi}px;
-            top: ${(i.burgerMargin - i.burgerRad) / dpi}px;
-            right: ${(i.burgerMargin - i.burgerRad) / dpi}px;`),
+            top: ${(i.burgerPosition.y - i.burgerRad) / dpi}px;
+            left: ${(i.burgerPosition.x - i.burgerRad) / dpi}px;
+            right: auto;`),
             (l.style = `
             width: ${(2 * i.burgerRad) / dpi}px;
             height: ${(2 * i.burgerRad) / dpi}px;
-            top: ${(i.burgerMargin - i.burgerRad) / dpi}px;
-            right: ${(i.burgerMargin - i.burgerRad) / dpi}px;`);
+            top: ${(i.burgerPosition.y - i.burgerRad) / dpi}px;
+            left: ${(i.burgerPosition.x - i.burgerRad) / dpi}px;
+            right: auto;`);
         });
     }
     burgerInit();

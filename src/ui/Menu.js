@@ -35,6 +35,7 @@ export default class Menu {
         this.isOpen = false;
         this.fillColor = '#0A0A0A';
         this.targetColor = '#E5E3DC';
+        this.lastDistance = 2000; // Hover detection state - reset on resize
 
         // Animation values
         this.y = { value: 0 };
@@ -115,8 +116,9 @@ export default class Menu {
         window.addEventListener('resize', () => this.resize());
 
         // Mouse hover detection (desktop only)
-        if (!window.isMobile) {
-            let lastDistance = 2000;
+        // Use inline User-Agent detection instead of relying on external global
+        const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!isMobileDevice) {
             window.addEventListener('mousemove', (e) => {
                 const cursor = [e.clientX, e.clientY];
                 const distance = Math.sqrt(
@@ -126,19 +128,19 @@ export default class Menu {
 
                 const threshold = this.config.burgerRad / this.dpi;
 
-                if (distance <= threshold && lastDistance > threshold) {
+                if (distance <= threshold && this.lastDistance > threshold) {
                     document.body.style.cursor = 'pointer';
                     if (this.burgerIn) this.burgerIn.classList.add('on');
                     this.animateNoise(0);
                 }
 
-                if (distance > threshold && lastDistance <= threshold) {
+                if (distance > threshold && this.lastDistance <= threshold) {
                     document.body.style.cursor = 'inherit';
                     if (this.burgerIn) this.burgerIn.classList.remove('on');
                     this.animateNoise(1);
                 }
 
-                lastDistance = distance;
+                this.lastDistance = distance;
             });
         }
     }
@@ -194,14 +196,9 @@ export default class Menu {
         this.height = this.ctx.canvas.height = this.container.offsetHeight * this.dpi;
         this.ctx.lineWidth = this.dpi;
 
-        // Update burger position
-        this.config.burgerPosition.x = this.width - this.config.burgerMargin;
-        this.config.burgerPosition.y = this.config.burgerMargin;
-
-        // Apply responsive breakpoints
-        let found = false;
+        // Apply responsive breakpoints FIRST
         this.breakpoints.forEach(bp => {
-            if (!found && window.innerWidth > bp.sWidth) {
+            if (window.innerWidth > bp.sWidth) {
                 this.config.burgerRad = bp.burgerRad;
                 this.config.burgerMargin = bp.burgerMargin;
                 this.config.burgerBigRad = bp.burgerBigRad;
@@ -217,7 +214,12 @@ export default class Menu {
             this.config.burgerRad = this.config.burgerBigRad;
         }
 
+        // Update burger position AFTER breakpoints are applied
         this.config.burgerPosition.x = this.width - this.config.burgerMargin;
+        this.config.burgerPosition.y = this.config.burgerMargin;
+
+        // Reset hover detection state to fix menu interaction after resize
+        this.lastDistance = 2000;
     }
 
     update() {
@@ -313,16 +315,22 @@ export default class Menu {
 
     updateClickableAreas() {
         const size = (2 * this.config.burgerRad) / this.dpi;
-        const offset = this.config.burgerMargin / (3 * this.dpi);
+        // The burger circle center is at (margin, margin) from top-right corner in CSS pixels
+        // To center a box of 'size' on that point, we offset by (margin - radius)
+        const marginPx = this.config.burgerMargin / this.dpi;
+        const radiusPx = this.config.burgerRad / this.dpi;
+        const offset = marginPx - radiusPx;
 
+        // Also need to override position to fixed since CSS might have different values
         const style = `
+            position: fixed;
             width: ${size}px;
             height: ${size}px;
             top: ${offset}px;
             right: ${offset}px;
         `;
 
-        if (this.burgerIn) this.burgerIn.style = style;
-        if (this.burgerOut) this.burgerOut.style = style;
+        if (this.burgerIn) this.burgerIn.style.cssText = style;
+        if (this.burgerOut) this.burgerOut.style.cssText = style;
     }
 }

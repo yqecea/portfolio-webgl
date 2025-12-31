@@ -432,7 +432,7 @@
                 <a rel="noopener" draggable="false" targetcolor="#0A0A0A"
                   data-w-id="7f415ce8-136e-436c-c678-47a776f3bb97" href="../index.html"
                   class="menu-li menulink w-inline-block">
-                  <h2 class="m-head">index</h2>
+                  <h2 class="m-head">intro</h2>
                 </a>
               </div>
               <div class="menu-item m2">
@@ -1128,7 +1128,8 @@
         l.addEventListener("click", I),
         window.isMobile ||
         window.addEventListener("mousemove", function (e) {
-          let r = [e.clientX, e.clientY],
+          // Scale mouse coordinates by DPI to match canvas coordinates
+          let r = [e.clientX * dpi, e.clientY * dpi],
             t = Math.sqrt(
               Math.pow(i.burgerPosition.x - r[0], 2) +
               Math.pow(i.burgerPosition.y - r[1], 2)
@@ -1167,11 +1168,17 @@
             T &&
             ((i.burgerMargin = i.burgerBigMargin),
               (i.burgerRad = i.burgerBigRad)),
-            (i.burgerPosition.x = window.innerWidth - i.burgerMargin),
+            (i.burgerPosition.x = window.innerWidth * dpi - i.burgerMargin),
             (i.burgerPosition.y = i.burgerMargin),
             (c = b.canvas.width = g.offsetWidth * dpi),
             (v = b.canvas.height = g.offsetHeight * dpi),
-            (i.burgerPosition.x = c - i.burgerMargin);
+            (i.burgerPosition.x = c - i.burgerMargin),
+            // Reset hover state to fix menu interaction after resize
+            (B = 2e3);
+          // Preserve menu open state - ensure nav-trigger has correct pointer-events
+          if (T) {
+            document.querySelector(".nav-trigger").classList.add("on");
+          }
         }),
         n.forEach((e) => {
           e.addEventListener("click", O);
@@ -1251,14 +1258,17 @@
             ),
             b.closePath(),
             b.stroke(),
-            (s.style = `\n            width: ${(2 * i.burgerRad) / dpi
-              }px;\n            height:${(2 * i.burgerRad) / dpi
-              }px;\n            top: ${i.burgerMargin / (3 * dpi)
-              }px;\n            right: ${i.burgerMargin / (3 * dpi)}px;`),
-            (l.style = `\n            width: ${(2 * i.burgerRad) / dpi
-              }px;\n            height:${(2 * i.burgerRad) / dpi
-              }px;\n             top: ${i.burgerMargin / (3 * dpi)
-              }px;\n            right: ${i.burgerMargin / (3 * dpi)}px;`);
+            // Position clickable areas to match burger circle visual position
+            (s.style = `
+            width: ${(2 * i.burgerRad) / dpi}px;
+            height: ${(2 * i.burgerRad) / dpi}px;
+            top: ${(i.burgerMargin - i.burgerRad) / dpi}px;
+            right: ${(i.burgerMargin - i.burgerRad) / dpi}px;`),
+            (l.style = `
+            width: ${(2 * i.burgerRad) / dpi}px;
+            height: ${(2 * i.burgerRad) / dpi}px;
+            top: ${(i.burgerMargin - i.burgerRad) / dpi}px;
+            right: ${(i.burgerMargin - i.burgerRad) / dpi}px;`);
         });
     }
     burgerInit();

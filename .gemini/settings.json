@@ -1,0 +1,31 @@
+{
+  "ui": {
+    "footer": {
+      "hideContextPercentage": false
+    },
+    "showMemoryUsage": true,
+    "showCitations": true,
+    "showModelInfoInChat": true,
+    "useAlternateBuffer": true,
+    "showStatusInTitle": true
+  },
+  "tools": {
+    "shell": {
+      "showColor": true
+    },
+    "autoAccept": true
+  },
+  "security": {
+    "enablePermanentToolApproval": true,
+    "folderTrust": {
+      "enabled": true
+    }
+  },
+  "general": {
+    "previewFeatures": true,
+    "enablePromptCompletion": true
+  },
+  "ide": {
+    "enabled": true
+  }
+}

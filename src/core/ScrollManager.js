@@ -49,17 +49,11 @@ export default class ScrollManager {
             return;
         }
 
-        // Better mobile detection: check screen width OR userAgent
-        // This ensures it works both on real devices AND in DevTools emulation
-        const isMobileByWidth = window.innerWidth <= 991;
-        const isMobileByUA = window.isMobile === true;
-        this.isMobile = isMobileByWidth || isMobileByUA;
+        // Check if on mobile (User-Agent ONLY - not width-based)
+        // This prevents false positives when resizing desktop browser window
+        this.isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-        console.log('[ScrollManager] Mobile detection:', {
-            byWidth: isMobileByWidth,
-            byUA: isMobileByUA,
-            result: this.isMobile
-        });
+        console.log('[ScrollManager] Mobile detection:', this.isMobile);
 
         // Apply mobile CSS fixes if on mobile
         if (this.isMobile) {

@@ -12,9 +12,9 @@
 
 export default class MobileFix {
     constructor() {
-        // Check if we're on mobile (screen width OR userAgent)
-        this.isMobile = window.innerWidth <= 991 ||
-            /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        // Check if we're on mobile (User-Agent ONLY - not width-based)
+        // This prevents false positives when resizing desktop browser window
+        this.isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
         if (!this.isMobile) {
             console.log('[MobileFix] Desktop detected, skipping all mobile fixes');
@@ -79,48 +79,37 @@ export default class MobileFix {
     }
 
     /**
-     * FIX 1: Gradient Banding + Number Scaling
-     * - Adds VERY subtle noise overlay (doesn't change colors)
-     * - Scales numbers to fit on mobile screen
+     * FIX 1: Mobile Layout + Number Scaling + Scroll Snap
+     * - Noise dithering is handled globally in CSS
+     * - Scales numbers to fill the screen on mobile
+     * - Adds scroll snap for auto-centering
+     * - Removes extra space after project 7
      */
     fixGradientBanding() {
-        // Create very subtle noise SVG - much lower opacity
-        const noiseSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
-                <filter id="noise">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
-                    <feColorMatrix type="saturate" values="0"/>
-                </filter>
-                <rect width="100%" height="100%" filter="url(#noise)" opacity="0.02"/>
-            </svg>
-        `;
-        const noiseDataURL = `url("data:image/svg+xml,${encodeURIComponent(noiseSVG)}")`;
+        // Noise overlay is now handled in CSS globally (works on all pages)
 
-        // Apply ONLY noise overlay - NO gradient changes
+        // Apply mobile-specific layout fixes
         const style = document.createElement('style');
         style.id = 'mobile-fixes-css';
         style.textContent = `
             @media (max-width: 991px) {
-                /* Very subtle noise - doesn't darken anything */
-                body::after {
-                    content: '';
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    pointer-events: none;
-                    z-index: 1;
-                    background: ${noiseDataURL};
-                    opacity: 0.15;
-                    mix-blend-mode: overlay;
+                /* ======== SCROLL SNAP for auto-centering ======== */
+                .sidescrollbox {
+                    scroll-snap-type: x mandatory !important;
+                    -webkit-overflow-scrolling: touch !important;
                 }
                 
-                /* Number scaling - auto-fit to screen */
+                .p-col {
+                    scroll-snap-align: center !important;
+                    scroll-snap-stop: always !important;
+                }
+                
+                /* ======== LARGE PROJECT NUMBERS - fill screen ======== */
                 .p-numb {
-                    font-size: clamp(40vw, 50vw, 60vw) !important;
-                    line-height: 0.9 !important;
+                    font-size: 75vh !important;
+                    line-height: 0.85 !important;
                     white-space: nowrap !important;
+                    color: rgba(10, 10, 10, 0.95) !important;
                 }
                 
                 .p-numb-w {
@@ -128,46 +117,69 @@ export default class MobileFix {
                     align-items: center !important;
                     justify-content: center !important;
                     width: 100% !important;
+                    height: 70vh !important;
                     overflow: visible !important;
                 }
                 
-                /* Section content scaling */
+                /* ======== SECTION LAYOUT - full viewport width ======== */
                 .p-col {
                     min-width: 100vw !important;
                     width: 100vw !important;
+                    height: 100vh !important;
                     display: flex !important;
                     flex-direction: column !important;
                     justify-content: center !important;
                     align-items: center !important;
-                    padding: 5vw !important;
+                    padding: 0 !important;
+                    flex-shrink: 0 !important;
+                }
+                
+                /* ======== FIX GRID WIDTH - exactly 7 screens ======== */
+                .p-grid.scroller {
+                    width: calc(100vw * 7) !important;
+                    max-width: calc(100vw * 7) !important;
                 }
                 
                 .p-inner {
                     width: 100% !important;
+                    height: 100% !important;
                     display: flex !important;
                     flex-direction: column !important;
                     align-items: center !important;
+                    justify-content: center !important;
                     text-align: center !important;
                 }
                 
                 .p-block {
                     text-align: center !important;
+                    margin-top: 2vh !important;
                 }
                 
                 .p-title {
-                    font-size: clamp(6vw, 8vw, 10vw) !important;
+                    font-size: clamp(5vw, 7vw, 9vw) !important;
                     line-height: 1.2 !important;
                     text-align: center !important;
+                    color: #0a0a0a !important;
                 }
                 
                 .p-client {
                     font-size: clamp(3vw, 4vw, 5vw) !important;
                     text-align: center !important;
                 }
+                
+                /* Hide the elastic line on mobile */
+                .elastic, .elasticbox {
+                    display: none !important;
+                }
+                
+                /* Hide the arrow on mobile */
+                .p-side {
+                    display: none !important;
+                }
             }
         `;
         document.head.appendChild(style);
-        console.log('[MobileFix] Gradient banding + number scaling applied');
+        console.log('[MobileFix] Gradient banding + number scaling + scroll snap applied');
     }
 
     /**
@@ -223,7 +235,12 @@ export default class MobileFix {
 
     updateLimit() {
         if (!this.scroller) return;
-        this.scroll.limit = Math.max(0, this.scroller.scrollWidth - window.innerWidth);
+        // Calculate limit based on exact number of sections (each is 100vw)
+        const numSections = this.sections.length || 7;
+        const sectionWidth = window.innerWidth;
+        // Limit = total content width - one screen (so we can see the last section)
+        this.scroll.limit = Math.max(0, (numSections - 1) * sectionWidth);
+        console.log('[MobileFix] Updated scroll limit:', this.scroll.limit, 'for', numSections, 'sections');
     }
 
     onTouchStart(e) {
@@ -266,11 +283,37 @@ export default class MobileFix {
 
         this.scroll.isDragging = false;
 
-        // Apply momentum
+        // Apply momentum first
         if (Math.abs(this.scroll.velocity) > 5) {
             this.scroll.target += this.scroll.velocity * 5;
             this.scroll.target = Math.max(0, Math.min(this.scroll.target, this.scroll.limit));
         }
+
+        // SCROLL SNAP: Snap to nearest section after momentum
+        this.snapToNearestSection();
+    }
+
+    /**
+     * Snap to the nearest section center
+     * This makes numbers auto-align centered on screen
+     */
+    snapToNearestSection() {
+        const sectionWidth = window.innerWidth; // Each section is 100vw
+        const numSections = this.sections.length || 7;
+
+        // Calculate which section we're closest to
+        const currentSection = Math.round(this.scroll.target / sectionWidth);
+
+        // Clamp to valid range
+        const targetSection = Math.max(0, Math.min(currentSection, numSections - 1));
+
+        // Calculate target scroll position (centered)
+        const targetPosition = targetSection * sectionWidth;
+
+        // Animate to the snapped position
+        this.scroll.target = targetPosition;
+
+        console.log('[MobileFix] Snapped to section', targetSection + 1);
     }
 
     /**

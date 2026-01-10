@@ -10,8 +10,10 @@ class Loop {
         this.dt = 0.15;
         this.lastFrame = Date.now();
         this.isRunning = false;
+        this.usingLegacyRAF = false;
         
         this.render = this.render.bind(this);
+        this.tick = this.tick.bind(this);
     }
 
     /**
@@ -43,7 +45,15 @@ class Loop {
     start() {
         if (this.isRunning) return;
         this.isRunning = true;
-        this.render();
+
+        // Optimization: Recycle existing RAF loop if available to save resources
+        if (window.RAF && typeof window.RAF.subscribe === 'function') {
+            window.RAF.subscribe('coreLoop', this.tick);
+            this.usingLegacyRAF = true;
+        } else {
+            this.render();
+            this.usingLegacyRAF = false;
+        }
     }
 
     /**
@@ -51,17 +61,18 @@ class Loop {
      */
     stop() {
         this.isRunning = false;
+        if (this.usingLegacyRAF && window.RAF) {
+             window.RAF.unsubscribe('coreLoop');
+        }
     }
 
     /**
-     * Main render loop - executes all subscribed callbacks
+     * Internal tick method called by legacy RAF or internal RAF
      */
-    render() {
+    tick() {
         if (!this.isRunning) return;
-        
-        requestAnimationFrame(this.render);
-        
-        // Execute all callbacks
+
+         // Logic that runs every frame
         this.callbacks.forEach(item => {
             item.callback();
         });
@@ -69,6 +80,16 @@ class Loop {
         // Calculate delta time
         this.dt = Date.now() - this.lastFrame;
         this.lastFrame = Date.now();
+    }
+
+    /**
+     * Main render loop - executes all subscribed callbacks
+     */
+    render() {
+        if (!this.isRunning) return;
+
+        requestAnimationFrame(this.render);
+        this.tick();
     }
 }
 

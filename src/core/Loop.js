@@ -12,6 +12,7 @@ class Loop {
         this.isRunning = false;
         
         this.render = this.render.bind(this);
+        this._executeCallbacks = this._executeCallbacks.bind(this);
     }
 
     /**
@@ -43,7 +44,16 @@ class Loop {
     start() {
         if (this.isRunning) return;
         this.isRunning = true;
-        this.render();
+
+        // Check for legacy RAF loop (defined in inline scripts)
+        // If it exists, we piggiback on it to avoid running two rAF loops
+        if (typeof window.RAF !== 'undefined' && typeof window.RAF.subscribe === 'function') {
+            console.log('[Loop] Piggybacking on legacy RAF loop');
+            window.RAF.subscribe('modernLoop', this._executeCallbacks);
+        } else {
+            console.log('[Loop] Starting independent RAF loop');
+            this.render();
+        }
     }
 
     /**
@@ -51,16 +61,19 @@ class Loop {
      */
     stop() {
         this.isRunning = false;
+
+        if (typeof window.RAF !== 'undefined' && typeof window.RAF.unsubscribe === 'function') {
+            window.RAF.unsubscribe('modernLoop');
+        }
     }
 
     /**
-     * Main render loop - executes all subscribed callbacks
+     * Internal method to execute callbacks and update time
+     * Used by both independent render() and piggybacked legacy loop
      */
-    render() {
+    _executeCallbacks() {
         if (!this.isRunning) return;
-        
-        requestAnimationFrame(this.render);
-        
+
         // Execute all callbacks
         this.callbacks.forEach(item => {
             item.callback();
@@ -69,6 +82,16 @@ class Loop {
         // Calculate delta time
         this.dt = Date.now() - this.lastFrame;
         this.lastFrame = Date.now();
+    }
+
+    /**
+     * Main render loop - executes all subscribed callbacks
+     */
+    render() {
+        if (!this.isRunning) return;
+
+        requestAnimationFrame(this.render);
+        this._executeCallbacks();
     }
 }
 

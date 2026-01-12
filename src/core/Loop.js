@@ -10,6 +10,7 @@ class Loop {
         this.dt = 0.15;
         this.lastFrame = Date.now();
         this.isRunning = false;
+        this.isPiggybacking = false;
         
         this.render = this.render.bind(this);
     }
@@ -42,6 +43,31 @@ class Loop {
      */
     start() {
         if (this.isRunning) return;
+
+        // Reset lastFrame to prevent large delta time on start
+        this.lastFrame = Date.now();
+
+        // Performance Optimization:
+        // If legacy RAFClass loop is running globally, reuse it instead of starting a second loop.
+        // This consolidates all animations into a single requestAnimationFrame cycle.
+        if (window.RAF && typeof window.RAF.subscribe === 'function') {
+            console.log('⚡ Bolt: Consolidating animation loops (piggybacking on legacy RAF)');
+            window.RAF.subscribe('BoltModernLoop', () => {
+                // Update delta time BEFORE callbacks so they have fresh timing data
+                const now = Date.now();
+                this.dt = now - this.lastFrame;
+                this.lastFrame = now;
+
+                // Execute all callbacks
+                this.callbacks.forEach(item => {
+                    item.callback();
+                });
+            });
+            this.isRunning = true;
+            this.isPiggybacking = true;
+            return;
+        }
+
         this.isRunning = true;
         this.render();
     }
@@ -51,24 +77,30 @@ class Loop {
      */
     stop() {
         this.isRunning = false;
+
+        if (this.isPiggybacking && window.RAF && typeof window.RAF.unsubscribe === 'function') {
+            window.RAF.unsubscribe('BoltModernLoop');
+            this.isPiggybacking = false;
+        }
     }
 
     /**
      * Main render loop - executes all subscribed callbacks
      */
     render() {
-        if (!this.isRunning) return;
+        if (!this.isRunning || this.isPiggybacking) return;
         
         requestAnimationFrame(this.render);
         
+        // Update delta time
+        const now = Date.now();
+        this.dt = now - this.lastFrame;
+        this.lastFrame = now;
+
         // Execute all callbacks
         this.callbacks.forEach(item => {
             item.callback();
         });
-
-        // Calculate delta time
-        this.dt = Date.now() - this.lastFrame;
-        this.lastFrame = Date.now();
     }
 }
 

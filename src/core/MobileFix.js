@@ -343,10 +343,11 @@ export default class MobileFix {
         const viewportWidth = window.innerWidth;
         const scrollX = this.scroll.current;
 
-        this.sections.forEach((section) => {
-            const rect = section.getBoundingClientRect();
-            const sectionLeft = rect.left;
-            const sectionWidth = rect.width;
+        this.sections.forEach((section, index) => {
+            // Optimization: Calculate position instead of forcing reflow with getBoundingClientRect()
+            // Each section is exactly 100vw wide and stacked horizontally
+            const sectionWidth = viewportWidth;
+            const sectionLeft = (index * viewportWidth) - scrollX;
 
             // Section is visible if it's within viewport
             const isVisible = sectionLeft < viewportWidth && sectionLeft + sectionWidth > 0;

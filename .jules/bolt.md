@@ -1,0 +1,3 @@
+## 2024-05-22 - Layout Thrashing in Mobile Animation Loop
+**Learning:** The `MobileFix.js` module was calling `getBoundingClientRect()` inside a `requestAnimationFrame` loop for every section element to check visibility. This forces a reflow (layout calculation) every frame, which is highly expensive on mobile devices and causes stutter.
+**Action:** When layout is deterministic (e.g., fixed widths known via CSS or window size), verify if positions can be calculated using simple math (index * width - scrollOffset) instead of querying the DOM. This avoids reading from the DOM after writing to it (the `transform` update), preventing layout thrashing.

@@ -74,11 +74,10 @@ class App {
 
                         // Apply transform
                         scroller.style.transform = `translateX(-${scrollX}px)`;
-
-                        // Continue animation
-                        requestAnimationFrame(animateScroll);
                     }
-                    animateScroll();
+                    // PERFORMANCE: Use centralized loop to reduce overhead and sync animations
+                    loop.subscribe('desktopScrollAnimation', animateScroll);
+                    animateScroll(); // Initial render to prevent visual jump
 
                     // Subscribe to resize events to recalculate maxScroll
                     resizeManager.subscribe('desktopScroll', () => {

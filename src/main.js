@@ -74,10 +74,13 @@ class App {
 
                         // Apply transform
                         scroller.style.transform = `translateX(-${scrollX}px)`;
-
-                        // Continue animation
-                        requestAnimationFrame(animateScroll);
                     }
+
+                    // Subscribe to centralized loop (Bolt Optimization)
+                    // Replaces local recursive requestAnimationFrame
+                    loop.subscribe('desktopScrollAnimation', animateScroll);
+
+                    // Initial render to prevent jump
                     animateScroll();
 
                     // Subscribe to resize events to recalculate maxScroll

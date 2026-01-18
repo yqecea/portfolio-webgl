@@ -1,0 +1,3 @@
+## 2025-01-18 - Centralizing Ad-Hoc Animation Loops
+**Learning:** The codebase contained a mix of legacy inline `requestAnimationFrame` loops and a modern `Loop.js` module. Additionally, `src/main.js` created a third, recursive RAF loop for desktop scrolling. Consolidating these ad-hoc loops into the central manager not only cleans up the architecture but allows for centralized control and optimization (like pausing all animations).
+**Action:** When working on "hybrid" legacy/modern projects, always scan for ad-hoc `requestAnimationFrame` calls in feature-specific code and refactor them to use the central loop manager if one exists.

@@ -68,16 +68,19 @@ class App {
                     const lerp = 0.08; // Smoothness factor (0-1, lower = smoother)
 
                     // Animation loop for smooth scrolling
-                    function animateScroll() {
+                    let lastScrollX = -1;
+                    const animateScroll = () => {
                         // Lerp toward target
                         scrollX += (targetScrollX - scrollX) * lerp;
 
-                        // Apply transform
-                        scroller.style.transform = `translateX(-${scrollX}px)`;
-
-                        // Continue animation
-                        requestAnimationFrame(animateScroll);
-                    }
+                        // Optimize: Only update DOM if value changed significantly (> 0.05px)
+                        if (Math.abs(scrollX - lastScrollX) > 0.05) {
+                            scroller.style.transform = `translateX(-${scrollX}px)`;
+                            lastScrollX = scrollX;
+                        }
+                    };
+                    loop.subscribe('desktopScrollAnimation', animateScroll);
+                    // Initial sync to set position
                     animateScroll();
 
                     // Subscribe to resize events to recalculate maxScroll

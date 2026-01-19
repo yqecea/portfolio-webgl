@@ -16,6 +16,9 @@ import MobileAnimations from './core/MobileAnimations.js';
 import WebGLApp from './webgl/WebGLApp.js';
 import Menu from './ui/Menu.js';
 
+// Expose Loop globaly to consolidate RAF loops
+window.GlobalLoop = loop;
+
 class App {
     constructor() {
         this.mobileFix = null;

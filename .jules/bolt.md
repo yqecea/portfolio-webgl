@@ -1,0 +1,3 @@
+## 2024-05-23 - [Consolidating Legacy RAF Loops]
+**Learning:** When integrating modern ES modules with legacy inline scripts, relying on a global singleton (`window.GlobalLoop`) is an effective bridge. However, care must be taken with fallback logic. The legacy `RAFClass` had an unsafe `unsubscribe` method (using `splice` inside `forEach`) which caused index skipping.
+**Action:** Always prefer `filter()` or reverse iteration when removing elements from an array during traversal. When bridging legacy code, ensure the handover logic (checking for `window.GlobalLoop`) handles the transition cleanly (e.g., clearing the local queue after transfer).

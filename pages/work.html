@@ -273,19 +273,36 @@
       }
 
       subscribe(name, callback) {
-        this.callbacks.push({
-          name: name,
-          callback: callback,
-        });
+        if (window.GlobalLoop) {
+          window.GlobalLoop.subscribe(name, callback);
+        } else {
+          this.callbacks.push({
+            name: name,
+            callback: callback,
+          });
+        }
       }
 
       unsubscribe(name) {
-        this.callbacks.forEach((item, i) => {
-          if (item.name == name) this.callbacks.splice(i, i + 1);
-        });
+        if (window.GlobalLoop) {
+          window.GlobalLoop.unsubscribe(name);
+        } else {
+          this.callbacks = this.callbacks.filter(item => item.name !== name);
+        }
       }
 
       render() {
+        if (window.GlobalLoop) {
+          // Transfer existing callbacks to GlobalLoop
+          this.callbacks.forEach((item) => {
+            window.GlobalLoop.subscribe(item.name, item.callback);
+          });
+          // Clear local callbacks as they are now managed by GlobalLoop
+          this.callbacks = [];
+          // Stop this local loop
+          return;
+        }
+
         requestAnimationFrame(this.render);
         this.callbacks.forEach((item) => {
           item.callback();

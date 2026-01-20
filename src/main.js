@@ -68,17 +68,15 @@ class App {
                     const lerp = 0.08; // Smoothness factor (0-1, lower = smoother)
 
                     // Animation loop for smooth scrolling
-                    function animateScroll() {
+                    // OPTIMIZATION: Use centralized Loop.js instead of recursive requestAnimationFrame
+                    // This reduces overhead by synchronizing all animations to a single RAF loop
+                    loop.subscribe('desktopScrollAnimation', () => {
                         // Lerp toward target
                         scrollX += (targetScrollX - scrollX) * lerp;
 
                         // Apply transform
                         scroller.style.transform = `translateX(-${scrollX}px)`;
-
-                        // Continue animation
-                        requestAnimationFrame(animateScroll);
-                    }
-                    animateScroll();
+                    });
 
                     // Subscribe to resize events to recalculate maxScroll
                     resizeManager.subscribe('desktopScroll', () => {

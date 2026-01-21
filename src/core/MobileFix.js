@@ -1,3 +1,5 @@
+import loop from './Loop.js';
+
 /**
  * MobileFix.js - Complete Mobile Experience Enhancement
  * 
@@ -61,7 +63,8 @@ export default class MobileFix {
         }
 
         // Start animation loop
-        this.animate();
+        // OPTIMIZATION: Use central Loop.js instead of recursive rAF
+        loop.subscribe('mobileFix', () => this.animate());
 
         console.log('[MobileFix] All fixes applied');
     }
@@ -386,9 +389,6 @@ export default class MobileFix {
 
         // Update section animations
         this.animateSections();
-
-        // Continue loop
-        requestAnimationFrame(() => this.animate());
     }
 
     /**

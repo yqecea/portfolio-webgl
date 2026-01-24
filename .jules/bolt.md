@@ -1,0 +1,3 @@
+## 2024-05-22 - Layout Thrashing in Mobile Animation Loops
+**Learning:** The codebase used `getBoundingClientRect()` inside a `requestAnimationFrame` loop for multiple elements (`animateSections` in `MobileFix.js`), causing severe layout thrashing (Read-Write-Read cycle) on every frame. This is especially critical on mobile devices where this code targets. The layout was predictable (100vw sections), allowing arithmetic calculation instead.
+**Action:** Check all `requestAnimationFrame` loops for DOM read operations like `getBoundingClientRect`, `offsetWidth`, etc. If layout is deterministic, prefer arithmetic calculation using state (e.g., scroll position) over DOM queries.

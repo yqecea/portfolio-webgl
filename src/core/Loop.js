@@ -7,9 +7,10 @@
 class Loop {
     constructor() {
         this.callbacks = [];
-        this.dt = 0.15;
-        this.lastFrame = Date.now();
+        this.dt = 16.66; // Default to ~60fps frame time (ms)
+        this.lastFrame = 0;
         this.isRunning = false;
+        this.elapsedTime = 0;
         
         this.render = this.render.bind(this);
     }
@@ -17,7 +18,7 @@ class Loop {
     /**
      * Subscribe a callback to the render loop
      * @param {string} name - Unique identifier for the callback
-     * @param {Function} callback - Function to call each frame
+     * @param {Function} callback - Function to call each frame. Receives (dt, elapsedTime).
      */
     subscribe(name, callback) {
         // Prevent duplicate subscriptions
@@ -43,6 +44,7 @@ class Loop {
     start() {
         if (this.isRunning) return;
         this.isRunning = true;
+        this.lastFrame = performance.now();
         this.render();
     }
 
@@ -61,14 +63,19 @@ class Loop {
         
         requestAnimationFrame(this.render);
         
+        const now = performance.now();
+        this.dt = now - this.lastFrame;
+
+        // Clamp dt to avoid huge jumps (e.g. max 100ms)
+        if (this.dt > 100) this.dt = 100;
+
+        this.lastFrame = now;
+        this.elapsedTime += this.dt;
+
         // Execute all callbacks
         this.callbacks.forEach(item => {
-            item.callback();
+            item.callback(this.dt, this.elapsedTime);
         });
-
-        // Calculate delta time
-        this.dt = Date.now() - this.lastFrame;
-        this.lastFrame = Date.now();
     }
 }
 

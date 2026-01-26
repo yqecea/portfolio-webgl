@@ -1,0 +1,3 @@
+## 2024-05-21 - [Fragmented Animation Loops]
+**Learning:** The codebase utilizes multiple, independent animation loops: a centralized `Loop.js`, a legacy `RAFClass` inline in HTML, and ad-hoc `requestAnimationFrame` calls in modules like `src/main.js` and `MobileFix.js`. This fragmentation makes global performance tuning difficult and can lead to frame fighting.
+**Action:** When touching animation code, prioritize refactoring isolated `requestAnimationFrame` loops to subscribe to the centralized `Loop.js` instance. Be cautious of legacy inline scripts which may still be running parallel loops.

@@ -66,11 +66,22 @@ class App {
                     let targetScrollX = 0;
                     let maxScroll = Math.max(0, scroller.scrollWidth - window.innerWidth);
                     const lerp = 0.08; // Smoothness factor (0-1, lower = smoother)
+                    let isAnimating = false;
 
                     // Animation loop for smooth scrolling
                     function animateScroll() {
                         // Lerp toward target
-                        scrollX += (targetScrollX - scrollX) * lerp;
+                        const diff = targetScrollX - scrollX;
+
+                        // OPTIMIZATION: Stop loop if delta is negligible
+                        if (Math.abs(diff) < 0.1) {
+                            scrollX = targetScrollX;
+                            scroller.style.transform = `translateX(-${scrollX}px)`;
+                            isAnimating = false;
+                            return;
+                        }
+
+                        scrollX += diff * lerp;
 
                         // Apply transform
                         scroller.style.transform = `translateX(-${scrollX}px)`;
@@ -78,6 +89,8 @@ class App {
                         // Continue animation
                         requestAnimationFrame(animateScroll);
                     }
+                    // Initial start (in case we start with an offset, though usually 0)
+                    isAnimating = true;
                     animateScroll();
 
                     // Subscribe to resize events to recalculate maxScroll
@@ -86,6 +99,12 @@ class App {
                         targetScrollX = Math.min(targetScrollX, maxScroll); // Clamp target to new bounds
                         scrollX = Math.min(scrollX, maxScroll); // Also clamp current position
                         console.log('[App] Desktop scroll updated, maxScroll:', maxScroll);
+
+                        // If clamping created a delta, ensure we animate/snap
+                        if (Math.abs(targetScrollX - scrollX) > 0.1 && !isAnimating) {
+                            isAnimating = true;
+                            animateScroll();
+                        }
                     });
 
                     window.addEventListener('wheel', (e) => {
@@ -95,6 +114,12 @@ class App {
                         // Update target (not current position) for smooth scroll
                         targetScrollX += e.deltaY;
                         targetScrollX = Math.max(0, Math.min(targetScrollX, maxScroll));
+
+                        // Restart loop if idle
+                        if (!isAnimating) {
+                            isAnimating = true;
+                            animateScroll();
+                        }
                     }, { passive: false });
 
                     console.log('[App] Desktop: Smooth horizontal scroll enabled for Work section');

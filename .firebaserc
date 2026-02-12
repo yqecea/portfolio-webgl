@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "gen-lang-client-0698883101"
+  },
+  "targets": {
+    "gen-lang-client-0698883101": {
+      "hosting": {
+        "yqecea-portfolio": [
+          "yqecea-portfolio"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "target": "yqecea-portfolio",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      ".gitignore",
+      "GEMINI.md",
+      "**/.*",
+      "**/node_modules/**",
+      "docs/**",
+      "index.backup.html"
+    ]
+  }
+}

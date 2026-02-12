@@ -1,151 +1,235 @@
-/**
- * main.js - Application Entry Point
- * 
- * Bootstraps all managers:
- * - MobileFix: MOBILE ONLY - handles horizontal scroll for Work page
- * - MobileAnimations: MOBILE ONLY - scroll animations for ALL pages
- * - WebGLApp: 3D sphere (both mobile and desktop)
- * - Menu: Burger menu (both mobile and desktop)
- * 
- * IMPORTANT: Desktop behavior is NOT modified by this module.
- */
 import loop from './core/Loop.js';
-import resizeManager from './core/ResizeManager.js';
 import MobileFix from './core/MobileFix.js';
 import MobileAnimations from './core/MobileAnimations.js';
 import WebGLApp from './webgl/WebGLApp.js';
 import Menu from './ui/Menu.js';
+import SoundReactor from './audio/SoundReactor.js';
+import SoundToggler from './audio/SoundToggler.js';
+import CursorCanvas from './ui/CursorCanvas.js';
+import PageTransition from './ui/PageTransition.js';
+import LocomotiveBridge from './scroll/LocomotiveBridge.js';
+import ElasticLines from './work/ElasticLines.js';
+import AnimationLock from './about/AnimationLock.js';
+import DesktopHorizontalScrollController from './work/DesktopHorizontalScrollController.js';
+
+const SOUND_URL =
+  'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/mainSound.mp3';
+const ROLLOVER_URL =
+  'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/rollovers/rol05.mp3';
 
 class App {
-    constructor() {
-        this.mobileFix = null;
-        this.mobileAnimations = null;
-        this.webglApp = null;
-        this.menu = null;
+  constructor() {
+    this.page = null;
+    this.isMobile = false;
+    this.instances = [];
+
+    this.soundReactor = null;
+    this.soundToggler = null;
+  }
+
+  detectPage() {
+    const fromData = document.body?.dataset?.page;
+    if (fromData) return fromData;
+
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('/pages/work')) return 'work';
+    if (path.includes('/pages/about')) return 'about';
+    if (path.includes('/pages/contact')) return 'contact';
+    if (path.includes('/pages/credits')) return 'credits';
+    return 'home';
+  }
+
+  setEnvironmentFlags() {
+    this.isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const ua = navigator.userAgent.toLowerCase();
+    const isSafari =
+      ua.includes('safari') &&
+      !ua.includes('chrome') &&
+      !ua.includes('crios') &&
+      !ua.includes('android');
+
+    window.isMobile = this.isMobile;
+    window.isMobileDevice = this.isMobile;
+    window.isSafari = isSafari;
+  }
+
+  setupGlobalLifecycle() {
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    });
+  }
+
+  hideRotateOverlayDesktop() {
+    if (this.isMobile) return;
+    const rotateOverlay = document.querySelector('.rotate');
+    if (rotateOverlay) rotateOverlay.style.display = 'none';
+  }
+
+  initMenu() {
+    const menuContainer = document.querySelector('.burgercontainer');
+    if (!menuContainer) return;
+
+    const menu = new Menu();
+    this.instances.push(menu);
+  }
+
+  initSound() {
+    if (this.isMobile) return;
+
+    const enableAnalyser = this.page === 'home';
+    this.soundReactor = new SoundReactor(SOUND_URL, { enableAnalyser });
+    this.soundReactor.init();
+    window.soundReactor = this.soundReactor;
+
+    if (enableAnalyser) {
+      loop.subscribe('soundReactorUpdate', () => this.soundReactor.update());
     }
 
-    init() {
-        console.log('[App] Initializing...');
+    const soundButton = document.querySelector('.soundtoggler');
+    if (!soundButton) return;
 
-        // Check if on mobile (User-Agent ONLY - not width-based)
-        // This prevents false positives when resizing desktop browser window
-        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    this.soundToggler = new SoundToggler();
+    this.soundToggler.init(this.soundReactor, {
+      allowAutoplayByMouse: this.page !== 'home' && !window.isSafari
+    });
 
-        // Expose to window for legacy scripts and CSS override
-        window.isMobileDevice = isMobile;
+    this.instances.push(this.soundToggler);
 
+    if (this.page === 'home') {
+      const homeToggler = document.querySelector('.hometoggler');
+      if (!homeToggler) return;
 
-        // DESKTOP FIX: Hide the "Rotate your device" overlay
-        // CSS shows it via media query at narrow widths, but we hide it on desktop
-        if (!isMobile) {
-            const rotateOverlay = document.querySelector('.rotate');
-            if (rotateOverlay) {
-                rotateOverlay.style.display = 'none';
-                console.log('[App] Desktop: Rotate overlay hidden');
-            }
-
-            // DESKTOP FIX: Force correct height for sidescrollbox at narrow widths
-            // CSS media query sets height:100% which breaks layout
-            const sidescrollbox = document.querySelector('.sidescrollbox');
-            if (sidescrollbox) {
-                sidescrollbox.style.height = '100vh';
-                sidescrollbox.style.width = '100vw';
-                sidescrollbox.style.overflow = 'hidden';
-                console.log('[App] Desktop: sidescrollbox layout fixed');
-
-                // Also fix scroller layout
-                const scroller = document.querySelector('.scroller, .p-grid');
-                if (scroller) {
-                    scroller.style.display = 'flex';
-                    scroller.style.flexDirection = 'row';
-                    scroller.style.flexWrap = 'nowrap';
-                    scroller.style.height = '100%';
-
-                    // Smooth horizontal scroll with lerp interpolation
-                    let scrollX = 0;
-                    let targetScrollX = 0;
-                    let maxScroll = Math.max(0, scroller.scrollWidth - window.innerWidth);
-                    const lerp = 0.08; // Smoothness factor (0-1, lower = smoother)
-
-                    // Animation loop for smooth scrolling
-                    function animateScroll() {
-                        // Lerp toward target
-                        scrollX += (targetScrollX - scrollX) * lerp;
-
-                        // Apply transform
-                        scroller.style.transform = `translateX(-${scrollX}px)`;
-
-                        // Continue animation
-                        requestAnimationFrame(animateScroll);
-                    }
-                    animateScroll();
-
-                    // Subscribe to resize events to recalculate maxScroll
-                    resizeManager.subscribe('desktopScroll', () => {
-                        maxScroll = Math.max(0, scroller.scrollWidth - window.innerWidth);
-                        targetScrollX = Math.min(targetScrollX, maxScroll); // Clamp target to new bounds
-                        scrollX = Math.min(scrollX, maxScroll); // Also clamp current position
-                        console.log('[App] Desktop scroll updated, maxScroll:', maxScroll);
-                    });
-
-                    window.addEventListener('wheel', (e) => {
-                        if (!sidescrollbox.contains(e.target)) return;
-                        e.preventDefault();
-
-                        // Update target (not current position) for smooth scroll
-                        targetScrollX += e.deltaY;
-                        targetScrollX = Math.max(0, Math.min(targetScrollX, maxScroll));
-                    }, { passive: false });
-
-                    console.log('[App] Desktop: Smooth horizontal scroll enabled for Work section');
-                }
-            }
+      homeToggler.addEventListener('click', async () => {
+        await this.soundReactor.resumeContextIfNeeded();
+        await this.soundReactor.play({ restore: false });
+        if (this.soundToggler) {
+          this.soundToggler.started();
         }
-
-        // Initialize MobileFix (ONLY for Work page with horizontal scroll)
-        if (isMobile) {
-            this.mobileFix = new MobileFix();
-            console.log('[App] MobileFix initialized (mobile only)');
-        } else {
-            console.log('[App] Desktop detected, MobileFix skipped');
-        }
-
-        // Initialize MobileAnimations (for ALL pages on mobile)
-        if (isMobile) {
-            this.mobileAnimations = new MobileAnimations();
-            console.log('[App] MobileAnimations initialized (mobile only)');
-        }
-
-        // Initialize WebGL Sphere (both mobile and desktop, if container exists)
-        const webglContainer = document.querySelector('.webglholder');
-        if (webglContainer) {
-            this.webglApp = new WebGLApp();
-            this.webglApp.init();
-            console.log('[App] WebGLApp initialized');
-        }
-
-        // Initialize Menu (both mobile and desktop)
-        const menuContainer = document.querySelector('.burgercontainer');
-        if (menuContainer) {
-            this.menu = new Menu();
-            console.log('[App] Menu initialized');
-        }
-
-        // Start the animation loop (for WebGL)
-        loop.start();
-        console.log('[App] Loop started');
+      });
     }
+  }
+
+  initCursor() {
+    if (this.isMobile) return;
+
+    const container = document.querySelector('.cursorcontainer');
+    if (!container) return;
+
+    const cursor = new CursorCanvas();
+    cursor.init(container);
+
+    document.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('mouseenter', cursor.aIn);
+      link.addEventListener('mouseleave', cursor.aOut);
+    });
+
+    this.instances.push(cursor);
+  }
+
+  initPageTransition() {
+    const isHome = this.page === 'home';
+
+    const transition = new PageTransition({
+      initialColor: isHome ? '#FFFF00' : '#FFAAFF',
+      clickColor: '#E5E3DC',
+      curtainFill: isHome ? '#FFFFFF' : '#0D0D0D',
+      allowOnMobile: true
+    });
+
+    transition.init({ soundReactor: this.soundReactor });
+    this.instances.push(transition);
+  }
+
+  initLocomotive() {
+    const locomotive = new LocomotiveBridge();
+    locomotive.init();
+    this.instances.push(locomotive);
+  }
+
+  initWorkDesktopScroll() {
+    if (this.page !== 'work' || this.isMobile) return;
+
+    const scroller = new DesktopHorizontalScrollController();
+    const started = scroller.init();
+    if (started) this.instances.push(scroller);
+  }
+
+  initWorkElasticLines() {
+    if (this.page !== 'work') return;
+
+    const elastic = new ElasticLines({
+      audioUrls: [ROLLOVER_URL]
+    });
+
+    elastic.init();
+    this.instances.push(elastic);
+  }
+
+  initWorkMobileFix() {
+    if (this.page !== 'work' || !this.isMobile) return;
+
+    const mobileFix = new MobileFix();
+    this.instances.push(mobileFix);
+  }
+
+  initMobileAnimations() {
+    if (!this.isMobile) return;
+
+    const mobileAnimations = new MobileAnimations();
+    this.instances.push(mobileAnimations);
+  }
+
+  initAboutAnimationLock() {
+    if (this.page !== 'about') return;
+
+    const animationLock = new AnimationLock();
+    animationLock.init();
+    this.instances.push(animationLock);
+  }
+
+  initWebgl() {
+    const webglContainer = document.querySelector('.webglholder');
+    if (!webglContainer) return;
+
+    const webglApp = new WebGLApp();
+    webglApp.init();
+    this.instances.push(webglApp);
+  }
+
+  init() {
+    this.page = this.detectPage();
+    this.setEnvironmentFlags();
+    this.setupGlobalLifecycle();
+    this.hideRotateOverlayDesktop();
+
+    this.initMenu();
+    this.initSound();
+    this.initCursor();
+    this.initPageTransition();
+    this.initLocomotive();
+
+    this.initWorkDesktopScroll();
+    this.initWorkElasticLines();
+    this.initWorkMobileFix();
+
+    this.initMobileAnimations();
+    this.initAboutAnimationLock();
+    this.initWebgl();
+
+    loop.start();
+  }
 }
 
-// Wait for DOM to be ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        const app = new App();
-        app.init();
-    });
-} else {
+  document.addEventListener('DOMContentLoaded', () => {
     const app = new App();
     app.init();
+  });
+} else {
+  const app = new App();
+  app.init();
 }
 
 export default App;

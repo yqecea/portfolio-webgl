@@ -33,6 +33,7 @@ export default class Menu {
 
         // State
         this.isOpen = false;
+        this.isAnimating = false;
         this.fillColor = '#0A0A0A';
         this.targetColor = '#E5E3DC';
         this.lastDistance = 2000; // Hover detection state - reset on resize
@@ -98,6 +99,8 @@ export default class Menu {
     init() {
         this.resize();
         this.bindEvents();
+        this.setActiveHitbox(this.burgerIn, true);
+        this.setActiveHitbox(this.burgerOut, false);
 
         // Subscribe to render loop
         loop.subscribe('menuUpdate', () => this.update());
@@ -106,10 +109,16 @@ export default class Menu {
     bindEvents() {
         // Click handlers
         if (this.burgerIn) {
-            this.burgerIn.addEventListener('click', () => this.toggle());
+            this.burgerIn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggle();
+            });
         }
         if (this.burgerOut) {
-            this.burgerOut.addEventListener('click', () => this.toggle());
+            this.burgerOut.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggle();
+            });
         }
 
         // Resize
@@ -154,6 +163,8 @@ export default class Menu {
     }
 
     toggle() {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
         this.isOpen = !this.isOpen;
 
         const duration = 0.8;
@@ -161,6 +172,7 @@ export default class Menu {
         const targetRad = this.isOpen ? this.config.burgerBigRad : this.smallConfig.burgerRad;
         const targetMargin = this.isOpen ? this.config.burgerBigMargin : this.smallConfig.burgerMargin;
         const targetLines = this.isOpen ? this.xLines : this.lines;
+        const unlockDelay = (duration + 0.5) * 1000;
 
         if (typeof TweenLite !== 'undefined') {
             TweenLite.to(this.y, duration, { value: targetY, ease: Power4.easeInOut });
@@ -177,6 +189,16 @@ export default class Menu {
             this.lines.bottom.forEach((line, i) => {
                 TweenLite.to(line, duration, { value: targetLines.bottom[i].value, ease: Power4.easeInOut });
             });
+        } else {
+            this.y.value = targetY;
+            this.config.burgerRad = targetRad;
+            this.config.burgerMargin = targetMargin;
+            this.lines.top.forEach((line, i) => {
+                line.value = targetLines.top[i].value;
+            });
+            this.lines.bottom.forEach((line, i) => {
+                line.value = targetLines.bottom[i].value;
+            });
         }
 
         // Toggle nav visibility
@@ -187,6 +209,19 @@ export default class Menu {
                 setTimeout(() => this.navTrigger.classList.remove('on'), 500);
             }
         }
+
+        // Keep only one active clickable layer during transition.
+        if (this.isOpen) {
+            this.setActiveHitbox(this.burgerIn, false);
+            setTimeout(() => this.setActiveHitbox(this.burgerOut, true), 500);
+        } else {
+            this.setActiveHitbox(this.burgerOut, false);
+            setTimeout(() => this.setActiveHitbox(this.burgerIn, true), 500);
+        }
+
+        setTimeout(() => {
+            this.isAnimating = false;
+        }, unlockDelay);
     }
 
     resize() {
@@ -220,6 +255,9 @@ export default class Menu {
 
         // Reset hover detection state to fix menu interaction after resize
         this.lastDistance = 2000;
+
+        // Keep trigger hitboxes in sync immediately, not only on the next RAF tick.
+        this.updateClickableAreas();
     }
 
     update() {
@@ -315,22 +353,26 @@ export default class Menu {
 
     updateClickableAreas() {
         const size = (2 * this.config.burgerRad) / this.dpi;
-        // The burger circle center is at (margin, margin) from top-right corner in CSS pixels
-        // To center a box of 'size' on that point, we offset by (margin - radius)
-        const marginPx = this.config.burgerMargin / this.dpi;
-        const radiusPx = this.config.burgerRad / this.dpi;
-        const offset = marginPx - radiusPx;
+        const top = (this.config.burgerPosition.y - this.config.burgerRad) / this.dpi;
+        const left = (this.config.burgerPosition.x - this.config.burgerRad) / this.dpi;
 
-        // Also need to override position to fixed since CSS might have different values
-        const style = `
-            position: fixed;
-            width: ${size}px;
-            height: ${size}px;
-            top: ${offset}px;
-            right: ${offset}px;
-        `;
+        this.applyHitboxStyle(this.burgerIn, size, top, left);
+        this.applyHitboxStyle(this.burgerOut, size, top, left);
+    }
 
-        if (this.burgerIn) this.burgerIn.style.cssText = style;
-        if (this.burgerOut) this.burgerOut.style.cssText = style;
+    applyHitboxStyle(el, size, top, left) {
+        if (!el) return;
+        el.style.position = 'fixed';
+        el.style.width = `${size}px`;
+        el.style.height = `${size}px`;
+        el.style.top = `${top}px`;
+        el.style.left = `${left}px`;
+        el.style.right = 'auto';
+    }
+
+    setActiveHitbox(el, isActive) {
+        if (!el) return;
+        el.classList.toggle('on', isActive);
+        el.style.pointerEvents = isActive ? 'auto' : 'none';
     }
 }

@@ -1,14 +1,9 @@
 /**
- * ScrollManager.js - Virtual Scroll System
- * 
- * CRITICAL FIX: Implements vertical-to-horizontal scroll translation for mobile.
- * Users swipe UP (natural gesture) → Gallery moves LEFT (desired behavior).
- * 
- * This manager also applies CSS fixes on mobile to force horizontal layout.
- * 
- * @selectors
- * - .sidescrollbox (wrapper with overflow:hidden)
- * - .scroller (long horizontal strip to transform)
+ * ScrollManager.js - Legacy virtual-scroll module.
+ *
+ * Kept for historical reference only. Active runtime uses:
+ * - src/work/DesktopHorizontalScrollController.js
+ * - src/core/MobileFix.js
  */
 export default class ScrollManager {
     constructor() {

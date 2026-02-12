@@ -408,16 +408,17 @@ export default class WebGLApp {
             child.material.uniforms.u_offsetInt.value = this.config.noiseOffset;
             child.material.uniforms.u_color.value = this.colorPool[n];
 
-            // Sound reactivity (if available globally)
-            if (typeof soundReactor !== 'undefined' && soundReactor.fdata) {
-                const highFreqIdx = Math.min(500, soundReactor.fdata.length - 1);
-                const lowFreqIdx = Math.min(10, soundReactor.fdata.length - 1);
+            // Sound reactivity (shared global instance from app bootstrap)
+            const reactor = window.soundReactor;
+            if (reactor && reactor.fdata) {
+                const highFreqIdx = Math.min(500, reactor.fdata.length - 1);
+                const lowFreqIdx = Math.min(10, reactor.fdata.length - 1);
                 child.material.uniforms.u_nDet.value =
-                    this.config.noiseDetail + (soundReactor.fdata[highFreqIdx] || 0) * this.config.highFreqIntensity;
+                    this.config.noiseDetail + (reactor.fdata[highFreqIdx] || 0) * this.config.highFreqIntensity;
                 child.material.uniforms.u_nRoof.value =
-                    this.config.noiseRoof - (soundReactor.fdata[lowFreqIdx] || 0) * this.config.lowFreqIntensity;
+                    this.config.noiseRoof - (reactor.fdata[lowFreqIdx] || 0) * this.config.lowFreqIntensity;
 
-                if (soundReactor.audio && !soundReactor.audio.paused) {
+                if (reactor.audio && !reactor.audio.paused) {
                     this.soundActor = 1;
                 } else {
                     this.soundActor = 0.2;

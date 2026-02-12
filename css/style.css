@@ -3116,6 +3116,22 @@ h5 {
   z-index: 1000;
 }
 
+/* Keep burger hitboxes inert until Menu.js positions and activates them. */
+.trigger.burgerclickablein,
+.trigger.burgerclickableout {
+  width: 0;
+  height: 0;
+  top: 0;
+  left: 0;
+  right: auto;
+  pointer-events: none;
+}
+
+.trigger.burgerclickablein.on,
+.trigger.burgerclickableout.on {
+  pointer-events: auto;
+}
+
 .nav-menu {
   width: 150px;
   height: 150px;

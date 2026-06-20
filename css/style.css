@@ -9663,3 +9663,73 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
     filter: brightness(1.1);
   }
 }
+
+
+/* === MOBILE HIDE — MUST BE LAST (added at end of file for cascade) === */
+@media screen and (max-width: 991px) {
+  html body[data-page="home"] .intro-context,
+  html body[data-page="home"] .intro-frame,
+  html body[data-page="home"] .intro-frame.if-tr,
+  html body[data-page="home"] .intro-frame.if-bl,
+  html body[data-page="home"] .intro-frame.if-br,
+  html body[data-page="home"] .intro-progress,
+  html body[data-page="home"] .intro-progress-dot {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+
+/* === WORK PAGE LAYOUT FIX — image near number, not at top === */
+/* On desktop: number on left, image on right, text below */
+@media (min-width: 992px) {
+  .p-col .p-inner {
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+  }
+  /* Move image below the number, not at the top */
+  .p-col .p-shot {
+    order: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 1vh;
+  }
+  .p-col .p-numb-w {
+    order: 1;
+  }
+  .p-col .p-block {
+    order: 2;
+  }
+  .p-col .p-side {
+    order: 4;
+  }
+}
+
+/* On mobile: keep vertical, put image right after the number */
+@media (max-width: 991px) {
+  .p-col .p-shot {
+    order: 2;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .p-col .p-numb-w {
+    order: 1;
+  }
+  .p-col .p-block {
+    order: 3;
+  }
+  .p-col .p-side {
+    order: 4;
+  }
+}
+
+
+/* === WORKS PAGE SCROLL FIX — ensure content is scrollable === */
+.p-grid.scroller {
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}

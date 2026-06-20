@@ -150,7 +150,6 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fflate@0.6.9/umd/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/loaders/FBXLoader.js"></script>
   <style>
@@ -596,7 +595,15 @@
       </div>
     </div>
   </div>
-  <div style="filter: invert(0%)" class="webglholder"></div>
+  <div style="filter: invert(0%)" class="webglholder">
+    <noscript>
+      <p class="webgl-fallback-message">
+        This portfolio uses WebGL for the home hero. Please enable JavaScript
+        or visit <a href="./pages/work.html">the work page</a> to see projects.
+      </p>
+    </noscript>
+    <div class="webgl-static-poster" aria-hidden="true"></div>
+  </div>
   <div class="cookie-c">
     <div class="cookie-t">
       This website use

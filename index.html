@@ -40,10 +40,10 @@
     ga("create", "UA-170294967-1", "auto");
     ga("send", "pageview");
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/EaselPlugin.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.0.3/dist/locomotive-scroll.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.js" integrity="sha384-ql1iFvtkPnIBOhSgnmrdroZD7emR0zaGpU80WipYhUnT8nqtvJ5UWuz4bknmyuCt" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js" integrity="sha384-Xfig962KkXx0xvL1ZwxVQ0niWczaeyKY3oGBBBWrlDj2/+7MAJya/AqlPnqPEUTE" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/EaselPlugin.min.js" integrity="sha384-8vzMZ49+T5k78oALwlE1qBYy0uh+Mz5nrxfBFTDTWxPMB/1e/aB2Z3uDLtacUIu7" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.0.3/dist/locomotive-scroll.min.js" integrity="sha384-LIw6Nt9s+2V2PgnOA2lXq+dxEzmWy1+J3ivPUBB1PqKfW168ofvadTBqVQcq3i4d" crossorigin="anonymous"></script>
   <link rel="stylesheet" type="text/css"
     href="https://cdn.jsdelivr.net/gh/locomotivemtl/locomotive-scroll/dist/locomotive-scroll.min.css" />
   
@@ -149,9 +149,9 @@
       display: block !important;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fflate@0.6.9/umd/index.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/loaders/FBXLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.min.js" integrity="sha384-0NGKQl7pcjp8Xc9UjIP9lKpJm6ntkZWhXwAFVqhsUmCOR2PyHx16hbYEWXEPwW0i" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fflate@0.6.9/umd/index.min.js" integrity="sha384-Wso0Qdl6igetPEbA4q0g9PMCh1o7hAKrt01rFuGwaOeX02Th1Flbv6/vcX/P6zBP" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/loaders/FBXLoader.js" integrity="sha384-bDrmSKRITYMRTwjzoKDqAgNPz7HfihR1mkEq0IpQN5YUzCAbloYCJMcIhlQoE7up" crossorigin="anonymous"></script>
   <style>
     .l-head {
       -webkit-text-stroke: 0.8px #e5e3dc;
@@ -339,11 +339,6 @@
                     data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="./pages/contact.html"
                     class="menu-ti menulink">Contact</a>
                 </div>
-                <div class="menu-as ma2">
-                  <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
-                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb5" href="./pages/credits.html"
-                    class="menu-ti menulink">Credits</a>
-                </div>
               </div>
               <div class="underline w-embed">
                 <style>
@@ -394,13 +389,16 @@
           </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
   <div class="cursor cursorcontainer"></div>
   <div class="rotate">
     <div class="text-block-9">Rotate your device, please.</div>
   </div>
   <div class="hero">
+    <div class="menu-prompt" aria-hidden="true">
+      <span class="menu-prompt-text">Menu</span>
+      <span class="menu-prompt-line" aria-hidden="true"></span>
+    </div>
     <div class="h-row">
       <div class="h-block hb-1">
         <div data-w-id="2fa7b419-afae-1137-067d-d93e6ca9f3aa" style="
@@ -535,13 +533,13 @@
             transform: translate3d(0, 150%, 0) scale3d(1, 1, 1) rotateX(0)
               rotateY(0) rotateZ(0) skew(0, 0);
           " class="h-quote">
-        &quot;building creative web experiences&quot;
+        Creative developer from Kazakhstan
       </div>
     </div>
     <div targetColor="#E2E2DD" draggable="false" rel="noopener" data-w-id="9f616e5c-fd93-dce6-429e-a0e1d5ee9f1b"
       class="h-start-w">
       <div class="h-start-i">
-        <a href="#" class="h-start pagelink">Start / Explore</a>
+        <a href="./pages/work.html" aria-label="Explore selected work" class="h-start pagelink">Start / Explore</a>
         <div class="underline w-embed">
           <style>
             .h-start::after {
@@ -607,7 +605,7 @@
   <div class="cookie-c">
     <div class="cookie-t">
       This website use
-      <a href="./pages/cookie.html" rel="noopener" target="_blank" class="cokkie-li">cookies</a>
+      <a href="./pages/cookie.html" rel="noopener noreferrer" target="_blank" class="cokkie-li">cookies</a>
       . <br />
       By continuing to browse <br />you accept their use.
     </div>
@@ -619,7 +617,7 @@
     type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
     crossorigin="anonymous"></script>
   <script src="https://uploads-ssl.webflow.com/5ea69b4027484b2df2b45806/js/webflow.fcbda2e35.js"
-    type="text/javascript"></script>
+    type="text/javascript" integrity="sha384-kJ/V/46xIq5FawJfMnAVRRpjqzHoR7ylwXzIJgGheykVk+P8Z1b4cYWOc5K0cGly" crossorigin="anonymous"></script>
   <!--[if lte IE 9
       ]><script src="//cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script
     ><![endif]-->

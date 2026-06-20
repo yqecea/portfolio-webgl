@@ -22,6 +22,7 @@ conditions, and update your row when done.
 | 003  | Harden the audio and contact-form paths                       | P1       | S      | —          | DONE   |
 | 004  | Quick WebGL wins (error states, pixel-ratio cap, fallbacks)   | P2       | M      | —          | DONE   |
 | 005  | Make the shipped 10-card work gallery intentional             | P2       | S      | —          | REJECTED |
+| 006  | Add SRI integrity + crossorigin to all CDN scripts (REJ-08 p1)| P1       | S      | —          | DONE   |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed
@@ -82,6 +83,12 @@ independently or approach abandoned).
   4515, 8591, 8600, 8606. The `data-fallback-shot` attribute is on
   `aitu-halogens` (line 422) — kept as-is per the plan's Outcome-B branch.
   No edits needed.
+- **006** (added after the original 5-plan cycle, picking the
+  highest-leverage deferred item): SRI on all CDN scripts. 23
+  `integrity="sha384-..."` + `crossorigin="anonymous"` attributes
+  added across the 4 main HTML pages. Hashes computed locally
+  from the upstream files at the pinned versions. Picked up the
+  `npm run lint:html` baseline that plan 001 introduced. **DONE**.
 
 ## Findings considered and rejected
 
@@ -164,15 +171,19 @@ here for the next cycle.
 
 **Source**: audit subagent (security + deps), [SECURITY-01] and
 [SECURITY-02].
-**Vetting result**: real, but **deferred to the next cycle** to
-keep this cycle's surface small. The work involves generating
-SRI hashes for 7+ CDN scripts, adding a Firebase `headers` block
-with `Content-Security-Policy`, and rolling it out in
-`Content-Security-Policy-Report-Only` first. jQuery already
-has SRI (`index.html:610`); the others do not. The
-self-hosting of the personal CDN
-(`cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana`) is also
-in this batch. A dedicated security-cycle plan will land it.
+**Vetting result**: real. **Part 1 (SRI) shipped in plan 006; part 2
+(CSP / security headers) deferred.** Part 1 added `integrity` (sha384)
+and `crossorigin="anonymous"` to 23 CDN script tags across
+`index.html`, `pages/about.html`, `pages/contact.html`,
+`pages/work.html`. jQuery 3.5.1 already had sha256 SRI; left untouched.
+`placeholders.min.js` in the IE9 conditional comment uses a
+protocol-relative `//cdnjs.cloudflare.com` URL and was not updated
+(IE9-only, ignored by every modern browser). Part 2 — adding a
+Firebase `headers` block with `Content-Security-Policy` (rolled out
+in `Content-Security-Policy-Report-Only` first) — is deferred to the
+next cycle. The self-hosting of the personal CDN
+(`cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana`) is also in the
+deferred batch (see REJ-10).
 
 ### REJ-09: Remove Webflow runtime and jQuery
 

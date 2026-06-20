@@ -1,0 +1,15 @@
+{
+  "name": "portfolio-webgl",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static WebGL portfolio. Verification baseline only - no build step.",
+  "scripts": {
+    "lint:html": "html-validate \"index.html\" \"pages/**/*.html\"",
+    "check:js": "node --check src/main.js && find src javascript -name '*.js' -exec node --check {} \\;",
+    "lint:links": "linkinator https://yqecea-portfolio.web.app --skip '^(https?://(?!yqecea-portfolio\\.web\\.app|niccolomiranda|chiaraluzzana|aitu-halogens|inko|overprint|ciridae|kazakhstan-unesco|oysana|requiem|vent|zero-to-infinity|aipay-landing))'"
+  },
+  "devDependencies": {
+    "html-validate": "^8.0.0",
+    "linkinator": "^6.0.0"
+  }
+}

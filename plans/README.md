@@ -273,7 +273,7 @@ scripts). The current call sites tween local objects rather
 than attacker-controlled payloads; the exposure is low. Deferred
 to the next cycle's security batch.
 
-### REJ-13: 20+ stale `bolt-optimize-scroll-loop-*` remote branches
+### REJ-13: 5 stale `bolt-optimize-scroll-loop-*` remote branches (and ~20 in the broader `bolt*` family)
 
 **Source**: recon (artist finding), audit subagent (tech-debt).
 **Vetting result**: not a code change. This is a process /

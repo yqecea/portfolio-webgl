@@ -24,6 +24,7 @@ conditions, and update your row when done.
 | 005  | Make the shipped 10-card work gallery intentional             | P2       | S      | —          | REJECTED |
 | 006  | Add SRI integrity + crossorigin to all CDN scripts (REJ-08 p1)| P1       | S      | —          | DONE   |
 | 007  | Self-host personal CDN assets (REJ-10)                       | P1       | M      | —          | DONE   |
+| 008  | Ignore unreferenced root PNGs (REJ-15) + Firebase security headers (REJ-08 p2) | P1 | S | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed
@@ -101,6 +102,18 @@ independently or approach abandoned).
   project-relative paths. Together with plan 006 (SRI), this
   closes both the in-flight tampering and the upstream-rename
   attack surfaces for these assets. **DONE**.
+- **008** (added for the second wave of deferred items):
+  Firebase security headers (REJ-08 part 2) + ignore
+  unreferenced root PNGs (REJ-15). The `firebase.json` `headers`
+  block emits `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: strict-origin-when-cross-origin`,
+  `Permissions-Policy` (disabling camera, microphone, geolocation,
+  accelerometer, gyroscope, magnetometer, payment, usb), and a
+  `Content-Security-Policy-Report-Only` policy (observe-only
+  mode first; tighten and enforce in a follow-up cycle).
+  `logo.png` and `shot1/2/3/4.png` (2.5 MB total of
+  unreferenced binary) added to `firebase.json` ignore so they
+  no longer deploy. **DONE**.
 
 ## Findings considered and rejected
 
@@ -183,17 +196,21 @@ here for the next cycle.
 
 **Source**: audit subagent (security + deps), [SECURITY-01] and
 [SECURITY-02].
-**Vetting result**: real. **Part 1 (SRI) shipped in plan 006; part 2
-(CSP / security headers) deferred.** Part 1 added `integrity` (sha384)
-and `crossorigin="anonymous"` to 23 CDN script tags across
-`index.html`, `pages/about.html`, `pages/contact.html`,
-`pages/work.html`. jQuery 3.5.1 already had sha256 SRI; left untouched.
-`placeholders.min.js` in the IE9 conditional comment uses a
-protocol-relative `//cdnjs.cloudflare.com` URL and was not updated
-(IE9-only, ignored by every modern browser). Part 2 — adding a
-Firebase `headers` block with `Content-Security-Policy` (rolled out
-in `Content-Security-Policy-Report-Only` first) — is deferred to the
-next cycle. The self-hosting of the personal CDN
+**Vetting result**: real. **Both parts shipped.** Part 1 (SRI)
+landed in plan 006 (23 script tags pinned to sha384 + crossorigin).
+Part 2 (Firebase security headers) landed in plan 008. The
+`firebase.json` `headers` block now emits on every static asset:
+
+- `X-Content-Type-Options: nosniff` (MIME-confusion defense)
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()` (no impact on current functionality)
+- `Content-Security-Policy-Report-Only` (observe-only mode; policy allows current CDN dependencies plus inline scripts/styles, `frame-ancestors 'none'` for clickjacking, `report-uri /csp-report`)
+
+The CSP is in **report-only** mode. The follow-up cycle's job is
+to (a) inspect the browser-reported violations, (b) tighten the
+policy (remove `unsafe-inline` and `unsafe-eval` where possible),
+and (c) flip `Content-Security-Policy-Report-Only` to enforced
+`Content-Security-Policy`. The self-hosting of the personal CDN
 (`cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana`) is also in the
 deferred batch (see REJ-10).
 

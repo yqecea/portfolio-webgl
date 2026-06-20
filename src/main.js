@@ -69,22 +69,61 @@ class App {
   initIntroDismiss() {
     if (this.page !== 'home') return;
 
-    // Single-step dismiss: first click/Enter/Space dismisses the intro.
-    // No pointless second screen — the user said it's awful.
+    const showSecondIntroScreen = () => {
+      if (document.body.classList.contains('intro-dismissed')) return;
+      document.body.classList.add('intro-second');
+    };
+
     const dismissIntro = () => {
       if (document.body.classList.contains('intro-dismissed')) return;
       document.body.classList.add('intro-dismissed');
+      document.body.classList.remove('intro-second');
     };
+
+    const advanceIntro = (event) => {
+      if (document.body.classList.contains('intro-dismissed')) return;
+      if (event && event.type === 'keydown') {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+      }
+      // If clicking a quicknav link, let the link navigate naturally.
+      // The link's default behavior will load the page and the intro
+      // will be dismissed on the next page load (since intro-dismissed
+      // is not persisted, we add a sessionStorage flag).
+      if (event && event.target && event.target.closest('.l-quicknav-link')) {
+        // Mark as dismissed for this session so the next page doesn't show intro
+        try { sessionStorage.setItem('intro-dismissed', '1'); } catch (e) {}
+        return; // let the link navigate
+      }
+      // If clicking the sound toggle, toggle sound and stay on second screen
+      if (event && event.target && event.target.closest('.l-sound-toggle')) {
+        document.body.classList.toggle('sound-on');
+        return; // don't advance intro
+      }
+      if (!document.body.classList.contains('intro-second')) {
+        showSecondIntroScreen();
+        return;
+      }
+      dismissIntro();
+    };
+
+    // Check if intro was already dismissed this session (via quicknav)
+    try {
+      if (sessionStorage.getItem('intro-dismissed') === '1') {
+        document.body.classList.add('intro-dismissed');
+        return;
+      }
+    } catch (e) {}
 
     const introOverlay = document.querySelector('.load.hometoggler');
     if (introOverlay) {
-      introOverlay.addEventListener('pointerdown', dismissIntro);
+      introOverlay.addEventListener('pointerdown', advanceIntro);
     }
 
     document.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       event.preventDefault();
-      dismissIntro();
+      advanceIntro(event);
     });
   }
 

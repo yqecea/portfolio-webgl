@@ -26,6 +26,7 @@ conditions, and update your row when done.
 | 007  | Self-host personal CDN assets (REJ-10)                       | P1       | M      | —          | DONE   |
 | 008  | Ignore unreferenced root PNGs (REJ-15) + Firebase security headers (REJ-08 p2) | P1 | S | — | DONE |
 | 009  | Oracle follow-up: CSP gaps, CLAUDE.md stale, LICENSE third-party note, aria-hidden | P1 | S | — | DONE |
+| 010  | Upgrade GSAP 3.2.6 → 3.13.0, migrate API (REJ-12, CVE-2020-28478) | P1 | M | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed
@@ -132,6 +133,17 @@ independently or approach abandoned).
   recoverable** without losing the security work. Recovery
   procedure is documented in the plan 009 commit message.
   **DONE**.
+- **010** (deferred security item picked up post-verification):
+  GSAP upgrade 3.2.6 → 3.13.0. Closes CVE-2020-28478
+  (GHSA-6g8v-hpgw-h2v7) which was present in GSAP <3.6.0; the
+  site had been on 3.2.6 (released 2019). 4 HTML files had their
+  CDN URLs bumped and SRI hashes regenerated; 3 source files
+  (`src/ui/Menu.js`, `src/work/ElasticLines.js`,
+  `src/audio/SoundToggler.js`) migrated from the GSAP 1.x/2.x
+  API (`TweenLite`, `Power4.easeInOut`, `Elastic.easeOut.config`)
+  to the 3.x API (`gsap.to`, `"power4.inOut"`, `"elastic.out(...)"`).
+  18 changes total. `npm run check:js` passes; no remaining
+  legacy API references in `src/`. **DONE**.
 
 ## Findings considered and rejected
 

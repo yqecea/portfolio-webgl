@@ -80,17 +80,50 @@ git status --short -- "${WIP_FILES[@]}"
 
 echo ""
 echo "=== Step 6: re-apply GSAP 3.13.0 (CVE-2020-28478 fix, plan 010) ==="
-echo "Without this, the recovered HTML reverts to GSAP 3.2.6 (vulnerable)."
-echo "The user's WIP didn't touch the GSAP version line, so the version"
-echo "bump can be safely re-applied without clobbering any WIP changes."
-for f in index.html pages/about.html pages/contact.html pages/work.html; do
-  if grep -q 'gsap/3.2.6' "$f"; then
-    sed -i "s|gsap/3.2.6/gsap.min.js|gsap/3.13.0/gsap.min.js|; s|sha384-Xfig962KkXx0xvL1ZwxVQ0niWczaeyKY3oGBBBWrlDj2/+7MAJya/AqlPnqPEUTE|sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc|; s|gsap/3.2.6/EaselPlugin.min.js|gsap/3.13.0/EaselPlugin.min.js|; s|sha384-8vzMZ49+T5k78oALwlE1qBYy0uh+Mz5nrxfBFTDTWxPMB/1e/aB2Z3uDLtacUIu7|sha384-gcbVULrCAP9hrGBa+1R57lCCOgkLr3j7ZYySlj0akrckbdlZQgExJEQyNIdDYqBM|" "$f"
-    echo "  $f: re-applied GSAP 3.13.0"
-  else
-    echo "  $f: already 3.13.0 (or no GSAP tag)"
-  fi
-done
+echo "Without this, the recovered HTML reverts to GSAP 3.2.6 (vulnerable),"
+echo "and (because the pre-WIP a40c4c8 baseline had no SRI on GSAP) the"
+echo "SRI attributes are missing entirely. This step uses Python for"
+echo "precise regex matching: bump the version AND ensure SRI is present."
+echo "The user's WIP didn't touch the GSAP tag, so the re-apply is safe."
+python3 << 'PYEOF'
+import re
+from pathlib import Path
+
+GSAP_URLS = {
+  "gsap.min.js": (
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js",
+    "sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc",
+  ),
+  "EaselPlugin.min.js": (
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/EaselPlugin.min.js",
+    "sha384-gcbVULrCAP9hrGBa+1R57lCCOgkLr3j7ZYySlj0akrckbdlZQgExJEQyNIdDYqBM",
+  ),
+}
+
+for path in ["index.html", "pages/about.html", "pages/contact.html", "pages/work.html"]:
+    p = Path(path)
+    if not p.exists():
+        continue
+    content = p.read_text()
+    orig = content
+    for fname, (new_url, hashval) in GSAP_URLS.items():
+        # Match the GSAP script tag, capture the URL, strip any existing
+        # integrity/crossorigin so the canonical form replaces any state.
+        pattern = re.compile(
+            r'<script\s+src="(https://cdnjs\.cloudflare\.com/ajax/libs/gsap/[^"]+/' + re.escape(fname) + r')"[^>]*></script>'
+        )
+        replacement = (
+            f'<script src="{new_url}" '
+            f'integrity="{hashval}" '
+            f'crossorigin="anonymous"></script>'
+        )
+        content = pattern.sub(replacement, content)
+    if content != orig:
+        p.write_text(content)
+        print(f"  {path}: re-applied GSAP 3.13.0 with SRI")
+    else:
+        print(f"  {path}: no GSAP tag (or already correct)")
+PYEOF
 
 echo ""
 echo "=== Step 7: re-apply self-hosted asset URLs (plan 007) ==="

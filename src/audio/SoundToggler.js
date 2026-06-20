@@ -102,9 +102,17 @@ export default class SoundToggler {
 
     if (shouldPlay) {
       this.soundReactor.setVolume(0);
-      await this.soundReactor.play({ restore: true });
-      this.fadeVolume(1);
-      this.soundReactor.setWasPlaying(true);
+      const started = await this.soundReactor.play({ restore: true });
+      if (started) {
+        this.fadeVolume(1);
+        this.soundReactor.setWasPlaying(true);
+        this.soundFlag = true;
+        this.animateAmp(targetAmp);
+      } else {
+        // Playback was blocked (autoplay policy, missing audio, etc.).
+        // Leave soundFlag false so the next click retries correctly.
+        this.soundFlag = false;
+      }
       this.isAnimating = false;
     } else {
       this.fadeVolume(0, () => {
@@ -112,10 +120,9 @@ export default class SoundToggler {
         this.isAnimating = false;
       });
       this.soundReactor.setWasPlaying(false);
+      this.soundFlag = false;
+      this.animateAmp(targetAmp);
     }
-
-    this.animateAmp(targetAmp);
-    this.soundFlag = shouldPlay;
   }
 
   started() {

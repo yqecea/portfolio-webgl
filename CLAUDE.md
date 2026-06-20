@@ -55,16 +55,24 @@ npm run lint:links  # linkinator against the live deploy
 
 ## Known issues
 
-- The contact form (`pages/contact.html:499`) still posts to a Mailchimp
-  endpoint owned by the previous site owner (`chiaraluzzana.us20`). Plan
-  003 fixes this.
+- The contact form (`pages/contact.html:499`) **was** posting to a
+  Mailchimp endpoint owned by the previous site owner (`chiaraluzzana.us20`).
+  **Plan 003 fixed this** by replacing the form with a
+  `mailto:yqecea@gmail.com` CTA and updating the stale
+  `data-wf-domain` Webflow metadata.
 - The `assets/work/` directory has 10 webp images; all 10 are mounted.
+  The 10 images are decorative (`alt=""` + `aria-hidden="true"`); the
+  project name and client live in the `h2.p-title` and `h3.p-client`
+  elements. Re-evaluate if the design intent changes.
 - The 20+ stale `bolt-optimize-scroll-loop-*` branches on `origin/` are
   AI-agent collision on the same RAF consolidation. Do not merge them;
   pick a winner or close.
 - The `javascript/` directory holds legacy `cursor/` and `webglball/`
   implementations. The active code in `src/ui/CursorCanvas.js` and
   `src/webgl/WebGLApp.js` supersedes them. Plan 003 (deferred) removes them.
+- The 4 self-hosted assets in `assets/sound/` and `assets/sphere/`
+  originated from `niccolomiranda/chiara-luzzana` on GitHub. See
+  `LICENSE` for the redistribution-rights note.
 
 ## Do not
 

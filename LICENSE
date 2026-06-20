@@ -13,3 +13,21 @@ their respective rightsholders. The CDN dependencies used by this site
 see their respective project pages for terms.
 
 Contact: yqecea@gmail.com
+
+## Third-party assets
+
+The following files were downloaded from
+`https://github.com/niccolomiranda/chiara-luzzana` via
+`cdn.jsdelivr.net` and self-hosted under this repository:
+
+- `assets/sound/mainSound.mp3`
+- `assets/sound/rollovers/rol05.mp3`
+- `assets/sphere/matCap0.jpg`
+- `assets/sphere/slice2.fbx`
+
+The original upstream license for these files has not been
+verified. If the operator does not have the right to redistribute
+them, this commit can be reverted; the original external URLs are
+recoverable from the git history of the `@improve` advisor commits
+prior to commit `c99420a`. Replace with owned assets before any
+public deployment to a domain other than the original.

@@ -8931,9 +8931,12 @@ body[data-page="home"]:not(.intro-dismissed) .load.hometoggler::after {
   font-family: Ayer, sans-serif;
   font-size: clamp(16px, 1.45vw, 24px);
   line-height: 1;
-  color: #0a0a0a;
-  opacity: 0.62;
+  color: #f5f4ef;
+  opacity: 0.95;
   white-space: nowrap;
+  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
 body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler::after {

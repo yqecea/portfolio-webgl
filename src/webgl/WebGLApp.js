@@ -293,8 +293,14 @@ export default class WebGLApp {
             }
         );
 
-        // Setup renderer
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // Setup renderer (with fallback for headless / no-WebGL browsers)
+        try {
+            this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        } catch (e) {
+            console.warn('[WebGLApp] WebGL context creation failed:', e);
+            this._showFallback('context-creation-failed');
+            return;
+        }
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.debug.checkShaderErrors = true;
         this.container.appendChild(this.renderer.domElement);

@@ -103,8 +103,8 @@ class App {
 
       homeToggler.addEventListener('click', async () => {
         await this.soundReactor.resumeContextIfNeeded();
-        await this.soundReactor.play({ restore: false });
-        if (this.soundToggler) {
+        const started = await this.soundReactor.play({ restore: false });
+        if (started && this.soundToggler) {
           this.soundToggler.started();
         }
       });

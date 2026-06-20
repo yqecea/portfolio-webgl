@@ -9404,19 +9404,38 @@ body[data-page="home"] .intro-progress-dot:first-child {
   white-space: nowrap;
 }
 
-/* Enhanced second screen — not visually sparse */
-/* === WORK PAGE: hover preview on desktop, tap on mobile === */
+/* === WORK PAGE: image at BOTTOM, text moves UP on hover === */
 .p-col .p-shot {
-  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1),
-              filter 0.4s ease;
+  transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1),
+              filter 0.5s ease;
   will-change: transform;
 }
 
-/* Desktop: hover on the card enlarges the shot */
+.p-col .p-numb-w,
+.p-col .p-block,
+.p-col .p-side {
+  transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1),
+              color 0.4s ease;
+  will-change: transform;
+}
+
+/* Desktop: hover lifts text, image at bottom scales up */
 @media (hover: hover) and (pointer: fine) {
+  /* Text content moves UP - reveals image prominence at the bottom */
+  .p-col:hover .p-numb-w {
+    transform: translateY(-2vh);
+  }
+  .p-col:hover .p-block {
+    transform: translateY(-1.5vh);
+  }
+  /* Image at the bottom: scales up and lifts slightly to become the focal point */
   .p-col:hover .p-shot {
-    transform: scale(1.08);
-    filter: brightness(1.1);
+    transform: scale(1.06) translateY(-0.8vh);
+    filter: brightness(1.12) contrast(1.05);
+  }
+  /* Arrow sinks slightly to anchor the bottom */
+  .p-col:hover .p-side {
+    transform: translateY(0.6vh);
   }
   .p-col:hover .p-numb,
   .p-col:hover .p-title,
@@ -9432,50 +9451,60 @@ body[data-page="home"] .intro-progress-dot:first-child {
     transform: scale(1.05);
     filter: brightness(1.1);
   }
+  .p-col:focus-within .p-numb-w,
+  .p-col:focus-within .p-block,
+  .p-col:active .p-numb-w,
+  .p-col:active .p-block {
+    transform: translateY(-1.5vh);
+  }
 }
 
 
 
 
 
-/* === WORK PAGE LAYOUT FIX — image near number, not at top === */
-/* On desktop: number on left, image on right, text below */
+
+/* === WORK PAGE LAYOUT - image clearly at BOTTOM of card === */
+/* On desktop: text at top, image pushed to BOTTOM with margin-top: auto */
 @media (min-width: 992px) {
   .p-col .p-inner {
     flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
   }
-  /* Move image below the number, not at the top */
-  .p-col .p-shot {
-    order: 3;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-top: 1vh;
-  }
+  /* Number and text at the TOP */
   .p-col .p-numb-w {
     order: 1;
   }
   .p-col .p-block {
     order: 2;
   }
+  /* Image at the BOTTOM - margin-top: auto pushes it to the bottom of flex */
+  .p-col .p-shot {
+    order: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: auto !important;
+  }
+  /* Arrow at the very bottom */
   .p-col .p-side {
     order: 4;
   }
 }
 
-/* On mobile: keep vertical, put image right after the number */
+/* On mobile: number, text, image, arrow - image at bottom */
 @media (max-width: 991px) {
-  .p-col .p-shot {
-    order: 2;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
   .p-col .p-numb-w {
     order: 1;
   }
   .p-col .p-block {
+    order: 2;
+  }
+  .p-col .p-shot {
     order: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 2vh !important;
   }
   .p-col .p-side {
     order: 4;

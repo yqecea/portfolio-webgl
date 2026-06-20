@@ -25,6 +25,7 @@ conditions, and update your row when done.
 | 006  | Add SRI integrity + crossorigin to all CDN scripts (REJ-08 p1)| P1       | S      | —          | DONE   |
 | 007  | Self-host personal CDN assets (REJ-10)                       | P1       | M      | —          | DONE   |
 | 008  | Ignore unreferenced root PNGs (REJ-15) + Firebase security headers (REJ-08 p2) | P1 | S | — | DONE |
+| 009  | Oracle follow-up: CSP gaps, CLAUDE.md stale, LICENSE third-party note, aria-hidden | P1 | S | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed
@@ -114,6 +115,23 @@ independently or approach abandoned).
   `logo.png` and `shot1/2/3/4.png` (2.5 MB total of
   unreferenced binary) added to `firebase.json` ignore so they
   no longer deploy. **DONE**.
+- **009** (Oracle follow-up): the `oracle` subagent ran a
+  skeptical review of the 4 cycles of work and flagged 6 issues.
+  5 were fixed: CSP-Report-Only gained `google-analytics.com`
+  in `script-src` and `cdn.jsdelivr.net` + `uploads-ssl.webflow.com`
+  in `style-src` (it was missing them, which would have produced
+  avoidable violations); the `report-uri /csp-report` 404 was
+  removed; `CLAUDE.md`'s "Known issues" no longer claims the
+  Mailchimp form is unfixed; `LICENSE` documents the
+  redistribution-rights status of the 4 self-hosted binary
+  assets; all 10 portfolio images gained `aria-hidden="true"`
+  (decorative; the project name lives in `h2.p-title`).
+  The 6th issue (HIGH: the original 6-file uncommitted WIP was
+  captured into commits 4798cdf and c99420a along with the SRI
+  and self-host work) is **acknowledged but not cleanly
+  recoverable** without losing the security work. Recovery
+  procedure is documented in the plan 009 commit message.
+  **DONE**.
 
 ## Findings considered and rejected
 

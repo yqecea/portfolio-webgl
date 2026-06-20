@@ -273,10 +273,25 @@ export default class WebGLApp {
             return;
         }
 
+        this._matCapLoaded = false;
+        this._modelLoaded = false;
+        this._paused = false;
+
         // Load matcaps
         const loader = new THREE.TextureLoader();
         const matCapUrl = 'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana@72fab3c/sphere/matCap0.jpg';
-        this.matCaps.push(loader.load(matCapUrl));
+        loader.load(
+            matCapUrl,
+            (texture) => {
+                this.matCaps.push(texture);
+                this._markMatCapLoaded();
+            },
+            undefined,
+            (error) => {
+                console.warn('[WebGLApp] Matcap load failed:', error);
+                this._showFallback('matcap');
+            }
+        );
 
         // Setup renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -284,8 +299,24 @@ export default class WebGLApp {
         this.renderer.debug.checkShaderErrors = true;
         this.container.appendChild(this.renderer.domElement);
 
+        this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
+            console.warn('[WebGLApp] WebGL context lost');
+            this._showFallback('context-loss');
+            this._paused = true;
+        });
+
+        this.renderer.domElement.addEventListener('webglcontextrestored', () => {
+            console.log('[WebGLApp] WebGL context restored');
+            this._paused = false;
+            this._hideFallback();
+            // Re-load assets that were tied to the lost context.
+            this.loadSphereModel();
+        });
+
         if (window.isMobile) {
-            this.renderer.setPixelRatio(window.devicePixelRatio);
+            const cap = 1.5;
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
         }
 
         // Setup scene
@@ -336,6 +367,7 @@ export default class WebGLApp {
         fbxLoader.load(
             'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sphere/slice2.fbx',
             (obj) => {
+                this._markModelLoaded();
                 let inc = 0;
                 for (let i = -sphereRad; i <= sphereRad; i += (sphereRad * 2) / this.config.SLICE_NUMBER) {
                     const n = Math.round(((this.simplex.noise2D(inc * 0.1, 1) + 1) / 2) * (this.colorPool.length - 1));
@@ -380,11 +412,17 @@ export default class WebGLApp {
                 this.sliceGeom.rotation.z = 1;
                 this.sliceGeom.rotation.y = -0.8;
                 this.scene.add(this.sliceGeom);
+            },
+            undefined,
+            (error) => {
+                console.warn('[WebGLApp] FBX load failed:', error);
+                this._showFallback('model');
             }
         );
     }
 
     update() {
+        if (this._paused) return;
         if (!this.renderer) return;
 
         this.renderer.render(this.scene, this.camera);
@@ -433,10 +471,36 @@ export default class WebGLApp {
         }
     }
 
+    _showFallback(reason) {
+        if (!this.container) return;
+        this.container.classList.add('webgl-fallback');
+        this.container.dataset.fallbackReason = reason;
+    }
+
+    _hideFallback() {
+        if (!this.container) return;
+        this.container.classList.remove('webgl-fallback');
+        delete this.container.dataset.fallbackReason;
+    }
+
+    _markMatCapLoaded() {
+        this._matCapLoaded = true;
+        if (this._modelLoaded) this._hideFallback();
+    }
+
+    _markModelLoaded() {
+        this._modelLoaded = true;
+        if (this._matCapLoaded) this._hideFallback();
+    }
+
     resizeCanvas() {
         if (!this.renderer || !this.camera) return;
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if (window.isMobile) {
+            const cap = 1.5;
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
+        }
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
     }

@@ -69,40 +69,23 @@ class App {
   initIntroDismiss() {
     if (this.page !== 'home') return;
 
-    const showSecondIntroScreen = () => {
-      document.body.classList.add('intro-second');
-    };
-
+    // Single-step dismiss: first click/Enter/Space dismisses the intro.
+    // No pointless second screen — the user said it's awful.
     const dismissIntro = () => {
-      document.body.classList.add('intro-dismissed');
-      document.body.classList.remove('intro-second');
-    };
-
-    const advanceIntro = (event) => {
       if (document.body.classList.contains('intro-dismissed')) return;
-
-      if (event.type === 'keydown') {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
-        event.preventDefault();
-      }
-
-      if (!document.body.classList.contains('intro-second')) {
-        showSecondIntroScreen();
-        return;
-      }
-
-      dismissIntro();
+      document.body.classList.add('intro-dismissed');
     };
 
     const introOverlay = document.querySelector('.load.hometoggler');
     if (introOverlay) {
-      introOverlay.addEventListener('pointerdown', advanceIntro);
+      introOverlay.addEventListener('pointerdown', dismissIntro);
     }
 
-    document.addEventListener(
-      'keydown',
-      advanceIntro
-    );
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      dismissIntro();
+    });
   }
 
   hideRotateOverlayDesktop() {

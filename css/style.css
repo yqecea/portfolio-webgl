@@ -5985,6 +5985,7 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
   align-items: center;
   gap: 10px;
   padding: 0;
+  cursor: pointer;
   font-family: "Neue Montreal", sans-serif;
   font-size: clamp(11px, 0.82vw, 13px);
   line-height: 1;
@@ -9613,13 +9614,52 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
 }
 
 
-/* === MOBILE HIDE (must be last to win cascade) === */
+/* === MOBILE HIDE (last + !important + body selector for max specificity) === */
 @media screen and (max-width: 991px) {
-  body[data-page="home"] .intro-context,
+  body[data-page="home"] .intro-context {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
   body[data-page="home"] .intro-frame,
   body[data-page="home"] .intro-frame.if-tr,
   body[data-page="home"] .intro-frame.if-bl,
   body[data-page="home"] .intro-frame.if-br {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+  body[data-page="home"] .intro-progress {
+    display: none !important;
+  }
+}
+
+
+/* === WORK PAGE: hover preview on desktop, tap on mobile === */
+.p-col .p-shot {
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1),
+              filter 0.4s ease;
+  will-change: transform;
+}
+
+/* Desktop: hover on the card enlarges the shot */
+@media (hover: hover) and (pointer: fine) {
+  .p-col:hover .p-shot {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+  }
+  .p-col:hover .p-numb,
+  .p-col:hover .p-title,
+  .p-col:hover .p-client {
+    color: #c4b5fd;
+  }
+}
+
+/* Mobile: tap to show preview (use :focus-within for tap) */
+@media (hover: none) {
+  .p-col:focus-within .p-shot,
+  .p-col:active .p-shot {
+    transform: scale(1.05);
+    filter: brightness(1.1);
   }
 }

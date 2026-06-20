@@ -26,8 +26,14 @@ export default class Menu {
         this.container.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
 
-        // Initialize simplex noise
-        this.simplex = new SimplexNoise();
+        // Initialize simplex noise (use window. for explicit global access
+        // since simplex-noise.js is loaded as a global script, not a module)
+        try {
+            this.simplex = new window.SimplexNoise();
+        } catch (e) {
+            console.warn('Menu: SimplexNoise not available, using fallback');
+            this.simplex = { noise2D: () => 0 };
+        }
 
         // DPI scaling
         this.dpi = window.devicePixelRatio || 1;
@@ -161,7 +167,7 @@ export default class Menu {
 
     animateNoise(target) {
         if (typeof gsap !== 'undefined') {
-            gsap.to(this.noiseAmplitude, { value: target, duration: 0.2 });
+            gsap.to(this.noiseAmplitude, { value: target, duration: 0.15 });
         } else {
             this.noiseAmplitude.value = target;
         }

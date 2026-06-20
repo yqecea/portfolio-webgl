@@ -10,7 +10,9 @@
       "**/.*",
       "**/node_modules/**",
       "docs/**",
-      "index.backup.html"
+      "index.backup.html",
+      "package.json",
+      "package-lock.json"
     ]
   }
 }

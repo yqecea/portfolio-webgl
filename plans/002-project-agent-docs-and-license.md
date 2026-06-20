@@ -165,7 +165,8 @@ npm run lint:links  # linkinator against the live deploy
   endpoint owned by the previous site owner (`chiaraluzzana.us20`). Plan
   003 fixes this.
 - The `assets/work/` directory has 10 webp images; all 10 are mounted.
-- The 20+ stale `bolt-optimize-scroll-loop-*` branches on `origin/` are
+- 5 stale `bolt-optimize-scroll-loop-*` branches on `origin/`
+  (plus ~15 more in the broader `bolt*` / `bolt/*` family) are
   AI-agent collision on the same RAF consolidation. Do not merge them;
   pick a winner or close.
 - The `javascript/` directory holds legacy `cursor/` and `webglball/`

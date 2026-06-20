@@ -1,15 +1,31 @@
-# User WIP snapshot — pre-improve-cycle working state
+# User WIP snapshot — pre-improve-cycle working state (BEST-EFFORT PARTIAL)
 #
 # Generated from HEAD (master at the time this script ran).
 # Each section below reverses my advisor changes (SRI additions,
 # URL swaps to local assets, aria-hidden additions) to recover the
-# user's WIP for each file my work touched. Apply with `git apply`.
+# user's WIP for each file my work touched.
 #
-# Recovery procedure:
-#   1. (Optional) Revert the advisor commits: git revert 4798cdf c99420a f62517c 0659a05 5cb3003 d9eb90b 935d0aa 7919c12 990a70f
-#   2. (Optional) Reset to pre-WIP: git reset --hard a40c4c8~1
-#   3. Apply this patch: git apply plans/wip-snapshot/user-wip.patch
-#   4. Commit as 'WIP: pre-improve-cycle working state'
+# IMPORTANT: this is a BEST-EFFORT PARTIAL reconstruction. It
+# reverses SRI attributes, URL swaps, and aria-hidden additions
+# only. It does NOT reverse:
+#   - Plan 004: OrbitControls removal, static poster, <noscript>
+#   - Plan 003: contact form mailto: replacement, data-wf-domain
+#   - Plan 004: WebGLApp.js (matcap/FBX error states, pixel-ratio
+#     cap, webglcontextlost/restored, _paused flag, _showFallback
+#     helpers)
+# For those, see the diff between a40c4c8 and the current commit
+# (e.g. `git diff 4798cdf~1 HEAD -- <file>`) and decide manually.
+#
+# CANONICAL RECOVERY PATH: bash plans/wip-snapshot/recover-wip.sh
+# That script does the required prep (git checkout a40c4c8 -- <files>)
+# before applying this patch, which is necessary because the patch
+# is a diff against a40c4c8 (pre-WIP) as the base, not current HEAD.
+#
+# Manual application (if you can't run the script):
+#   git checkout a40c4c8 -- index.html pages/about.html \
+#       pages/contact.html pages/work.html src/main.js \
+#       src/webgl/WebGLApp.js
+#   git apply plans/wip-snapshot/user-wip.patch
 #
 
 # === index.html (advisor changes from plan 006) ===

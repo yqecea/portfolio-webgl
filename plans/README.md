@@ -282,6 +282,12 @@ fast-forward master to the consolidated loop. The operator
 should do this with `git branch -d` on a clean clone, not in
 this cycle. Recorded here for the next cycle.
 
+Note: the original "20+" framing was loose. The exact
+`bolt-optimize-scroll-loop-*` prefix has 5 entries on `origin/`
+as of 2026-06-20; the broader `bolt*` / `bolt/*` family has
+~20. `CLAUDE.md` says "5 visible on `origin/`" for the exact
+prefix, which is the precise number.
+
 ### REJ-14: Add `<noscript>` blocks on every page
 
 **Source**: audit subagent (direction + docs + webgl),
@@ -324,7 +330,8 @@ cluster of categories from
 
 Each subagent received: the playbook path, the recon facts (HEAD,
 no build/test/lint, 8+ CDN scripts without SRI, the dual
-animation systems, the 20+ stale `bolt-*` branches, etc.), the
+animation systems, the 5 exact-prefix `bolt-optimize-scroll-loop-*`
+branches (or ~20 in the broader `bolt*` family), etc.), the
 specific category headings to read, and the explicit instruction
 to return findings only (no plans, no edits).
 

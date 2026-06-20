@@ -48,11 +48,11 @@ echo "=== Step 1: record current HEAD ==="
 START=$(git rev-parse HEAD)
 echo "Current HEAD: $START"
 
-echo "=== Step 2: verify worktree is clean (no uncommitted changes to the 6 WIP files) ==="
-UNSTAGED=$(git diff --name-only -- "${WIP_FILES[@]}" || true)
-if [ -n "$UNSTAGED" ]; then
-  echo "ERROR: You have uncommitted changes to one or more WIP files:"
-  echo "$UNSTAGED"
+echo "=== Step 2: verify worktree is clean (no staged or unstaged changes to the 6 WIP files) ==="
+DIRTY=$(git status --porcelain -- "${WIP_FILES[@]}" || true)
+if [ -n "$DIRTY" ]; then
+  echo "ERROR: You have staged or unstaged changes to one or more WIP files:"
+  echo "$DIRTY"
   echo "Stash or commit them first, then re-run this script."
   exit 1
 fi
@@ -73,7 +73,10 @@ else
 fi
 
 echo "=== Step 5: show the result ==="
-git diff --stat a40c4c8..HEAD -- "${WIP_FILES[@]}"
+git diff --stat a40c4c8 -- "${WIP_FILES[@]}"
+echo ""
+echo "(status of these files: staged+unstaged+untracked)"
+git status --short -- "${WIP_FILES[@]}"
 
 echo ""
 echo "=== Done ==="

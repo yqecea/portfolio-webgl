@@ -9611,3 +9611,15 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
     padding: 24px 40px;
   }
 }
+
+
+/* === MOBILE HIDE (must be last to win cascade) === */
+@media screen and (max-width: 991px) {
+  body[data-page="home"] .intro-context,
+  body[data-page="home"] .intro-frame,
+  body[data-page="home"] .intro-frame.if-tr,
+  body[data-page="home"] .intro-frame.if-bl,
+  body[data-page="home"] .intro-frame.if-br {
+    display: none !important;
+  }
+}

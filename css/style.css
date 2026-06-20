@@ -6447,6 +6447,14 @@ html.w-mod-js [data-ix="text-0-2"] {
     line-height: 10.5vw;
   }
 
+  .intro-context {
+    display: none;
+  }
+
+  .intro-frame {
+    display: none;
+  }
+
   .l-item {
     width: auto;
     margin-top: 0.5vw;

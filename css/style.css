@@ -2371,13 +2371,7 @@ h5 {
 }
 
 .intro-dismissed .load.hometoggler,
-.intro-dismissed .l-over.hometoggler {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
+.intro-dismissed body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
   opacity: 0;
 }
 
@@ -3313,33 +3307,8 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
   cursor: pointer;
 }
 
-.l-text {
-  z-index: 3000;
-  margin-right: 1vw;
-  margin-left: 1vw;
-  float: left;
-  color: #f5f4ef;
-  font-size: 1.3vw;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  text-shadow: 0 0 20px rgba(124, 58, 237, 0.4), 0 0 12px rgba(0, 0, 0, 0.7);
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
 .l-text:hover {
   color: #c4b5fd;
-}
-
-.l-text.lm {
-  display: none;
-}
-
-.l-text-w {
-  position: absolute;
-  bottom: 12vh;
-  opacity: 0.95;
-  transition: opacity 0.4s ease;
 }
 
 .text-wrap {
@@ -3469,12 +3438,6 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.l-arrow {
-  width: 5vw;
-  float: left;
-  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.3));
 }
 
 .menu-ci {
@@ -3656,31 +3619,6 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
   bottom: 6vw;
   overflow: hidden;
   width: 4vw;
-}
-
-.l-over {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-}
-
-.l-over.hometoggler {
-  display: none;
-  pointer-events: auto;
-  /* MUST be auto to capture "click anywhere to start" */
 }
 
 /* Fix: Ensure burger canvas doesn't block menu link interactions */
@@ -6209,16 +6147,6 @@ html.w-mod-js [data-ix="text-0-2"] {
     height: 10vh;
   }
 
-  .l-text {
-    font-size: 3.2vh;
-    letter-spacing: 0.1em;
-    font-weight: 600;
-  }
-
-  .l-text-w {
-    bottom: 3.5vw;
-  }
-
   .text-wrap {
     width: 41vh;
     height: 13vh;
@@ -6650,18 +6578,6 @@ html.w-mod-js [data-ix="text-0-2"] {
   .at-text {
     font-size: 2.7vw;
     line-height: 3vw;
-  }
-
-  .l-text {
-    font-size: 2vw;
-  }
-
-  .l-text.lm {
-    display: block;
-  }
-
-  .l-text.lt-r {
-    display: none;
   }
 
   .text-wrap {
@@ -7716,11 +7632,6 @@ html.w-mod-js [data-ix="text-0-2"] {
     text-align: left;
   }
 
-  .l-text {
-    font-size: 3vw;
-    line-height: 3vw;
-  }
-
   .text-wrap {
     width: 28vw;
     height: 11vw;
@@ -7749,11 +7660,6 @@ html.w-mod-js [data-ix="text-0-2"] {
 
   .l-inner-2 {
     width: 46vw;
-  }
-
-  .l-arrow {
-    width: 10vw;
-    margin-top: 1vw;
   }
 
   .p-inner {
@@ -8830,61 +8736,7 @@ body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill-2 {
   animation-delay: 0.82s;
 }
 
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-grid {
-  opacity: 0;
-  filter: blur(8px);
-  transform: translate3d(0, -3vh, 0) scale(0.985);
-  pointer-events: none;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-over {
-  display: none !important;
-  align-items: flex-end;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-over {
-  display: flex !important;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
-  left: 0;
-  right: 0;
-  bottom: max(10vh, calc(env(safe-area-inset-bottom) + 34px));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  opacity: 0;
-  transform: translate3d(0, 18px, 0);
-  animation: introSecondTextIn 0.82s cubic-bezier(0.2, 0.85, 0.18, 1) 0.12s forwards;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text,
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-arrow {
-  opacity: 0;
-  transform: translate3d(0, 12px, 0);
-  animation: introSecondWordIn 0.62s cubic-bezier(0.2, 0.85, 0.18, 1) forwards;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-arrow {
-  animation-delay: 0.28s;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text.lt-r,
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text.lm {
-  animation-delay: 0.4s;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-arrow svg {
-  display: block;
-  animation: introArrowPulse 1.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
-}
-
-@keyframes introLineRise {
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler @keyframes introLineRise {
   from {
     opacity: 0;
     transform: translate3d(0, 108%, 0);
@@ -8946,10 +8798,6 @@ body[data-page="home"]:not(.intro-dismissed) .load.hometoggler::after {
   text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.7);
   letter-spacing: 0.05em;
   font-weight: 500;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler::after {
-  content: none;
 }
 
 body[data-page="home"]:not(.intro-dismissed) .hero,
@@ -9319,21 +9167,7 @@ html[data-page="contact"] .contact {
     font-size: clamp(15px, 4vw, 18px);
   }
 
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
-    bottom: max(9vh, calc(env(safe-area-inset-bottom) + 36px));
-  }
-
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text {
-    font-size: clamp(14px, 4vw, 17px);
-    line-height: 1;
-  }
-
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-arrow {
-    width: clamp(40px, 14vw, 54px);
-    margin-right: clamp(10px, 3vw, 14px);
-    margin-left: clamp(10px, 3vw, 14px);
-  }
-}
+  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler }
 
 body[data-page="contact"] .contact {
   min-height: auto !important;
@@ -9371,18 +9205,9 @@ body[data-page="contact"] .contact {
   body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill-2 {
     width: 100% !important;
   }
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-grid {
-    opacity: 0 !important;
-    filter: none !important;
-    transform: none !important;
-  }
   body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w,
   body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text,
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-arrow {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
+  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler }
 
 @media (pointer: coarse) {
   .cursor.cursorcontainer {
@@ -9561,16 +9386,6 @@ body[data-page="home"] .intro-progress-dot:first-child {
   transform: scale(1.4);
 }
 
-body[data-page="home"].intro-second .intro-progress-dot:first-child {
-  background: rgba(229, 227, 220, 0.25);
-  transform: scale(1);
-}
-
-body[data-page="home"].intro-second .intro-progress-dot:nth-child(2) {
-  background: #c4b5fd;
-  transform: scale(1.4);
-}
-
 /* Intro context label — makes the intro feel intentional */
 .intro-context {
   position: fixed;
@@ -9590,33 +9405,6 @@ body[data-page="home"].intro-second .intro-progress-dot:nth-child(2) {
 }
 
 /* Enhanced second screen — not visually sparse */
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
-  background: linear-gradient(180deg,
-    rgba(10, 10, 14, 0.85) 0%,
-    rgba(10, 10, 14, 0.75) 100%);
-  padding: 24px 36px;
-  border-radius: 6px;
-  border-top: 1px solid rgba(196, 181, 253, 0.3);
-  border-bottom: 1px solid rgba(196, 181, 253, 0.3);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  max-width: 90vw;
-  margin: 0 auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-/* Desktop: constrain second screen prompt width */
-@media (min-width: 768px) {
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
-    max-width: 600px;
-    padding: 24px 40px;
-  }
-}
-
-
-
-
-
 /* === WORK PAGE: hover preview on desktop, tap on mobile === */
 .p-col .p-shot {
   transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1),
@@ -9716,5 +9504,35 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
+  }
+}
+
+
+/* === WORK PAGE SCROLL FIX — ensure content is scrollable === */
+/* The page uses Locomotive Scroll. Ensure body can also scroll natively
+   as a fallback. The .p-grid.scroller is the Locomotive container. */
+body[data-page="work"] {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+.p-grid.scroller {
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* On mobile, make sure the page can scroll */
+@media (max-width: 991px) {
+  body[data-page="work"] {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+  .p-grid.scroller {
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh;
   }
 }

@@ -9392,3 +9392,187 @@ body[data-page="contact"] .contact {
   font-style: normal;
   font-display: auto;
 }
+
+
+/* === ACCESSIBILITY === */
+
+/* Skip-to-content link — hidden until focused */
+.skip-to-content {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 99999;
+  padding: 12px 20px;
+  background: #7c3aed;
+  color: #f5f4ef;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: top 0.2s ease;
+}
+
+.skip-to-content:focus,
+.skip-to-content:focus-visible {
+  top: 16px;
+  outline: 2px solid #f5f4ef;
+  outline-offset: 2px;
+}
+
+/* Visible focus indicators for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #c4b5fd;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen reader-only utility (visually hidden, accessible) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* === INTRO VISUAL FRAME — intentional design === */
+
+/* Top-left corner bracket */
+.intro-frame {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  width: 40px;
+  height: 40px;
+  border-top: 1px solid rgba(229, 227, 220, 0.4);
+  border-left: 1px solid rgba(229, 227, 220, 0.4);
+  pointer-events: none;
+  z-index: 1210;
+  opacity: 0;
+  animation: introFrameIn 0.8s cubic-bezier(0.2, 0, 0, 1) 0.4s forwards;
+}
+
+.intro-frame.if-tr {
+  left: auto;
+  right: 24px;
+  border-left: none;
+  border-right: 1px solid rgba(229, 227, 220, 0.4);
+}
+
+.intro-frame.if-bl {
+  top: auto;
+  bottom: 24px;
+  border-top: none;
+  border-bottom: 1px solid rgba(229, 227, 220, 0.4);
+}
+
+.intro-frame.if-br {
+  top: auto;
+  bottom: 24px;
+  left: auto;
+  right: 24px;
+  border: none;
+  border-right: 1px solid rgba(229, 227, 220, 0.4);
+  border-bottom: 1px solid rgba(229, 227, 220, 0.4);
+}
+
+@keyframes introFrameIn {
+  to { opacity: 1; }
+}
+
+/* Intro progress indicator — shows where you are in the intro */
+.intro-progress {
+  position: fixed;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1210;
+  opacity: 0;
+  animation: introFrameIn 0.8s cubic-bezier(0.2, 0, 0, 1) 0.6s forwards;
+}
+
+.intro-progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(229, 227, 220, 0.25);
+  transition: background 0.4s ease, transform 0.4s ease;
+}
+
+body[data-page="home"] .intro-progress-dot:first-child {
+  background: #c4b5fd;
+  transform: scale(1.4);
+}
+
+body[data-page="home"].intro-second .intro-progress-dot:first-child {
+  background: rgba(229, 227, 220, 0.25);
+  transform: scale(1);
+}
+
+body[data-page="home"].intro-second .intro-progress-dot:nth-child(2) {
+  background: #c4b5fd;
+  transform: scale(1.4);
+}
+
+/* Intro context label — makes the intro feel intentional */
+.intro-context {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(229, 227, 220, 0.5);
+  z-index: 1210;
+  opacity: 0;
+  animation: introFrameIn 0.8s cubic-bezier(0.2, 0, 0, 1) 0.5s forwards;
+  font-weight: 500;
+}
+
+/* Enhanced second screen — not visually sparse */
+body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
+  background: linear-gradient(180deg,
+    rgba(124, 58, 237, 0.08) 0%,
+    rgba(124, 58, 237, 0.02) 100%);
+  padding: 20px 32px;
+  border-radius: 4px;
+  border-top: 1px solid rgba(124, 58, 237, 0.2);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  max-width: 90vw;
+  margin: 0 auto;
+}
+
+/* Desktop: constrain second screen prompt width */
+@media (min-width: 768px) {
+  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
+    max-width: 600px;
+    padding: 24px 40px;
+  }
+}

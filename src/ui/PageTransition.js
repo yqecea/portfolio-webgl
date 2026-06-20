@@ -61,10 +61,8 @@ export default class PageTransition {
   fadeOutAudio() {
     if (!this.soundReactor?.audio || window.isMobile) return;
 
-    if (typeof TweenLite !== 'undefined') {
-      TweenLite.to(this.soundReactor.audio, this.duration, {
-        volume: 0
-      });
+    if (typeof gsap !== 'undefined') {
+      gsap.to(this.soundReactor.audio, { volume: 0, duration: this.duration });
       return;
     }
 
@@ -80,6 +78,15 @@ export default class PageTransition {
     }
 
     document.location.href = href;
+  }
+
+  closeMenuStateForNavigation() {
+    document.body.classList.remove('menu-open');
+    document.querySelector('.nav-trigger')?.classList.remove('on');
+    document.querySelector('.burgerclickableout')?.classList.remove('on');
+    document.querySelector('.burgerclickablein')?.classList.add('on');
+    const menu = document.querySelector('.menu');
+    if (menu) menu.style.display = 'none';
   }
 
   onLinkClick(event) {
@@ -104,6 +111,7 @@ export default class PageTransition {
 
     event.preventDefault();
     this.isTransitioning = true;
+    this.closeMenuStateForNavigation();
 
     const target = link.getAttribute('target');
     const targetColor = link.getAttribute('targetcolor');
@@ -115,18 +123,20 @@ export default class PageTransition {
 
     this.fadeOutAudio();
 
-    if (typeof TweenLite !== 'undefined') {
-      TweenLite.to(this.bottomWave, this.duration, {
+    if (typeof gsap !== 'undefined') {
+      gsap.to(this.bottomWave, {
         value: 0,
-        ease: Power4.easeInOut,
+        ease: 'power4.inOut',
+        duration: this.duration,
         onComplete: () => {
           this.overlayActive = true;
         }
       });
 
-      TweenLite.to(this.topWave, this.duration, {
+      gsap.to(this.topWave, {
         value: 0,
-        ease: Power4.easeInOut,
+        ease: 'power4.inOut',
+        duration: this.duration,
         delay: this.duration,
         onComplete: () => {
           if (this.soundReactor) {

@@ -79,6 +79,29 @@ echo "(status of these files: staged+unstaged+untracked)"
 git status --short -- "${WIP_FILES[@]}"
 
 echo ""
+echo "=== Step 6: re-apply GSAP 3.13.0 (CVE-2020-28478 fix, plan 010) ==="
+echo "Without this, the recovered HTML reverts to GSAP 3.2.6 (vulnerable)."
+echo "The user's WIP didn't touch the GSAP version line, so the version"
+echo "bump can be safely re-applied without clobbering any WIP changes."
+NEW_GSAP_HTML=$(cat <<'HTML'
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/EaselPlugin.min.js" integrity="sha384-gcbVULrCAP9hrGBa+1R57lCCOgkLr3j7ZYySlj0akrckbdlZQgExJEQyNIdDYqBM" crossorigin="anonymous"></script>
+HTML
+)
+OLD_GSAP_HTML=$(cat <<'HTML'
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js" integrity="sha384-Xfig962KkXx0xvL1ZwxVQ0niWczaeyKY3oGBBBWrlDj2/+7MAJya/AqlPnqPEUTE" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/EaselPlugin.min.js" integrity="sha384-8vzMZ49+T5k78oALwlE1qBYy0uh+Mz5nrxfBFTDTWxPMB/1e/aB2Z3uDLtacUIu7" crossorigin="anonymous"></script>
+HTML
+)
+for f in index.html pages/about.html pages/contact.html pages/work.html; do
+  if grep -q 'gsap/3.2.6' "$f"; then
+    sed -i "s|gsap/3.2.6/gsap.min.js|gsap/3.13.0/gsap.min.js|; s|sha384-Xfig962KkXx0xvL1ZwxVQ0niWczaeyKY3oGBBBWrlDj2/+7MAJya/AqlPnqPEUTE|sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc|; s|gsap/3.2.6/EaselPlugin.min.js|gsap/3.13.0/EaselPlugin.min.js|; s|sha384-8vzMZ49+T5k78oALwlE1qBYy0uh+Mz5nrxfBFTDTWxPMB/1e/aB2Z3uDLtacUIu7|sha384-gcbVULrCAP9hrGBa+1R57lCCOgkLr3j7ZYySlj0akrckbdlZQgExJEQyNIdDYqBM|" "$f"
+    echo "  $f: re-applied GSAP 3.13.0"
+  else
+    echo "  $f: already 3.13.0 (or no GSAP tag)"
+  fi
+done
+echo ""
 echo "=== Done ==="
 echo "The 6 WIP files are now in the user's pre-improve WIP state."
 echo "Other WIP files (.gitignore, css/style.css, src/about/AnimationLock.js, etc.)"

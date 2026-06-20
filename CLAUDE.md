@@ -23,7 +23,7 @@ the v2 refactor was not fully completed.
 - ES modules under `src/`: `core/`, `ui/`, `webgl/`, `scroll/`, `audio/`,
   `about/`, `work/`
 - Three.js r125 (CDN) for the WebGL sphere
-- GSAP 3.2.6 + EaselPlugin (CDN) for animation
+- GSAP 3.13.0 + EaselPlugin (CDN) for animation
 - Locomotive Scroll 4.0.3 (CDN) for smooth scroll on home + work
 - jQuery 3.5.1 (CDN, has SRI hash) for the Webflow runtime
 - Webflow runtime (CDN) for legacy form + IX2 animations

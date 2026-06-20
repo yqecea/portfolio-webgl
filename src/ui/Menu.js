@@ -28,11 +28,18 @@ export default class Menu {
 
         // Initialize simplex noise (use window. for explicit global access
         // since simplex-noise.js is loaded as a global script, not a module)
-        try {
-            this.simplex = new window.SimplexNoise();
-        } catch (e) {
+        // Provide a complete fallback with both noise2D and noise3D
+        const noopNoise = { noise2D: () => 0, noise3D: () => 0 };
+        if (typeof window.SimplexNoise === 'function') {
+            try {
+                this.simplex = new window.SimplexNoise();
+            } catch (e) {
+                console.warn('Menu: SimplexNoise construct failed, using fallback');
+                this.simplex = noopNoise;
+            }
+        } else {
             console.warn('Menu: SimplexNoise not available, using fallback');
-            this.simplex = { noise2D: () => 0 };
+            this.simplex = noopNoise;
         }
 
         // DPI scaling

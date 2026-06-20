@@ -9550,6 +9550,17 @@ body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-over {
 
 body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-over {
   display: flex !important;
+  pointer-events: auto !important;
+}
+
+body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler {
+  pointer-events: auto !important;
+}
+
+body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-quicknav,
+body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-sound-control {
+  pointer-events: auto !important;
+  z-index: 3001;
 }
 
 body[data-page="home"]:not(.intro-dismissed) .load.hometoggler::after {

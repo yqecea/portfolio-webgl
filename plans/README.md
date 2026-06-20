@@ -23,6 +23,7 @@ conditions, and update your row when done.
 | 004  | Quick WebGL wins (error states, pixel-ratio cap, fallbacks)   | P2       | M      | —          | DONE   |
 | 005  | Make the shipped 10-card work gallery intentional             | P2       | S      | —          | REJECTED |
 | 006  | Add SRI integrity + crossorigin to all CDN scripts (REJ-08 p1)| P1       | S      | —          | DONE   |
+| 007  | Self-host personal CDN assets (REJ-10)                       | P1       | M      | —          | DONE   |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed
@@ -89,6 +90,17 @@ independently or approach abandoned).
   added across the 4 main HTML pages. Hashes computed locally
   from the upstream files at the pinned versions. Picked up the
   `npm run lint:html` baseline that plan 001 introduced. **DONE**.
+- **007** (added to land the highest-leverage remaining security
+  item): self-host the personal CDN assets. 4 binary files
+  (903 KB mainSound.mp3, 39 KB rol05.mp3, 17 KB matCap0.jpg,
+  51 KB slice2.fbx) downloaded from
+  `cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana` and placed
+  in `assets/sound/`, `assets/sound/rollovers/`, and
+  `assets/sphere/`. The CDN URLs in `src/main.js:16-17` and
+  `src/webgl/WebGLApp.js:282, 368` were replaced with
+  project-relative paths. Together with plan 006 (SRI), this
+  closes both the in-flight tampering and the upstream-rename
+  attack surfaces for these assets. **DONE**.
 
 ## Findings considered and rejected
 
@@ -197,11 +209,17 @@ requires verifying the `data-w-id` attributes and the
 ### REJ-10: Self-host the personal CDN assets (matcap, FBX, audio)
 
 **Source**: audit subagent (security + deps), [SECURITY-04].
-**Vetting result**: real, but coupled to the WebGL asset
-loading (plan 004) and the audio path (plan 003). The
-self-hosting is M effort (download, place in `assets/`, update
-URLs, set cache headers) and is best done as a focused
-follow-up plan after plan 004's error-handling work.
+**Vetting result**: real, **shipped in plan 007.** 4 binary assets
+downloaded from `cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/`
+into the project at `assets/sound/`, `assets/sound/rollovers/`, and
+`assets/sphere/`. Total ~1.0 MB. The CDN URLs in `src/main.js:16-17`
+and `src/webgl/WebGLApp.js:282, 368` were replaced with project-relative
+paths. `npm run check:js` still passes. SRI (plan 006) plus self-hosting
+together close both the in-flight tampering and upstream-rename attack
+surfaces. The `firebase.json` `headers` block for cache-control on these
+assets remains deferred (no-op for the deploy; only affects cache
+performance). Note: the four files originated from a third-party GitHub
+repo; the operator should confirm redistribution rights are in place.
 
 ### REJ-11: `pages/cookie.html` is minimal (49 lines) — possibly dead
 

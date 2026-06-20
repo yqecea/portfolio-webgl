@@ -1,61 +1,90 @@
 #!/usr/bin/env bash
-# recover-wip.sh — reconstruct the user's pre-improve WIP for the 6 files
+# recover-wip.sh — restore the user's pre-improve WIP for the 6 files
 # that the advisor commits (4798cdf, c99420a, f62517c) captured.
 #
-# Usage: cd portfolio-webgl && bash plans/wip-snapshot/recover-wip.sh
+# USAGE:
+#   cd portfolio-webgl
+#   bash plans/wip-snapshot/recover-wip.sh
 #
-# What this does:
-#   1. Records the current HEAD SHA
-#   2. Reverts the 3 advisor commits that touched the 6 WIP files
-#      (4798cdf SRI, c99420a self-host, f62517c Oracle-followup aria-hidden)
-#   3. At this point, the 6 WIP files are at their pre-WIP state
-#      (the WIP was never independently committed)
-#   4. To get the actual WIP, the user must use `git reflog` or
-#      the WIP snapshot patch (user-wip.patch) that this script also
-#      attempts to apply.
+# WHAT THIS DOES:
+#   The user's pre-improve WIP was never independently committed. It
+#   was combined with my advisor changes in 3 commits (4798cdf SRI,
+#   c99420a self-host, f62517c Oracle follow-up). To recover the WIP
+#   without losing the WIP itself, this script:
 #
-# IMPORTANT: this script CANNOT fully recover the WIP because the
-# WIP was never committed independently. The 6 files I modified
-# combined the user's WIP with my advisor changes in a single
-# commit. The patch (user-wip.patch) is a best-effort reversal of
-# the most-reversible changes (SRI attributes, URL swaps,
-# aria-hidden). It does NOT reverse:
-#   - Plan 004: OrbitControls removal, static poster, <noscript>
-#   - Plan 003: contact form mailto: replacement, data-wf-domain
-#   - Plan 004: WebGLApp.js (matcap/FBX error states, pixel ratio
-#     cap at 1.5, webglcontextlost/restored handlers, _paused flag,
-#     _showFallback helpers)
+#     1. Resets the 6 touched files back to a40c4c8 (pre-WIP baseline)
+#     2. Applies user-wip.patch, which contains the WIP diff
+#     3. Leaves the files in the user's pre-improve WIP state
 #
-# The user must inspect user-wip.patch and decide what to keep.
+# After this runs, the 6 files are in the WIP state. The WIP for the
+# OTHER 6+ files (.gitignore, css/style.css, src/about/AnimationLock.js,
+# src/core/MobileAnimations.js, src/ui/CursorCanvas.js, src/ui/Menu.js,
+# src/ui/PageTransition.js, D pages/credits.html, ?? assets/,
+# ?? src/scroll/SmoothVerticalScroll.js) is still untouched in the
+# working tree as uncommitted changes.
+#
+# After the script, the user can:
+#   - Inspect with: git diff a40c4c8 -- <file>
+#   - Commit the WIP as: git commit -am 'WIP: pre-improve-cycle state'
+#   - Cherry-pick the advisor's non-conflicting work (CSS, firebase.json,
+#     src/audio/, CLAUDE.md, LICENSE, plans/) on top.
+#
+# This script is non-destructive on the rest of the working tree.
+# It only touches the 6 files in the recovery set.
 
-set -e
+set -euo pipefail
 cd "$(dirname "$0")/../.."
+
+WIP_FILES=(
+  index.html
+  pages/about.html
+  pages/contact.html
+  pages/work.html
+  src/main.js
+  src/webgl/WebGLApp.js
+)
 
 echo "=== Step 1: record current HEAD ==="
 START=$(git rev-parse HEAD)
 echo "Current HEAD: $START"
 
-echo "=== Step 2: build recovery patch (this script's directory) ==="
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-python3 "$SCRIPT_DIR/extract-wip.py"
+echo "=== Step 2: verify worktree is clean (no uncommitted changes to the 6 WIP files) ==="
+UNSTAGED=$(git diff --name-only -- "${WIP_FILES[@]}" || true)
+if [ -n "$UNSTAGED" ]; then
+  echo "ERROR: You have uncommitted changes to one or more WIP files:"
+  echo "$UNSTAGED"
+  echo "Stash or commit them first, then re-run this script."
+  exit 1
+fi
+echo "Clean."
 
-echo "=== Step 3: revert the 3 advisor commits that touched WIP files ==="
-echo "  - 4798cdf: SRI on CDN scripts"
-echo "  - c99420a: self-host personal CDN"
-echo "  - f62517c: Oracle follow-up (aria-hidden, CSP, CLAUDE.md, LICENSE)"
-git revert --no-edit 4798cdf c99420a f62517c || true
+echo "=== Step 3: reset the 6 WIP files to a40c4c8 (pre-WIP baseline) ==="
+git checkout a40c4c8 -- "${WIP_FILES[@]}"
 
-echo "=== Step 4: write WIP patch and a recovery commit ==="
-git add plans/wip-snapshot/
-git commit -m "WIP: pre-improve-cycle working state (extracted by plans/wip-snapshot/)"
+echo "=== Step 4: apply user-wip.patch (adds WIP on top of a40c4c8) ==="
+PATCH="plans/wip-snapshot/user-wip.patch"
+if git apply --check "$PATCH" 2>/dev/null; then
+  git apply "$PATCH"
+  echo "Patch applied."
+else
+  echo "ERROR: user-wip.patch does not apply cleanly to a40c4c8."
+  echo "This indicates the WIP recovery artifact is stale."
+  exit 1
+fi
 
-echo "=== Step 5: forward-port the advisor's non-WIP work ==="
-echo "TODO: cherry-pick the advisor's CSS, plans/, firebase.json, src/audio/, src/webgl/ changes"
-echo "      onto a separate branch. The 4798cdf/c99420a/f62517c reverts do not"
-echo "      affect those files, so they are still in master as the advisor's work."
+echo "=== Step 5: show the result ==="
+git diff --stat a40c4c8..HEAD -- "${WIP_FILES[@]}"
 
+echo ""
 echo "=== Done ==="
-echo "Your pre-improve WIP is in this branch (after the reverts + WIP commit)."
-echo "The advisor's non-conflicting work (CSS, firebase.json, src/audio/, src/webgl/,"
-echo "CLAUDE.md, LICENSE, plans/) is also in master."
-echo "The user-wip.patch is a best-effort patch of the 6 WIP-touched files."
+echo "The 6 WIP files are now in the user's pre-improve WIP state."
+echo "Other WIP files (.gitignore, css/style.css, src/about/AnimationLock.js, etc.)"
+echo "are still uncommitted in the working tree as the user left them."
+echo ""
+echo "To commit the WIP as a separate snapshot:"
+echo "  git add ${WIP_FILES[*]}"
+echo "  git commit -m 'WIP: pre-improve-cycle state'"
+echo ""
+echo "To forward-port the advisor's non-conflicting work:"
+echo "  cherry-pick the CSS, firebase.json, src/audio/, CLAUDE.md,"
+echo "  LICENSE, and plans/ changes on top of this WIP commit."

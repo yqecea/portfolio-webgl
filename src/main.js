@@ -8,14 +8,13 @@ import SoundToggler from './audio/SoundToggler.js';
 import CursorCanvas from './ui/CursorCanvas.js';
 import PageTransition from './ui/PageTransition.js';
 import LocomotiveBridge from './scroll/LocomotiveBridge.js';
+import SmoothVerticalScroll from './scroll/SmoothVerticalScroll.js';
 import ElasticLines from './work/ElasticLines.js';
 import AnimationLock from './about/AnimationLock.js';
 import DesktopHorizontalScrollController from './work/DesktopHorizontalScrollController.js';
 
-const SOUND_URL =
-  'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/mainSound.mp3';
-const ROLLOVER_URL =
-  'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/rollovers/rol05.mp3';
+const SOUND_URL = '../assets/sound/mainSound.mp3';
+const ROLLOVER_URL = '../assets/sound/rollovers/rol05.mp3';
 
 class App {
   constructor() {
@@ -25,6 +24,8 @@ class App {
 
     this.soundReactor = null;
     this.soundToggler = null;
+    this.mobileAnimations = null;
+    this.boundResponsiveAnimationsResize = this.ensureResponsiveAnimations.bind(this);
   }
 
   detectPage() {
@@ -35,7 +36,6 @@ class App {
     if (path.includes('/pages/work')) return 'work';
     if (path.includes('/pages/about')) return 'about';
     if (path.includes('/pages/contact')) return 'contact';
-    if (path.includes('/pages/credits')) return 'credits';
     return 'home';
   }
 
@@ -59,6 +59,50 @@ class App {
         window.location.reload();
       }
     });
+  }
+
+  setPageFlags() {
+    document.documentElement.dataset.page = this.page;
+    document.body.classList.remove('menu-open');
+  }
+
+  initIntroDismiss() {
+    if (this.page !== 'home') return;
+
+    const showSecondIntroScreen = () => {
+      document.body.classList.add('intro-second');
+    };
+
+    const dismissIntro = () => {
+      document.body.classList.add('intro-dismissed');
+      document.body.classList.remove('intro-second');
+    };
+
+    const advanceIntro = (event) => {
+      if (document.body.classList.contains('intro-dismissed')) return;
+
+      if (event.type === 'keydown') {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+      }
+
+      if (!document.body.classList.contains('intro-second')) {
+        showSecondIntroScreen();
+        return;
+      }
+
+      dismissIntro();
+    };
+
+    const introOverlay = document.querySelector('.load.hometoggler');
+    if (introOverlay) {
+      introOverlay.addEventListener('pointerdown', advanceIntro);
+    }
+
+    document.addEventListener(
+      'keydown',
+      advanceIntro
+    );
   }
 
   hideRotateOverlayDesktop() {
@@ -112,10 +156,13 @@ class App {
   }
 
   initCursor() {
-    if (this.isMobile) return;
-
     const container = document.querySelector('.cursorcontainer');
     if (!container) return;
+
+    if (this.isMobile) {
+      container.classList.add('is-disabled');
+      return;
+    }
 
     const cursor = new CursorCanvas();
     cursor.init(container);
@@ -143,9 +190,19 @@ class App {
   }
 
   initLocomotive() {
+    if (this.page === 'about' || this.page === 'contact') return;
+
     const locomotive = new LocomotiveBridge();
     locomotive.init();
     this.instances.push(locomotive);
+  }
+
+  initSmoothVerticalScroll() {
+    if (this.page !== 'about' && this.page !== 'contact') return;
+
+    const smoothScroll = new SmoothVerticalScroll();
+    const started = smoothScroll.init();
+    if (started) this.instances.push(smoothScroll);
   }
 
   initWorkDesktopScroll() {
@@ -175,10 +232,19 @@ class App {
   }
 
   initMobileAnimations() {
-    if (!this.isMobile) return;
+    this.ensureResponsiveAnimations();
+    window.addEventListener('resize', this.boundResponsiveAnimationsResize);
+  }
 
-    const mobileAnimations = new MobileAnimations();
-    this.instances.push(mobileAnimations);
+  ensureResponsiveAnimations() {
+    if (this.mobileAnimations) return;
+    if (!this.isMobile && window.innerWidth > 1199) return;
+
+    this.mobileAnimations = new MobileAnimations({
+      force: true,
+      maxWidth: 1199
+    });
+    this.instances.push(this.mobileAnimations);
   }
 
   initAboutAnimationLock() {
@@ -200,15 +266,18 @@ class App {
 
   init() {
     this.page = this.detectPage();
+    this.setPageFlags();
     this.setEnvironmentFlags();
     this.setupGlobalLifecycle();
     this.hideRotateOverlayDesktop();
+    this.initIntroDismiss();
 
     this.initMenu();
     this.initSound();
     this.initCursor();
     this.initPageTransition();
     this.initLocomotive();
+    this.initSmoothVerticalScroll();
 
     this.initWorkDesktopScroll();
     this.initWorkElasticLines();

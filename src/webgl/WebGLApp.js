@@ -279,7 +279,7 @@ export default class WebGLApp {
 
         // Load matcaps
         const loader = new THREE.TextureLoader();
-        const matCapUrl = 'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana@72fab3c/sphere/matCap0.jpg';
+        const matCapUrl = '../../assets/sphere/matCap0.jpg';
         loader.load(
             matCapUrl,
             (texture) => {
@@ -365,7 +365,7 @@ export default class WebGLApp {
         const sphereRad = 1;
 
         fbxLoader.load(
-            'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sphere/slice2.fbx',
+            '../../assets/sphere/slice2.fbx',
             (obj) => {
                 this._markModelLoaded();
                 let inc = 0;

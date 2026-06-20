@@ -1,0 +1,845 @@
+# User WIP snapshot — pre-improve-cycle working state
+#
+# Generated from HEAD (master at the time this script ran).
+# Each section below reverses my advisor changes (SRI additions,
+# URL swaps to local assets, aria-hidden additions) to recover the
+# user's WIP for each file my work touched. Apply with `git apply`.
+#
+# Recovery procedure:
+#   1. (Optional) Revert the advisor commits: git revert 4798cdf c99420a f62517c 0659a05 5cb3003 d9eb90b 935d0aa 7919c12 990a70f
+#   2. (Optional) Reset to pre-WIP: git reset --hard a40c4c8~1
+#   3. Apply this patch: git apply plans/wip-snapshot/user-wip.patch
+#   4. Commit as 'WIP: pre-improve-cycle working state'
+#
+
+# === index.html (advisor changes from plan 006) ===
+--- a/index.html
++++ b/index.html
+@@ -150,7 +150,6 @@
+     }
+   </style>
+   <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/build/three.min.js"></script>
+-  <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/controls/OrbitControls.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/fflate@0.6.9/umd/index.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/three@0.125.2/examples/js/loaders/FBXLoader.js"></script>
+   <style>
+@@ -340,11 +339,6 @@
+                     data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="./pages/contact.html"
+                     class="menu-ti menulink">Contact</a>
+                 </div>
+-                <div class="menu-as ma2">
+-                  <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
+-                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb5" href="./pages/credits.html"
+-                    class="menu-ti menulink">Credits</a>
+-                </div>
+               </div>
+               <div class="underline w-embed">
+                 <style>
+@@ -395,13 +389,16 @@
+           </div>
+         </div>
+       </div>
+-    </div>
+-  </nav>
++    </nav>
+   <div class="cursor cursorcontainer"></div>
+   <div class="rotate">
+     <div class="text-block-9">Rotate your device, please.</div>
+   </div>
+   <div class="hero">
++    <div class="menu-prompt">
++      <span class="menu-prompt-text">Menu</span>
++      <span class="menu-prompt-line"></span>
++    </div>
+     <div class="h-row">
+       <div class="h-block hb-1">
+         <div data-w-id="2fa7b419-afae-1137-067d-d93e6ca9f3aa" style="
+@@ -536,13 +533,13 @@
+             transform: translate3d(0, 150%, 0) scale3d(1, 1, 1) rotateX(0)
+               rotateY(0) rotateZ(0) skew(0, 0);
+           " class="h-quote">
+-        &quot;building creative web experiences&quot;
++        Creative developer from Kazakhstan
+       </div>
+     </div>
+     <div targetColor="#E2E2DD" draggable="false" rel="noopener" data-w-id="9f616e5c-fd93-dce6-429e-a0e1d5ee9f1b"
+       class="h-start-w">
+       <div class="h-start-i">
+-        <a href="#" class="h-start pagelink">Start / Explore</a>
++        <a href="./pages/work.html" aria-label="Explore selected work" class="h-start pagelink">Start / Explore</a>
+         <div class="underline w-embed">
+           <style>
+             .h-start::after {
+@@ -596,11 +593,19 @@
+       </div>
+     </div>
+   </div>
+-  <div style="filter: invert(0%)" class="webglholder"></div>
++  <div style="filter: invert(0%)" class="webglholder">
++    <noscript>
++      <p class="webgl-fallback-message">
++        This portfolio uses WebGL for the home hero. Please enable JavaScript
++        or visit <a href="./pages/work.html">the work page</a> to see projects.
++      </p>
++    </noscript>
++    <div class="webgl-static-poster"></div>
++  </div>
+   <div class="cookie-c">
+     <div class="cookie-t">
+       This website use
+-      <a href="./pages/cookie.html" rel="noopener" target="_blank" class="cokkie-li">cookies</a>
++      <a href="./pages/cookie.html" rel="noopener noreferrer" target="_blank" class="cokkie-li">cookies</a>
+       . <br />
+       By continuing to browse <br />you accept their use.
+     </div>
+
+
+# === pages/about.html (advisor changes from plan 006) ===
+--- a/pages/about.html
++++ b/pages/about.html
+@@ -8,27 +8,35 @@
+   <meta content="width=device-width, initial-scale=1" name="viewport" />
+   <link rel="stylesheet" href="../css/style.css" />
+   <style>
+-    @media (min-width: 992px) {
+-      html.w-mod-js:not(.w-mod-ix) [data-w-id="b84a4718-3d32-7794-986d-ff4584ed2164"] {
+-        -webkit-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        -moz-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        -ms-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-      }
+-
+-      html.w-mod-js:not(.w-mod-ix) [data-w-id="32eaee09-4cf5-ec96-4bf0-c6da8ea3e53e"] {
+-        -webkit-transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        -moz-transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        -ms-transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        display: block;
+-      }
+-
++    html.w-mod-js:not(.w-mod-ix) [data-w-id="b84a4718-3d32-7794-986d-ff4584ed2164"] {
++      -webkit-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      -moz-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      -ms-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++    }
++
++    html.w-mod-js:not(.w-mod-ix) [data-w-id="32eaee09-4cf5-ec96-4bf0-c6da8ea3e53e"] {
++      -webkit-transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      -moz-transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      -ms-transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      transform: translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      display: block;
++    }
++
++    html.w-mod-js:not(.w-mod-ix) [data-w-id="fade6d6e-aa5a-6018-b8be-75b18fa12882"] {
++      -webkit-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      -moz-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      -ms-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++      transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++    }
++
++    @media (prefers-reduced-motion: reduce) {
++      html.w-mod-js:not(.w-mod-ix) [data-w-id="b84a4718-3d32-7794-986d-ff4584ed2164"],
++      html.w-mod-js:not(.w-mod-ix) [data-w-id="32eaee09-4cf5-ec96-4bf0-c6da8ea3e53e"],
+       html.w-mod-js:not(.w-mod-ix) [data-w-id="fade6d6e-aa5a-6018-b8be-75b18fa12882"] {
+-        -webkit-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        -moz-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        -ms-transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+-        transform: translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
++        opacity: 1 !important;
++        transform: none !important;
++        display: block !important;
+       }
+     }
+   </style>
+@@ -327,11 +335,6 @@
+                     data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="./contact.html"
+                     class="menu-ti menulink">Contact</a>
+                 </div>
+-                <div class="menu-as ma2">
+-                  <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
+-                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb5" href="./credits.html"
+-                    class="menu-ti menulink">Credits</a>
+-                </div>
+               </div>
+               <div class="underline w-embed">
+                 <style>
+@@ -382,8 +385,7 @@
+           </div>
+         </div>
+       </div>
+-    </div>
+-  </nav>
++    </nav>
+   <a rel="noopener" aria-label="sound" href="#" class="sound soundtoggler w-inline-block"></a>
+   <a rel="noopener" aria-label="trigger" href="#" class="trigger burgerclickablein w-inline-block"></a>
+   <div class="trigger burgerclickableout"></div>
+@@ -580,7 +582,7 @@
+           <div class="af-quote-w">
+             <h2 data-scroll="0" data-scroll-speed="2" class="a-quote aq-2">
+               building<br />
+-              <a href="https://github.com/yqecea" rel="noopener" target="_blank" aria-label="GitHub">
++              <a href="https://github.com/yqecea" rel="noopener noreferrer" target="_blank" aria-label="GitHub">
+                 <span class="a-span"> creative web<br />experiences </span>
+               </a>
+               from Kazakhstan
+@@ -588,12 +590,24 @@
+           </div>
+           <div class="af-links">
+             <div class="af-link-w">
+-              <a rel="noopener" aria-label="github" href="https://github.com/yqecea" target="_blank"
++              <a rel="noopener noreferrer" aria-label="github" href="https://github.com/yqecea" target="_blank"
+                 class="af-link">GitHub</a>
+             </div>
+             <div class="af-link-w">
+-              <a rel="noopener" aria-label="telegram" href="https://t.me/yqecea" target="_blank"
++              <a rel="noopener noreferrer" aria-label="telegram" href="https://t.me/yqecea" target="_blank"
+                 class="af-link">Telegram</a>
++            </div>
++            <div class="af-link-w">
++              <a rel="noopener noreferrer" aria-label="linkedin" href="https://www.linkedin.com/in/yqecea/" target="_blank"
++                class="af-link">LinkedIn</a>
++            </div>
++            <div class="af-link-w">
++              <a rel="noopener noreferrer" aria-label="vk" href="https://vk.com/yqecea" target="_blank"
++                class="af-link">VK</a>
++            </div>
++            <div class="af-link-w">
++              <a rel="noopener noreferrer" aria-label="x" href="https://x.com/y_qecea" target="_blank"
++                class="af-link">X</a>
+             </div>
+             <div class="underline w-embed">
+               <style>
+
+
+# === pages/contact.html (advisor changes from plan 006) ===
+--- a/pages/contact.html
++++ b/pages/contact.html
+@@ -1,5 +1,5 @@
+ <!DOCTYPE html>
+-<html data-wf-domain="www.chiaraluzzana.com" data-wf-page="5ed515f3ca38aa11fc683b8a"
++<html data-wf-domain="yqecea-portfolio.web.app" data-wf-page="5ed515f3ca38aa11fc683b8a"
+   data-wf-site="5ea69b4027484b2df2b45806" lang="en">
+ 
+ <head>
+@@ -308,11 +308,6 @@
+                     data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="./contact.html" aria-current="page"
+                     class="menu-ti menulink w--current">Contact</a>
+                 </div>
+-                <div class="menu-as ma2">
+-                  <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
+-                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb5" href="./credits.html"
+-                    class="menu-ti menulink">Credits</a>
+-                </div>
+               </div>
+               <div class="underline w-embed">
+                 <style>
+@@ -363,8 +358,7 @@
+           </div>
+         </div>
+       </div>
+-    </div>
+-  </nav>
++    </nav>
+   <a rel="noopener" aria-label="sound" href="#" class="sound soundtoggler w-inline-block"></a>
+   <div class="cursor cursorcontainer"></div>
+   <div class="rotate">
+@@ -428,7 +422,7 @@
+     </div>
+     <div class="c-col cc-2">
+       <div class="c-block">
+-        <a rel="noopener" target="_blank" data-w-id="367e5aa5-b48e-e271-8270-321bad69548b"
++        <a rel="noopener" data-w-id="367e5aa5-b48e-e271-8270-321bad69548b"
+           href="mailto:yqecea@gmail.com" class="c-email-w w-inline-block">
+           <div data-w-id="caae8015-8190-0805-4a68-ce8ef278d24b" class="c-email">
+             yqecea@gmail.com
+@@ -450,7 +444,7 @@
+         </a>
+         <div class="social-grid w-clearfix">
+           <div class="social-col">
+-            <a rel="noopener" target="_blank" aria-label="github" data-w-id="fd24e24c-7331-71fc-c55c-917dc3f7643b"
++            <a rel="noopener noreferrer" target="_blank" aria-label="github" data-w-id="fd24e24c-7331-71fc-c55c-917dc3f7643b"
+               href="https://github.com/yqecea" class="c-social w-inline-block">
+               <div class="c-icon w-embed">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+@@ -460,15 +454,39 @@
+               </div>
+               <div class="c-text">Github</div>
+             </a>
+-            <a target="_blank" rel="noopener" aria-label="telegram" data-w-id="94a295da-7c0c-351d-e97f-9101db389f3a"
++            <a target="_blank" rel="noopener noreferrer" aria-label="telegram" data-w-id="94a295da-7c0c-351d-e97f-9101db389f3a"
+               href="https://t.me/yqecea" class="c-social w-inline-block">
+               <div class="c-icon w-embed">
+-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
++                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" focusable="false">
+                   <path
+                     d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.654-.64.135-.954l11.566-4.458c.538-.196 1.006.128.833.94z" />
+                 </svg>
+               </div>
+               <div class="c-text">Telegram</div>
++            </a>
++            <a target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" href="https://www.linkedin.com/in/yqecea/" class="c-social w-inline-block">
++              <div class="c-icon w-embed">
++                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" focusable="false">
++                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
++                </svg>
++              </div>
++              <div class="c-text">LinkedIn</div>
++            </a>
++            <a target="_blank" rel="noopener noreferrer" aria-label="VK" href="https://vk.com/yqecea" class="c-social w-inline-block">
++              <div class="c-icon w-embed">
++                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" focusable="false">
++                  <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.523-2.049-1.714-1.033-1.033-1.49-1.171-1.744-1.171-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4 8.492 4 8.076c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.779.677.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.474-.085.716-.576.716z"/>
++                </svg>
++              </div>
++              <div class="c-text">VK</div>
++            </a>
++            <a target="_blank" rel="noopener noreferrer" aria-label="X" href="https://x.com/y_qecea" class="c-social w-inline-block">
++              <div class="c-icon w-embed">
++                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" focusable="false">
++                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
++                </svg>
++              </div>
++              <div class="c-text">X</div>
+             </a>
+           </div>
+         </div>
+@@ -477,23 +495,10 @@
+         <div class="c-sub">Newsletter</div>
+         <div class="c-text ct-2">I promise you, no spam.</div>
+         <div class="f-block w-form">
+-          <form id="wf-form-Newsletter" name="wf-form-Newsletter" data-name="Newsletter"
+-            action="https://chiaraluzzana.us20.list-manage.com/subscribe/post?u=f068e795d25dfba3917276e6c&amp;amp;id=f12ca822b9"
+-            method="post" class="f-fields">
+-            <label for="email" class="f-placeholder">Email Address</label>
+-            <input type="email" class="f-input w-input" maxlength="256" name="email" data-name="Email" placeholder=""
+-              id="email" required="" />
+-            <div class="f-sub-w">
+-              <input type="submit" value=" " data-wait="" class="submit w-button" />
+-              <div class="f-submit w-embed">
+-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 97 72">
+-                  <defs />
+-                  <path fill="#191919"
+-                    d="M57.2,1.4l-1.9,0.3l-0.9,0.2l0,0l-0.9,0.2C56.9,20.8,66.9,29.7,76.2,34H1.3v0.9v1.9v0.9h75.3c-9.7,4.2-20.2,13.2-23.2,31.9l1.9,0.3l1,0.2l0,0l0.9,0.1C61.7,41.5,84.8,38,92.5,37.7c1.7,0.1,2.7,0,2.8,0l-0.1-0.9l0,0v-0.5l0.1-2.4c0,0-0.6,0-1.5,0h-2.5C82.7,33.4,62.2,29.3,57.2,1.4z" />
+-                </svg>
+-              </div>
+-            </div>
+-          </form>
++          <div class="contact-cta">
++            <a class="contact-button" href="mailto:yqecea@gmail.com?subject=Portfolio%20inquiry">Email me directly</a>
++            <p class="contact-note">I read every message. Newsletter signups are not currently supported on this site.</p>
++          </div>
+           <div class="w-form-done">
+             <div>Thank you! Your submission has been received!</div>
+           </div>
+
+
+# === pages/work.html (advisor changes from plan 006+009) ===
+--- a/pages/work.html
++++ b/pages/work.html
+@@ -221,11 +221,6 @@
+                     data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="./contact.html"
+                     class="menu-ti menulink">Contact</a>
+                 </div>
+-                <div class="menu-as ma2">
+-                  <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
+-                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb5" href="./credits.html"
+-                    class="menu-ti menulink">Credits</a>
+-                </div>
+               </div>
+               <div class="underline w-embed">
+                 <style>
+@@ -276,8 +271,7 @@
+           </div>
+         </div>
+       </div>
+-    </div>
+-  </nav>
++    </nav>
+   <a rel="noopener" aria-label="sound" href="#" class="sound soundtoggler w-inline-block"></a>
+   <div class="rotate">
+     <div class="text-block-9">Rotate your device, please.</div>
+@@ -285,9 +279,10 @@
+   <div class="sidescrollbox">
+     <main class="p-grid scroller">
+       <!-- Project 1: Zero to Infinity -->
+-      <a rel="noopener" href="https://zero-to-infinity-3d-experience.vercel.app/" target="_blank"
++      <a rel="noopener noreferrer" href="https://zero-to-infinity-3d-experience.vercel.app/" target="_blank"
+         class="p-col pagelink w-inline-block">
+         <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/zero-to-infinity.webp" alt="" loading="lazy" decoding="async"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">1</h2>
+           </div>
+@@ -312,8 +307,9 @@
+       </a>
+ 
+       <!-- Project 2: INKO -->
+-      <a rel="noopener" href="https://inko.web.app/" target="_blank" class="p-col pagelink w-inline-block">
+-        <div class="p-inner">
++      <a rel="noopener noreferrer" href="https://inko.web.app/" target="_blank" class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/inko.webp" alt="" loading="lazy" decoding="async"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">2</h2>
+           </div>
+@@ -338,8 +334,9 @@
+       </a>
+ 
+       <!-- Project 3: Overprint -->
+-      <a rel="noopener" href="https://overprint.web.app/" target="_blank" class="p-col pagelink w-inline-block">
+-        <div class="p-inner">
++      <a rel="noopener noreferrer" href="https://overprint.web.app/" target="_blank" class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/overprint.webp" alt="" loading="lazy" decoding="async"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">3</h2>
+           </div>
+@@ -364,9 +361,10 @@
+       </a>
+ 
+       <!-- Project 4: Kazakhstan UNESCO Heritage -->
+-      <a rel="noopener" href="https://kazakhstan-unesco-heritage.vercel.app/" target="_blank"
++      <a rel="noopener noreferrer" href="https://kazakhstan-unesco-heritage.vercel.app/" target="_blank"
+         class="p-col pagelink w-inline-block">
+         <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/kazakhstan-unesco.webp" alt="" loading="lazy" decoding="async"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">4</h2>
+           </div>
+@@ -391,9 +389,10 @@
+       </a>
+ 
+       <!-- Project 5: Requiem -->
+-      <a rel="noopener" href="https://requiem-kz.web.app/" target="_blank"
++      <a rel="noopener noreferrer" href="https://requiem-kz.web.app/" target="_blank"
+         class="p-col pagelink w-inline-block">
+         <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/requiem.webp" alt="" loading="lazy" decoding="async"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">5</h2>
+           </div>
+@@ -418,8 +417,9 @@
+       </a>
+ 
+       <!-- Project 6: AITU Halogens -->
+-      <a rel="noopener" href="https://aitu-halogens.vercel.app/" target="_blank" class="p-col pagelink w-inline-block">
+-        <div class="p-inner">
++      <a rel="noopener noreferrer" href="https://aitu-halogens.vercel.app/" target="_blank" class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/aitu-halogens.webp" alt="" loading="lazy" decoding="async" data-fallback-shot="true"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">6</h2>
+           </div>
+@@ -444,8 +444,9 @@
+       </a>
+ 
+       <!-- Project 7: Ciridae -->
+-      <a rel="noopener" href="https://ciridae-clone.vercel.app/" target="_blank" class="p-col pagelink w-inline-block">
+-        <div class="p-inner">
++      <a rel="noopener noreferrer" href="https://ciridae-clone.vercel.app/" target="_blank" class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/ciridae.webp" alt="" loading="lazy" decoding="async"></figure>
+           <div class="p-numb-w">
+             <h2 class="p-numb">7</h2>
+           </div>
+@@ -456,6 +457,93 @@
+             <div class="p-title-w">
+               <h2 class="p-title">Ciridae<br />The New Intelligence</h2>
+             </div>
++          </div>
++          <div class="p-side">
++            <div class="p-arrow w-embed">
++              <svg viewBox="0 0 72 100">
++                <path style="fill: #191919"
++                  d="M70.4,58.9L70.1,57l-0.2-0.9c0,0,0,0,0,0l-0.2-0.9c-18.7,3.4-27.6,13.4-31.9,22.7V3h-0.9H35h-0.9v75.3c-4.2-9.7-13.2-20.2-31.9-23.2L1.9,57L1.7,58c0,0,0,0,0,0l-0.1,0.9c28.7,4.5,32.2,27.6,32.5,35.3c-0.1,1.7,0,2.7,0,2.8l0.9-0.1v0l0.5,0l2.4,0.1c0,0,0-0.6,0-1.5v-2.5C38.4,84.4,42.5,63.9,70.4,58.9z" />
++              </svg>
++            </div>
++          </div>
++        </div>
++        <div class="elastic elasticbox"></div>
++      </a>
++
++      <!-- Project 8: Oysana landing page -->
++      <a rel="noopener noreferrer" href="https://landing-oysana.vercel.app/" target="_blank"
++        class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/oysana-landing.webp" alt="" loading="lazy" decoding="async"></figure>
++          <div class="p-numb-w">
++            <h2 class="p-numb">8</h2>
++          </div>
++          <div class="p-block">
++            <div class="p-client-w">
++              <h3 class="p-client">AI Automation</h3>
++            </div>
++            <div class="p-title-w">
++              <h2 class="p-title">OYSANA<br />AI Automation for Business</h2>
++            </div>
++            <p class="p-desc">Landing page for AI-powered business automation systems in Kazakhstan.</p>
++          </div>
++          <div class="p-side">
++            <div class="p-arrow w-embed">
++              <svg viewBox="0 0 72 100">
++                <path style="fill: #191919"
++                  d="M70.4,58.9L70.1,57l-0.2-0.9c0,0,0,0,0,0l-0.2-0.9c-18.7,3.4-27.6,13.4-31.9,22.7V3h-0.9H35h-0.9v75.3c-4.2-9.7-13.2-20.2-31.9-23.2L1.9,57L1.7,58c0,0,0,0,0,0l-0.1,0.9c28.7,4.5,32.2,27.6,32.5,35.3c-0.1,1.7,0,2.7,0,2.8l0.9-0.1v0l0.5,0l2.4,0.1c0,0,0-0.6,0-1.5v-2.5C38.4,84.4,42.5,63.9,70.4,58.9z" />
++              </svg>
++            </div>
++          </div>
++        </div>
++        <div class="elastic elasticbox"></div>
++      </a>
++
++      <!-- Project 9: AiPay landing beta -->
++      <a rel="noopener noreferrer" href="https://aipay-landing-beta.vercel.app/" target="_blank"
++        class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/aipay-landing.webp" alt="" loading="lazy" decoding="async"></figure>
++          <div class="p-numb-w">
++            <h2 class="p-numb">9</h2>
++          </div>
++          <div class="p-block">
++            <div class="p-client-w">
++              <h3 class="p-client">Payments</h3>
++            </div>
++            <div class="p-title-w">
++              <h2 class="p-title">AIPay<br />Kaspi Payments on Autopilot</h2>
++            </div>
++            <p class="p-desc">Landing page for Kaspi payment automation, CRM integration, and POS terminal management.</p>
++          </div>
++          <div class="p-side">
++            <div class="p-arrow w-embed">
++              <svg viewBox="0 0 72 100">
++                <path style="fill: #191919"
++                  d="M70.4,58.9L70.1,57l-0.2-0.9c0,0,0,0,0,0l-0.2-0.9c-18.7,3.4-27.6,13.4-31.9,22.7V3h-0.9H35h-0.9v75.3c-4.2-9.7-13.2-20.2-31.9-23.2L1.9,57L1.7,58c0,0,0,0,0,0l-0.1,0.9c28.7,4.5,32.2,27.6,32.5,35.3c-0.1,1.7,0,2.7,0,2.8l0.9-0.1v0l0.5,0l2.4,0.1c0,0,0-0.6,0-1.5v-2.5C38.4,84.4,42.5,63.9,70.4,58.9z" />
++              </svg>
++            </div>
++          </div>
++        </div>
++        <div class="elastic elasticbox"></div>
++      </a>
++
++      <!-- Project 10: Vent by Oysana -->
++      <a rel="noopener noreferrer" href="https://vent.oysana.com/" target="_blank"
++        class="p-col pagelink w-inline-block">
++        <div class="p-inner">
++          <figure class="p-shot"><img src="../assets/work/vent-oysana.webp" alt="" loading="lazy" decoding="async"></figure>
++          <div class="p-numb-w">
++            <h2 class="p-numb">10</h2>
++          </div>
++          <div class="p-block">
++            <div class="p-client-w">
++              <h3 class="p-client">Ventilation Control</h3>
++            </div>
++            <div class="p-title-w">
++              <h2 class="p-title">VentControl<br />TRC Ventilation Cleaning</h2>
++            </div>
++            <p class="p-desc">Digital ventilation-cleaning control for TRC Moscow Mall, Almaty.</p>
+           </div>
+           <div class="p-side">
+             <div class="p-arrow w-embed">
+
+
+# === src/main.js (advisor changes from plan 007) ===
+--- a/src/main.js
++++ b/src/main.js
+@@ -8,14 +8,13 @@
+ import CursorCanvas from './ui/CursorCanvas.js';
+ import PageTransition from './ui/PageTransition.js';
+ import LocomotiveBridge from './scroll/LocomotiveBridge.js';
++import SmoothVerticalScroll from './scroll/SmoothVerticalScroll.js';
+ import ElasticLines from './work/ElasticLines.js';
+ import AnimationLock from './about/AnimationLock.js';
+ import DesktopHorizontalScrollController from './work/DesktopHorizontalScrollController.js';
+ 
+-const SOUND_URL =
+-  'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/mainSound.mp3';
+-const ROLLOVER_URL =
+-  'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/rollovers/rol05.mp3';
++const SOUND_URL = 'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/mainSound.mp3';
++const ROLLOVER_URL = 'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/rollovers/rol05.mp3';
+ 
+ class App {
+   constructor() {
+@@ -25,6 +24,8 @@
+ 
+     this.soundReactor = null;
+     this.soundToggler = null;
++    this.mobileAnimations = null;
++    this.boundResponsiveAnimationsResize = this.ensureResponsiveAnimations.bind(this);
+   }
+ 
+   detectPage() {
+@@ -35,7 +36,6 @@
+     if (path.includes('/pages/work')) return 'work';
+     if (path.includes('/pages/about')) return 'about';
+     if (path.includes('/pages/contact')) return 'contact';
+-    if (path.includes('/pages/credits')) return 'credits';
+     return 'home';
+   }
+ 
+@@ -61,6 +61,50 @@
+     });
+   }
+ 
++  setPageFlags() {
++    document.documentElement.dataset.page = this.page;
++    document.body.classList.remove('menu-open');
++  }
++
++  initIntroDismiss() {
++    if (this.page !== 'home') return;
++
++    const showSecondIntroScreen = () => {
++      document.body.classList.add('intro-second');
++    };
++
++    const dismissIntro = () => {
++      document.body.classList.add('intro-dismissed');
++      document.body.classList.remove('intro-second');
++    };
++
++    const advanceIntro = (event) => {
++      if (document.body.classList.contains('intro-dismissed')) return;
++
++      if (event.type === 'keydown') {
++        if (event.key !== 'Enter' && event.key !== ' ') return;
++        event.preventDefault();
++      }
++
++      if (!document.body.classList.contains('intro-second')) {
++        showSecondIntroScreen();
++        return;
++      }
++
++      dismissIntro();
++    };
++
++    const introOverlay = document.querySelector('.load.hometoggler');
++    if (introOverlay) {
++      introOverlay.addEventListener('pointerdown', advanceIntro);
++    }
++
++    document.addEventListener(
++      'keydown',
++      advanceIntro
++    );
++  }
++
+   hideRotateOverlayDesktop() {
+     if (this.isMobile) return;
+     const rotateOverlay = document.querySelector('.rotate');
+@@ -103,8 +147,8 @@
+ 
+       homeToggler.addEventListener('click', async () => {
+         await this.soundReactor.resumeContextIfNeeded();
+-        await this.soundReactor.play({ restore: false });
+-        if (this.soundToggler) {
++        const started = await this.soundReactor.play({ restore: false });
++        if (started && this.soundToggler) {
+           this.soundToggler.started();
+         }
+       });
+@@ -112,10 +156,13 @@
+   }
+ 
+   initCursor() {
+-    if (this.isMobile) return;
+-
+     const container = document.querySelector('.cursorcontainer');
+     if (!container) return;
++
++    if (this.isMobile) {
++      container.classList.add('is-disabled');
++      return;
++    }
+ 
+     const cursor = new CursorCanvas();
+     cursor.init(container);
+@@ -143,11 +190,21 @@
+   }
+ 
+   initLocomotive() {
++    if (this.page === 'about' || this.page === 'contact') return;
++
+     const locomotive = new LocomotiveBridge();
+     locomotive.init();
+     this.instances.push(locomotive);
+   }
+ 
++  initSmoothVerticalScroll() {
++    if (this.page !== 'about' && this.page !== 'contact') return;
++
++    const smoothScroll = new SmoothVerticalScroll();
++    const started = smoothScroll.init();
++    if (started) this.instances.push(smoothScroll);
++  }
++
+   initWorkDesktopScroll() {
+     if (this.page !== 'work' || this.isMobile) return;
+ 
+@@ -175,10 +232,19 @@
+   }
+ 
+   initMobileAnimations() {
+-    if (!this.isMobile) return;
+-
+-    const mobileAnimations = new MobileAnimations();
+-    this.instances.push(mobileAnimations);
++    this.ensureResponsiveAnimations();
++    window.addEventListener('resize', this.boundResponsiveAnimationsResize);
++  }
++
++  ensureResponsiveAnimations() {
++    if (this.mobileAnimations) return;
++    if (!this.isMobile && window.innerWidth > 1199) return;
++
++    this.mobileAnimations = new MobileAnimations({
++      force: true,
++      maxWidth: 1199
++    });
++    this.instances.push(this.mobileAnimations);
+   }
+ 
+   initAboutAnimationLock() {
+@@ -200,15 +266,18 @@
+ 
+   init() {
+     this.page = this.detectPage();
++    this.setPageFlags();
+     this.setEnvironmentFlags();
+     this.setupGlobalLifecycle();
+     this.hideRotateOverlayDesktop();
++    this.initIntroDismiss();
+ 
+     this.initMenu();
+     this.initSound();
+     this.initCursor();
+     this.initPageTransition();
+     this.initLocomotive();
++    this.initSmoothVerticalScroll();
+ 
+     this.initWorkDesktopScroll();
+     this.initWorkElasticLines();
+
+
+# === src/webgl/WebGLApp.js (advisor changes from plan 007) ===
+--- a/src/webgl/WebGLApp.js
++++ b/src/webgl/WebGLApp.js
+@@ -273,10 +273,25 @@
+             return;
+         }
+ 
++        this._matCapLoaded = false;
++        this._modelLoaded = false;
++        this._paused = false;
++
+         // Load matcaps
+         const loader = new THREE.TextureLoader();
+         const matCapUrl = 'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana@72fab3c/sphere/matCap0.jpg';
+-        this.matCaps.push(loader.load(matCapUrl));
++        loader.load(
++            matCapUrl,
++            (texture) => {
++                this.matCaps.push(texture);
++                this._markMatCapLoaded();
++            },
++            undefined,
++            (error) => {
++                console.warn('[WebGLApp] Matcap load failed:', error);
++                this._showFallback('matcap');
++            }
++        );
+ 
+         // Setup renderer
+         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+@@ -284,8 +299,24 @@
+         this.renderer.debug.checkShaderErrors = true;
+         this.container.appendChild(this.renderer.domElement);
+ 
++        this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
++            event.preventDefault();
++            console.warn('[WebGLApp] WebGL context lost');
++            this._showFallback('context-loss');
++            this._paused = true;
++        });
++
++        this.renderer.domElement.addEventListener('webglcontextrestored', () => {
++            console.log('[WebGLApp] WebGL context restored');
++            this._paused = false;
++            this._hideFallback();
++            // Re-load assets that were tied to the lost context.
++            this.loadSphereModel();
++        });
++
+         if (window.isMobile) {
+-            this.renderer.setPixelRatio(window.devicePixelRatio);
++            const cap = 1.5;
++            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
+         }
+ 
+         // Setup scene
+@@ -336,6 +367,7 @@
+         fbxLoader.load(
+             'https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sphere/slice2.fbx',
+             (obj) => {
++                this._markModelLoaded();
+                 let inc = 0;
+                 for (let i = -sphereRad; i <= sphereRad; i += (sphereRad * 2) / this.config.SLICE_NUMBER) {
+                     const n = Math.round(((this.simplex.noise2D(inc * 0.1, 1) + 1) / 2) * (this.colorPool.length - 1));
+@@ -380,11 +412,17 @@
+                 this.sliceGeom.rotation.z = 1;
+                 this.sliceGeom.rotation.y = -0.8;
+                 this.scene.add(this.sliceGeom);
++            },
++            undefined,
++            (error) => {
++                console.warn('[WebGLApp] FBX load failed:', error);
++                this._showFallback('model');
+             }
+         );
+     }
+ 
+     update() {
++        if (this._paused) return;
+         if (!this.renderer) return;
+ 
+         this.renderer.render(this.scene, this.camera);
+@@ -433,10 +471,36 @@
+         }
+     }
+ 
++    _showFallback(reason) {
++        if (!this.container) return;
++        this.container.classList.add('webgl-fallback');
++        this.container.dataset.fallbackReason = reason;
++    }
++
++    _hideFallback() {
++        if (!this.container) return;
++        this.container.classList.remove('webgl-fallback');
++        delete this.container.dataset.fallbackReason;
++    }
++
++    _markMatCapLoaded() {
++        this._matCapLoaded = true;
++        if (this._modelLoaded) this._hideFallback();
++    }
++
++    _markModelLoaded() {
++        this._modelLoaded = true;
++        if (this._matCapLoaded) this._hideFallback();
++    }
++
+     resizeCanvas() {
+         if (!this.renderer || !this.camera) return;
+ 
+         this.renderer.setSize(window.innerWidth, window.innerHeight);
++        if (window.isMobile) {
++            const cap = 1.5;
++            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
++        }
+         this.camera.aspect = window.innerWidth / window.innerHeight;
+         this.camera.updateProjectionMatrix();
+     }
+

@@ -69,8 +69,8 @@ export default class SoundToggler {
   }
 
   animateAmp(target) {
-    if (typeof TweenLite !== 'undefined') {
-      TweenLite.to(this.amp, 0.5, { value: target });
+    if (typeof gsap !== 'undefined') {
+      gsap.to(this.amp, { value: target, duration: 0.5 });
       return;
     }
     this.amp.value = target;
@@ -79,11 +79,9 @@ export default class SoundToggler {
   fadeVolume(target, onComplete) {
     if (!this.soundReactor?.audio) return;
 
-    if (typeof TweenLite !== 'undefined') {
-      TweenLite.to(this.soundReactor.audio, 0.5, {
-        volume: target,
-        onComplete
-      });
+    if (typeof gsap !== 'undefined') {
+      gsap.to(this.soundReactor.audio, { volume: target,
+        onComplete, duration: 0.5 });
       return;
     }
 

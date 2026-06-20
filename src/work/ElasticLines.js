@@ -99,12 +99,10 @@ export default class ElasticLines {
     if (!box) return;
 
     box.mouseIn = false;
-    if (typeof TweenLite !== 'undefined') {
-      box.anim = TweenLite.to(box.handlePos, 1, {
-        x: box.handleInitPos.x,
+    if (typeof gsap !== 'undefined') {
+      box.anim = gsap.to(box.handlePos, { x: box.handleInitPos.x,
         y: box.handleInitPos.y,
-        ease: Elastic.easeOut.config(1, 0.3)
-      });
+        ease: "elastic.out(1, 0.3)", duration: 1 });
     } else {
       box.handlePos.x = box.handleInitPos.x;
       box.handlePos.y = box.handleInitPos.y;

@@ -11,6 +11,7 @@ import loop from '../core/Loop.js';
 export default class Menu {
     constructor() {
         this.container = document.querySelector('.burgercontainer');
+        this.menuPanel = document.querySelector('.menu');
         this.burgerIn = document.querySelector('.burgerclickablein');
         this.burgerOut = document.querySelector('.burgerclickableout');
         this.navTrigger = document.querySelector('.nav-trigger');
@@ -121,6 +122,10 @@ export default class Menu {
             });
         }
 
+        document.querySelectorAll('.menulink').forEach((link) => {
+            link.addEventListener('click', () => this.closeForNavigation());
+        });
+
         // Resize
         window.addEventListener('resize', () => this.resize());
 
@@ -155,8 +160,8 @@ export default class Menu {
     }
 
     animateNoise(target) {
-        if (typeof TweenLite !== 'undefined') {
-            TweenLite.to(this.noiseAmplitude, 0.2, { value: target });
+        if (typeof gsap !== 'undefined') {
+            gsap.to(this.noiseAmplitude, { value: target, duration: 0.2 });
         } else {
             this.noiseAmplitude.value = target;
         }
@@ -167,6 +172,11 @@ export default class Menu {
         this.isAnimating = true;
         this.isOpen = !this.isOpen;
 
+        if (this.isOpen) {
+            this.dismissIntroOverlay();
+            document.body.classList.add('menu-open');
+        }
+
         const duration = 0.8;
         const targetY = this.isOpen ? 1 : 0;
         const targetRad = this.isOpen ? this.config.burgerBigRad : this.smallConfig.burgerRad;
@@ -174,20 +184,18 @@ export default class Menu {
         const targetLines = this.isOpen ? this.xLines : this.lines;
         const unlockDelay = (duration + 0.5) * 1000;
 
-        if (typeof TweenLite !== 'undefined') {
-            TweenLite.to(this.y, duration, { value: targetY, ease: Power4.easeInOut });
-            TweenLite.to(this.config, duration, {
-                burgerRad: targetRad,
+        if (typeof gsap !== 'undefined') {
+            gsap.to(this.y, { value: targetY, ease: "power4.inOut", duration: duration });
+            gsap.to(this.config, { burgerRad: targetRad,
                 burgerMargin: targetMargin,
-                ease: Power4.easeInOut
-            });
+                ease: "power4.inOut", duration: duration });
 
             // Animate lines
             this.lines.top.forEach((line, i) => {
-                TweenLite.to(line, duration, { value: targetLines.top[i].value, ease: Power4.easeInOut });
+                gsap.to(line, { value: targetLines.top[i].value, ease: "power4.inOut", duration: duration });
             });
             this.lines.bottom.forEach((line, i) => {
-                TweenLite.to(line, duration, { value: targetLines.bottom[i].value, ease: Power4.easeInOut });
+                gsap.to(line, { value: targetLines.bottom[i].value, ease: "power4.inOut", duration: duration });
             });
         } else {
             this.y.value = targetY;
@@ -204,9 +212,14 @@ export default class Menu {
         // Toggle nav visibility
         if (this.navTrigger) {
             if (this.isOpen) {
+                if (this.menuPanel) this.menuPanel.style.display = 'flex';
                 this.navTrigger.classList.add('on');
             } else {
-                setTimeout(() => this.navTrigger.classList.remove('on'), 500);
+                setTimeout(() => {
+                    this.navTrigger.classList.remove('on');
+                    document.body.classList.remove('menu-open');
+                    if (this.menuPanel) this.menuPanel.style.display = 'none';
+                }, 500);
             }
         }
 
@@ -222,6 +235,39 @@ export default class Menu {
         setTimeout(() => {
             this.isAnimating = false;
         }, unlockDelay);
+    }
+
+    closeForNavigation() {
+        this.isOpen = false;
+        this.isAnimating = false;
+        document.body.classList.remove('menu-open');
+        if (this.menuPanel) this.menuPanel.style.display = 'none';
+        if (this.navTrigger) this.navTrigger.classList.remove('on');
+        this.setActiveHitbox(this.burgerOut, false);
+        this.setActiveHitbox(this.burgerIn, true);
+
+        this.y.value = 0;
+        this.config.burgerRad = this.smallConfig.burgerRad;
+        this.config.burgerMargin = this.smallConfig.burgerMargin;
+        const closedTop = [-12, -5, 12, -5].map((value) => value * this.dpi);
+        const closedBottom = [-12, 5, 12, 5].map((value) => value * this.dpi);
+        this.lines.top.forEach((line, index) => {
+            line.value = closedTop[index];
+        });
+        this.lines.bottom.forEach((line, index) => {
+            line.value = closedBottom[index];
+        });
+        this.resize();
+    }
+
+    dismissIntroOverlay() {
+        document.body.classList.add('intro-dismissed');
+        document.body.classList.remove('intro-second');
+        document.querySelectorAll('.load.hometoggler, .l-over.hometoggler').forEach((element) => {
+            element.style.display = 'none';
+            element.style.opacity = '0';
+            element.style.pointerEvents = 'none';
+        });
     }
 
     resize() {

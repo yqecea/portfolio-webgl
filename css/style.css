@@ -2455,12 +2455,15 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
 }
 
 .nav-logo img {
-  filter: invert(1) brightness(1.2) contrast(1.1);
-  transition: filter 0.3s ease;
+  /* The logo.svg fill is #e5e3dc (light), so it shows on dark bg.
+     Filter is a safety net for any rendering quirks. */
+  filter: brightness(1.05) contrast(1.05);
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
 .nav-logo:hover img {
-  filter: invert(0.85) brightness(1.3) contrast(1.1);
+  filter: brightness(1.2) contrast(1.1);
+  opacity: 0.9;
 }
 
 .nav-logo.w--current {

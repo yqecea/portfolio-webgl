@@ -1,17 +1,22 @@
 /**
- * MobileAnimations.js - lightweight mobile-only viewport/touch effects.
+ * MobileAnimations.js - lightweight responsive viewport/touch effects.
  *
  * This module is intentionally conservative so it does not create
  * cross-page layout or interaction side effects.
  */
 export default class MobileAnimations {
   constructor(options = {}) {
+    this.maxWidth = options.maxWidth || 1199;
     this.isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (!this.isMobile) return;
+    this.isResponsiveViewport = window.matchMedia(`(max-width: ${this.maxWidth}px)`).matches;
+    if (!options.force && !this.isMobile && !this.isResponsiveViewport) return;
 
     this.fallbackSelector =
       options.fallbackSelector ||
-      '.c-title, .c-item, .c-inner, .c-head, .c-block, .c-row, .c-link-w, .c-email-w, .social-col, .c-list, .c-sub, .cr-inner, .credits .c-row, .contact .c-col';
+      '.c-title, .c-item, .c-inner, .c-head, .c-block, .c-row, .c-link-w, .c-email-w, .social-col, .c-list, .c-sub, .contact .c-col';
+    this.extraSelector =
+      options.extraSelector ||
+      '.hero .h-block, .hero .h-quote-w, .hero .h-start-w, .a-logo, .a-icon-w';
     this.interactiveSelector =
       options.interactiveSelector || 'a, button, .menu-li, .menu-ti, .c-link, .submit';
 
@@ -21,6 +26,9 @@ export default class MobileAnimations {
       fallbackElements.forEach((el) => el.setAttribute('data-scroll-fallback', ''));
       this.scrollElements = fallbackElements;
     }
+    const extraElements = Array.from(document.querySelectorAll(this.extraSelector));
+    extraElements.forEach((el) => el.setAttribute('data-scroll-fallback', ''));
+    this.scrollElements = Array.from(new Set([...this.scrollElements, ...extraElements]));
 
     this.interactiveElements = Array.from(document.querySelectorAll(this.interactiveSelector));
     this.observer = null;
@@ -37,6 +45,14 @@ export default class MobileAnimations {
   }
 
   init() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.scrollElements.forEach((element) => {
+        element.classList.add('is-inview');
+      });
+      this.hideRotateOverlay();
+      return;
+    }
+
     this.injectStyles();
     this.setupScrollAnimations();
     this.setupTouchFeedback();
@@ -53,7 +69,7 @@ export default class MobileAnimations {
     const style = document.createElement('style');
     style.id = 'mobile-animations-css';
     style.textContent = `
-      @media (max-width: 991px) {
+      @media (max-width: ${this.maxWidth}px) {
         [data-scroll],
         [data-scroll-fallback] {
           opacity: 0;
@@ -87,7 +103,7 @@ export default class MobileAnimations {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add('is-inview');
+          this.revealElement(entry.target);
           this.observer.unobserve(entry.target);
         });
       },
@@ -98,12 +114,37 @@ export default class MobileAnimations {
       }
     );
 
-    this.scrollElements.forEach((element) => {
-      if (element.closest('.a-hero') || element.closest('.hero') || element.closest('.h-row')) {
-        element.classList.add('is-inview');
-        return;
-      }
-      this.observer.observe(element);
+    window.requestAnimationFrame(() => {
+      this.scrollElements.forEach((element) => {
+        this.prepareElement(element);
+        this.observer.observe(element);
+      });
+      window.setTimeout(() => {
+        document.querySelectorAll('.hero [data-scroll-fallback], .hero .h-head, .a-hero [data-scroll-fallback]').forEach((element) => {
+          this.revealElement(element);
+        });
+      }, 260);
+    });
+  }
+
+  prepareElement(element) {
+    if (!element || element.closest('.load')) return;
+    element.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+    element.style.opacity = '0';
+    element.style.transform = 'translate3d(0, 24px, 0)';
+    element.style.willChange = 'opacity, transform';
+  }
+
+  revealElement(element) {
+    element.classList.add('is-inview');
+    element.style.opacity = '1';
+    element.style.transform = 'none';
+    element.style.willChange = 'auto';
+    element.querySelectorAll('[data-w-id], .h-head').forEach((child) => {
+      child.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+      child.style.opacity = '1';
+      child.style.transform = 'none';
+      child.style.willChange = 'auto';
     });
   }
 

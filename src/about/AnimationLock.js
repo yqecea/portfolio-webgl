@@ -4,7 +4,6 @@ export default class AnimationLock {
     this.debounceMs = options.debounceMs || 150;
     this.selectors = options.selectors || [
       '[data-w-id="b84a4718-3d32-7794-986d-ff4584ed2164"]',
-      '[data-w-id="32eaee09-4cf5-ec96-4bf0-c6da8ea3e53e"]',
       '[data-w-id="fade6d6e-aa5a-6018-b8be-75b18fa12882"]'
     ];
 
@@ -27,6 +26,7 @@ export default class AnimationLock {
   onLoad() {
     window.setTimeout(() => {
       this.completed = true;
+      this.lockFinalStates();
     }, this.delayMs);
   }
 
@@ -35,6 +35,11 @@ export default class AnimationLock {
       const element = document.querySelector(selector);
       if (!element) return;
       element.style.setProperty('opacity', '1', 'important');
+      element.style.setProperty(
+        'transform',
+        'translate3d(0,0,0) scale3d(1,1,1) rotateX(0) rotateY(0) rotateZ(0) skew(0,0)',
+        'important'
+      );
     });
   }
 

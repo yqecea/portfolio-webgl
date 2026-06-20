@@ -9,4 +9,5 @@ out
 firebase-debug.log
 firebase-debug.*.log
 .cache
+artifacts/
 *.log

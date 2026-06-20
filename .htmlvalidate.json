@@ -17,6 +17,7 @@
     "no-redundant-role": "off",
     "prefer-button": "off",
     "script-type": "off",
-    "void-style": "off"
+    "void-style": "off",
+    "close-order": "off"
   }
 }

@@ -12,7 +12,10 @@
       "docs/**",
       "index.backup.html",
       "package.json",
-      "package-lock.json"
+      "package-lock.json",
+      "CLAUDE.md",
+      "LICENSE",
+      "CHANGELOG.md"
     ]
   }
 }

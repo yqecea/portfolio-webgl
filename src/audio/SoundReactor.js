@@ -20,6 +20,23 @@ export default class SoundReactor {
     this.update = this.update.bind(this);
   }
 
+  _safeGet(key) {
+    try {
+      return window['localStorage'].getItem(key);
+    } catch (error) {
+      console.warn('[SoundReactor] localStorage read blocked:', error);
+      return null;
+    }
+  }
+
+  _safeSet(key, value) {
+    try {
+      window['localStorage'].setItem(key, value);
+    } catch (error) {
+      console.warn('[SoundReactor] localStorage write blocked:', error);
+    }
+  }
+
   init() {
     if (this.audio) return;
 
@@ -61,7 +78,7 @@ export default class SoundReactor {
 
   restorePlaybackTime() {
     if (!this.audio) return;
-    const saved = Number(window.localStorage.getItem(this.storage.time) || 0);
+    const saved = Number(this._safeGet(this.storage.time) || 0);
     if (!Number.isFinite(saved) || saved <= 0) return;
 
     try {
@@ -78,16 +95,16 @@ export default class SoundReactor {
 
   syncStorage() {
     if (!this.audio) return;
-    window.localStorage.setItem(this.storage.time, String(this.audio.currentTime || 0));
-    window.localStorage.setItem(this.storage.wasPlaying, String(!this.audio.paused));
+    this._safeSet(this.storage.time, String(this.audio.currentTime || 0));
+    this._safeSet(this.storage.wasPlaying, String(!this.audio.paused));
   }
 
   setWasPlaying(value) {
-    window.localStorage.setItem(this.storage.wasPlaying, String(Boolean(value)));
+    this._safeSet(this.storage.wasPlaying, String(Boolean(value)));
   }
 
   getWasPlaying() {
-    return window.localStorage.getItem(this.storage.wasPlaying) === 'true';
+    return this._safeGet(this.storage.wasPlaying) === 'true';
   }
 
   async play({ restore = true } = {}) {

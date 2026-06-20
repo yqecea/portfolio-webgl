@@ -183,7 +183,7 @@ export default class Menu {
             document.body.classList.add('menu-open');
         }
 
-        const duration = 0.8;
+        const duration = 0.4;
         const targetY = this.isOpen ? 1 : 0;
         const targetRad = this.isOpen ? this.config.burgerBigRad : this.smallConfig.burgerRad;
         const targetMargin = this.isOpen ? this.config.burgerBigMargin : this.smallConfig.burgerMargin;

@@ -83,16 +83,6 @@ echo "=== Step 6: re-apply GSAP 3.13.0 (CVE-2020-28478 fix, plan 010) ==="
 echo "Without this, the recovered HTML reverts to GSAP 3.2.6 (vulnerable)."
 echo "The user's WIP didn't touch the GSAP version line, so the version"
 echo "bump can be safely re-applied without clobbering any WIP changes."
-NEW_GSAP_HTML=$(cat <<'HTML'
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/EaselPlugin.min.js" integrity="sha384-gcbVULrCAP9hrGBa+1R57lCCOgkLr3j7ZYySlj0akrckbdlZQgExJEQyNIdDYqBM" crossorigin="anonymous"></script>
-HTML
-)
-OLD_GSAP_HTML=$(cat <<'HTML'
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js" integrity="sha384-Xfig962KkXx0xvL1ZwxVQ0niWczaeyKY3oGBBBWrlDj2/+7MAJya/AqlPnqPEUTE" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/EaselPlugin.min.js" integrity="sha384-8vzMZ49+T5k78oALwlE1qBYy0uh+Mz5nrxfBFTDTWxPMB/1e/aB2Z3uDLtacUIu7" crossorigin="anonymous"></script>
-HTML
-)
 for f in index.html pages/about.html pages/contact.html pages/work.html; do
   if grep -q 'gsap/3.2.6' "$f"; then
     sed -i "s|gsap/3.2.6/gsap.min.js|gsap/3.13.0/gsap.min.js|; s|sha384-Xfig962KkXx0xvL1ZwxVQ0niWczaeyKY3oGBBBWrlDj2/+7MAJya/AqlPnqPEUTE|sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc|; s|gsap/3.2.6/EaselPlugin.min.js|gsap/3.13.0/EaselPlugin.min.js|; s|sha384-8vzMZ49+T5k78oALwlE1qBYy0uh+Mz5nrxfBFTDTWxPMB/1e/aB2Z3uDLtacUIu7|sha384-gcbVULrCAP9hrGBa+1R57lCCOgkLr3j7ZYySlj0akrckbdlZQgExJEQyNIdDYqBM|" "$f"
@@ -101,6 +91,27 @@ for f in index.html pages/about.html pages/contact.html pages/work.html; do
     echo "  $f: already 3.13.0 (or no GSAP tag)"
   fi
 done
+
+echo ""
+echo "=== Step 7: re-apply self-hosted asset URLs (plan 007) ==="
+echo "Without this, src/main.js and src/webgl/WebGLApp.js revert to the"
+echo "external jsDelivr CDN (cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana)."
+echo "The user's WIP didn't touch the URL lines, so the swap to local"
+echo "assets/ paths is safe to re-apply without clobbering WIP changes."
+for f in src/main.js src/webgl/WebGLApp.js; do
+  if grep -q 'cdn.jsdelivr.net/gh/niccolomiranda' "$f"; then
+    sed -i \
+      -e "s|https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/mainSound.mp3|../assets/sound/mainSound.mp3|" \
+      -e "s|https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sound/rollovers/rol05.mp3|../assets/sound/rollovers/rol05.mp3|" \
+      -e "s|https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana@72fab3c/sphere/matCap0.jpg|../../assets/sphere/matCap0.jpg|" \
+      -e "s|https://cdn.jsdelivr.net/gh/niccolomiranda/chiara-luzzana/sphere/slice2.fbx|../../assets/sphere/slice2.fbx|" \
+      "$f"
+    echo "  $f: re-applied self-hosted asset URLs"
+  else
+    echo "  $f: already self-hosted (or no matching URLs)"
+  fi
+done
+
 echo ""
 echo "=== Done ==="
 echo "The 6 WIP files are now in the user's pre-improve WIP state."

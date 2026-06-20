@@ -108,15 +108,18 @@ export default class SoundReactor {
   }
 
   async play({ restore = true } = {}) {
-    if (!this.audio) return;
+    if (!this.audio) return false;
     await this.resumeContextIfNeeded();
     if (restore) this.restorePlaybackTime();
 
     try {
       await this.audio.play();
       this.setWasPlaying(true);
+      return true;
     } catch (error) {
       console.warn('[SoundReactor] Play blocked:', error);
+      this.setWasPlaying(false);
+      return false;
     }
   }
 

@@ -279,13 +279,14 @@ plan.
 ### REJ-15: Asset budget for root-level PNGs (`shot1.png`, `shot3.png`, `shot4.png`)
 
 **Source**: audit subagent (perf + tech-debt), [PERFORMANCE-01].
-**Vetting result**: real, but the unoptimized root PNGs are
-**not currently referenced** by any HTML or CSS. They are
-deployable as dead weight (an accidental `<img src="../shot3.png">`
-could regress LCP). The cheap fix is to add them to
-`firebase.json` ignore. A future plan will do that as part of
-the asset housekeeping, paired with the WebGL self-hosting
-(REJ-10).
+**Vetting result**: real, **shipped in plan 008.** `logo.png`
+(102 KB) and `shot1.png` / `shot2.png` / `shot3.png` / `shot4.png`
+(2.4 MB total) are not referenced by any HTML or CSS in the
+working tree (verified by grep). All 5 added to `firebase.json`
+ignore. They no longer ship to Firebase hosting, preventing
+accidental LCP regression from a future `<img>` reference.
+`profile.jpg` (67 KB) is referenced at `css/style.css:3108` and
+remains deployed.
 
 ## Audit methodology
 

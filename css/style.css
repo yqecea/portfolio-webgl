@@ -2285,6 +2285,36 @@ h5 {
 }
 
 /* Noise dithering overlay to eliminate gradient banding on all devices */
+.body::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 38vmin;
+  height: 38vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+    rgba(124, 58, 237, 0.08) 0%,
+    rgba(124, 58, 237, 0.03) 30%,
+    transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  animation: centerGlow 6s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes centerGlow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 0.9;
+  }
+}
+
 .body::before {
   content: '';
   position: fixed;
@@ -2998,12 +3028,24 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
 .webgl-static-poster {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 70%);
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 45%,
+      rgba(124, 58, 237, 0.12) 0%,
+      rgba(74, 45, 184, 0.06) 40%,
+      transparent 70%),
+    radial-gradient(circle at center, #1a1a2e 0%, #0a0a14 70%);
   z-index: 0;
+  animation: posterPulse 8s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .webglholder.webgl-fallback .webgl-static-poster {
   z-index: 1;
+}
+
+@keyframes posterPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
 }
 
 .webglholder canvas {
@@ -3032,6 +3074,16 @@ body[data-page="home"]:not(.intro-dismissed) .menu-prompt {
   z-index: 999;
   width: 10vh;
   height: 10vh;
+}
+
+::selection {
+  background-color: rgba(124, 58, 237, 0.35);
+  color: #f5f4ef;
+}
+
+::-moz-selection {
+  background-color: rgba(124, 58, 237, 0.35);
+  color: #f5f4ef;
 }
 
 .sound.soundtoggler {
@@ -6121,7 +6173,17 @@ html.w-mod-js [data-ix="text-0-2"] {
     display: none;
   }
 
-  .sound.soundtoggler {
+  ::selection {
+  background-color: rgba(124, 58, 237, 0.35);
+  color: #f5f4ef;
+}
+
+::-moz-selection {
+  background-color: rgba(124, 58, 237, 0.35);
+  color: #f5f4ef;
+}
+
+.sound.soundtoggler {
     width: 10vh;
     height: 10vh;
   }

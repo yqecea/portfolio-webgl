@@ -17,11 +17,11 @@ conditions, and update your row when done.
 
 | Plan | Title                                                         | Priority | Effort | Depends on | Status |
 |------|---------------------------------------------------------------|----------|--------|------------|--------|
-| 001  | Establish a one-command verification baseline                 | P1       | S      | —          | TODO   |
-| 002  | Add project agent docs, LICENSE, and CHANGELOG               | P1       | S      | —          | TODO   |
-| 003  | Harden the audio and contact-form paths                       | P1       | S      | —          | TODO   |
-| 004  | Quick WebGL wins (error states, pixel-ratio cap, fallbacks)   | P2       | M      | —          | TODO   |
-| 005  | Make the shipped 10-card work gallery intentional             | P2       | S      | —          | TODO   |
+| 001  | Establish a one-command verification baseline                 | P1       | S      | —          | DONE   |
+| 002  | Add project agent docs, LICENSE, and CHANGELOG               | P1       | S      | —          | DONE   |
+| 003  | Harden the audio and contact-form paths                       | P1       | S      | —          | DONE   |
+| 004  | Quick WebGL wins (error states, pixel-ratio cap, fallbacks)   | P2       | M      | —          | DONE   |
+| 005  | Make the shipped 10-card work gallery intentional             | P2       | S      | —          | REJECTED |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed
@@ -46,6 +46,42 @@ independently or approach abandoned).
   `css/style.css`. No other plan touches these files.
 - Plan 002 (project docs) is content-only and does not conflict
   with any other plan.
+
+## Execution record (this cycle)
+
+- **001**: merged from `advisor/001-verification-baseline` (3 commits).
+  `package.json` + `html-validate` + `linkinator` + `.htmlvalidate.json`
+  + CI verify step in both Firebase workflows. `firebase.json` ignore
+  extended. **DONE**.
+- **002**: applied directly to the user's working tree (the executor
+  worktree STOPPED on a false-alarm: it branched from a commit that
+  still had `pages/credits.html`, which the user's WIP had deleted).
+  `CLAUDE.md` (83 lines), `LICENSE` (15 lines, All Rights Reserved
+  placeholder), `CHANGELOG.md` (34 lines), `docs/README.md` deleted,
+  `firebase.json` ignore extended. **DONE**.
+- **003**: merged from `advisor/003-audio-form-hardening` (4 commits).
+  `SoundReactor.play()` now returns success boolean; toggler and
+  homeToggler honor the return. Safe-storage adapter replaces all 5
+  unguarded `localStorage` call sites. Mailchimp wrong-endpoint form
+  replaced with `mailto:yqecea@gmail.com` CTA. Stale Webflow
+  `data-wf-domain` updated. **DONE**.
+- **004**: merged from `advisor/004-webgl-wins` (1 commit, the executor
+  committed its uncommitted edits before the worktree was torn down).
+  Matcap + FBX error states, mobile `setPixelRatio` cap at 1.5,
+  `webglcontextlost` / `webglcontextrestored` handlers with `_paused`
+  flag, static poster + `<noscript>` fallback in `.webglholder`,
+  unused OrbitControls CDN script removed. **DONE**.
+- **005**: **REJECTED — already done by the user's WIP.** The user's
+  working tree had 10 cards on `pages/work.html` with full
+  `h2.p-title` + `h3.p-client` + `p-numb` + `p-arrow` structure
+  (verified at lines 283, 310, 337, 365, 393, 420, 447, 475, 504, 533).
+  The plan's premise (adding bare `<span class="p-title">` to 7
+  simple cards) was based on the old committed tree. The CSS
+  (`.p-title`, `.p-client`, `.p-shot`, `.p-numb-w`, `.p-title-w`)
+  is already in `css/style.css` at lines 2596, 2628, 3457, 4506,
+  4515, 8591, 8600, 8606. The `data-fallback-shot` attribute is on
+  `aitu-halogens` (line 422) — kept as-is per the plan's Outcome-B branch.
+  No edits needed.
 
 ## Findings considered and rejected
 

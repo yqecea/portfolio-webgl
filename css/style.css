@@ -9614,25 +9614,7 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
 }
 
 
-/* === MOBILE HIDE (last + !important + body selector for max specificity) === */
-@media screen and (max-width: 991px) {
-  body[data-page="home"] .intro-context {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-  }
-  body[data-page="home"] .intro-frame,
-  body[data-page="home"] .intro-frame.if-tr,
-  body[data-page="home"] .intro-frame.if-bl,
-  body[data-page="home"] .intro-frame.if-br {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-  }
-  body[data-page="home"] .intro-progress {
-    display: none !important;
-  }
-}
+
 
 
 /* === WORK PAGE: hover preview on desktop, tap on mobile === */
@@ -9665,21 +9647,7 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
 }
 
 
-/* === MOBILE HIDE — MUST BE LAST (added at end of file for cascade) === */
-@media screen and (max-width: 991px) {
-  html body[data-page="home"] .intro-context,
-  html body[data-page="home"] .intro-frame,
-  html body[data-page="home"] .intro-frame.if-tr,
-  html body[data-page="home"] .intro-frame.if-bl,
-  html body[data-page="home"] .intro-frame.if-br,
-  html body[data-page="home"] .intro-progress,
-  html body[data-page="home"] .intro-progress-dot {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-}
+
 
 
 /* === WORK PAGE LAYOUT FIX — image near number, not at top === */
@@ -9732,4 +9700,21 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
   min-height: 100vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+
+/* === MOBILE HIDE — MUST BE VERY LAST IN CSS (cascade depends on position) === */
+@media screen and (max-width: 991px) {
+  html body[data-page="home"] .intro-context,
+  html body[data-page="home"] .intro-frame,
+  html body[data-page="home"] .intro-frame.if-tr,
+  html body[data-page="home"] .intro-frame.if-bl,
+  html body[data-page="home"] .intro-frame.if-br,
+  html body[data-page="home"] .intro-progress,
+  html body[data-page="home"] .intro-progress-dot {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 }

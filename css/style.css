@@ -9984,6 +9984,18 @@ body.intro-second .h-start-w {
   pointer-events: auto !important;
 }
 
+body.intro-second .h-start-w,
+body.intro-second .hero .h-start-w {
+  display: block !important;
+  visibility: visible !important;
+  position: absolute !important;
+  right: 31.7vw !important;
+  bottom: 7vw !important;
+  width: auto !important;
+  height: auto !important;
+  z-index: 10 !important;
+}
+
 body.intro-dismissed .mobile-intro-bottom {
   display: none !important;
 }

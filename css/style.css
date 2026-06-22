@@ -9938,11 +9938,7 @@ body:not(.sound-on) .l-sound-state-off { display: inline-block; }
 
 body.intro-second .mobile-intro-bottom,
 body.intro-dismissed .mobile-intro-bottom {
-  display: block;
-}
-
-body.intro-dismissed .mobile-intro-bottom {
-  z-index: 3;
+  display: none !important;
 }
 
 .mobile-intro-bottom .h-quote-w,
@@ -9953,6 +9949,7 @@ body.intro-dismissed .mobile-intro-bottom {
   bottom: auto !important;
   margin: 0;
   overflow: visible;
+  opacity: 1 !important;
 }
 
 .mobile-intro-bottom .h-quote-w {
@@ -9971,16 +9968,19 @@ body.intro-dismissed .mobile-intro-bottom {
   color: #f5f4ef;
   text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.5);
   transform: none !important;
+  opacity: 1 !important;
 }
 
 .mobile-intro-bottom .h-start-w {
-  left: 0 !important;
-  right: 0 !important;
+  left: 50% !important;
+  right: auto !important;
   bottom: 6vw !important;
+  transform: translateX(-50%);
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
   pointer-events: auto;
+  opacity: 1 !important;
 }
 
 .mobile-intro-bottom .h-start-i {

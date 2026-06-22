@@ -8833,6 +8833,10 @@ body.menu-open .menu {
   background-color: #0a0a0a !important;
 }
 
+body.menu-open .menu-item {
+  overflow: visible !important;
+}
+
 body.menu-open .menu-item,
 body.menu-open .menu-no,
 body.menu-open .menu-ti,

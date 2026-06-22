@@ -9842,6 +9842,7 @@ body:not(.sound-on) .l-sound-state-off { display: inline-block; }
     transform: none !important;
   }
   body[data-page="home"] .h-quote-w {
+    position: absolute !important;
     bottom: 14vw !important;
     left: 5vw !important;
   }

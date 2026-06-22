@@ -324,30 +324,14 @@ class App {
     const start = hero.querySelector('.h-start-w');
     if (!quote && !start) return;
 
-    // Already dismissed this session — keep the original Webflow DOM layout.
     if (document.body.classList.contains('intro-dismissed')) return;
 
-    // Move the bottom text out of .hero so it is not hidden by .hero's
-    // opacity:0 during the second intro screen. The .mobile-intro-bottom
-    // wrapper is styled in css/style.css to sit above the .load.hometoggler
-    // overlay (z-index 1200) only while body.intro-second is active.
     const container = document.createElement('div');
     container.className = 'mobile-intro-bottom';
     container.setAttribute('aria-hidden', 'true');
     if (quote) container.appendChild(quote);
     if (start) container.appendChild(start);
     document.body.appendChild(container);
-
-    const restoreToHero = () => {
-      if (!document.body.classList.contains('intro-dismissed')) return;
-      if (quote) hero.appendChild(quote);
-      if (start) hero.appendChild(start);
-      container.remove();
-      observer.disconnect();
-    };
-
-    const observer = new MutationObserver(restoreToHero);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   }
 }
 

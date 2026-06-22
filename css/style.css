@@ -9793,3 +9793,56 @@ body.sound-on .l-sound-state-on { display: inline-block; }
 body.sound-on .l-sound-state-off { display: none; }
 body:not(.sound-on) .l-sound-state-on { display: none; }
 body:not(.sound-on) .l-sound-state-off { display: inline-block; }
+
+/* ==========================================================================
+   Stage 2 surgical patches — user-reported issues
+   ========================================================================== */
+
+.cursor,
+.cursor canvas {
+  pointer-events: none !important;
+}
+
+.c-social {
+  transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.c-social:hover {
+  opacity: 0.6;
+  transform: translateX(2px);
+}
+
+@media screen and (max-width: 767px) {
+  .c-social {
+    margin-bottom: 3vw;
+    padding: 1.5vw 0;
+  }
+  .c-text {
+    margin-left: 3vw;
+  }
+  .c-icon {
+    width: 5vw;
+  }
+}
+
+/* Mobile intro bottom text — work around 4eddf6f display:none default */
+@media screen and (max-width: 479px) {
+  body[data-page="home"] .h-start-w {
+    display: flex !important;
+    position: static !important;
+    justify-content: center;
+    margin-top: 4vw;
+  }
+  body[data-page="home"] .h-start {
+    font-size: 4.5vw !important;
+    line-height: 1.2 !important;
+  }
+  body[data-page="home"] .h-quote {
+    font-size: 3.5vw !important;
+    line-height: 1.3 !important;
+    transform: none !important;
+  }
+  body[data-page="home"] .h-quote-w {
+    bottom: 14vw !important;
+    left: 5vw !important;
+  }
+}

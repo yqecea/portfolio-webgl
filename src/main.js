@@ -308,7 +308,7 @@ class App {
     this.initMobileAnimations();
     this.initAboutAnimationLock();
     this.initWebgl();
-    this.fixMobileIntroBottomText();
+    setTimeout(() => this.fixMobileIntroBottomText(), 0);
 
     loop.start();
   }

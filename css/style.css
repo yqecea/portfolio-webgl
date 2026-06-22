@@ -9978,6 +9978,16 @@ body.intro-second .hero {
   pointer-events: none !important;
 }
 
+body.intro-second .h-head,
+body.intro-second .h-quote,
+body.intro-second .h-slant,
+body.intro-second .h-block,
+body.intro-second .h-row,
+body.intro-second .h-wrap {
+  transform: none !important;
+  opacity: 1 !important;
+}
+
 body.intro-second .h-quote-w,
 body.intro-second .h-start-w {
   opacity: 1 !important;

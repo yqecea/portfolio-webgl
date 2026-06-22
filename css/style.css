@@ -9936,7 +9936,10 @@ body:not(.sound-on) .l-sound-state-off { display: inline-block; }
   height: 100%;
 }
 
-body.intro-second .mobile-intro-bottom,
+body.intro-second .mobile-intro-bottom {
+  display: block !important;
+}
+
 body.intro-dismissed .mobile-intro-bottom {
   display: none !important;
 }

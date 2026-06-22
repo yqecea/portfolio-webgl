@@ -309,6 +309,7 @@ class App {
     this.initAboutAnimationLock();
     this.initWebgl();
     setTimeout(() => this.fixMobileIntroBottomText(), 0);
+    this.forceStartButtonVisible();
 
     loop.start();
   }
@@ -331,6 +332,17 @@ class App {
     if (quote) container.appendChild(quote);
     if (start) container.appendChild(start);
     document.body.appendChild(container);
+  }
+
+  forceStartButtonVisible() {
+    if (this.page !== 'home') return;
+    const force = () => {
+      const start = document.querySelector('.h-start-w');
+      if (start && document.body.classList.contains('intro-second')) {
+        start.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: absolute !important; right: 31.7vw !important; bottom: 7vw !important; width: auto !important; height: auto !important; z-index: 10 !important; pointer-events: auto !important;';
+      }
+    };
+    setInterval(force, 50);
   }
 }
 

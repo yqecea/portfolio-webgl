@@ -351,24 +351,17 @@ class App {
       }
     };
 
-    const onClick = () => {
-      const overlay = document.querySelector('.load.hometoggler');
-      if (overlay) {
-        overlay.style.setProperty('display', 'none', 'important');
-        overlay.style.setProperty('opacity', '0', 'important');
-        overlay.style.setProperty('pointer-events', 'none', 'important');
+    const observer = new MutationObserver(() => {
+      if (document.body.classList.contains('intro-second') ||
+          document.body.classList.contains('intro-dismissed')) {
+        apply();
       }
-      document.body.classList.add('intro-dismissed');
-      requestAnimationFrame(apply);
-      setTimeout(apply, 100);
-      setTimeout(apply, 500);
-    };
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-    const overlay = document.querySelector('.load.hometoggler');
-    if (overlay) {
-      overlay.addEventListener('click', onClick, { once: true });
-      overlay.addEventListener('pointerdown', onClick, { once: true, capture: true });
-    }
+    requestAnimationFrame(apply);
+    setTimeout(apply, 200);
+    setTimeout(apply, 600);
   }
 }
 

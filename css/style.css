@@ -9977,6 +9977,7 @@ body.intro-second .mobile-intro-bottom {
 body.intro-second .hero {
   opacity: 1 !important;
   pointer-events: none !important;
+  z-index: 4 !important;
 }
 
 body.intro-second .h-head,

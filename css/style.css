@@ -8825,6 +8825,18 @@ body.menu-open .menu-prompt {
   opacity: 0 !important;
 }
 
+body.menu-open .menu {
+  background-color: #0a0a0a !important;
+}
+
+body.menu-open .menu-item,
+body.menu-open .menu-no,
+body.menu-open .menu-ti,
+body.menu-open .m-head,
+body.menu-open .menu-bl {
+  color: #e2e2dd;
+}
+
 body[data-page="home"].menu-open .hero,
 body[data-page="home"].menu-open .webglholder {
   opacity: 0 !important;

@@ -327,21 +327,27 @@ class App {
         quoteW.style.setProperty('position', 'absolute', 'important');
         quoteW.style.setProperty('bottom', '14vw', 'important');
         quoteW.style.setProperty('left', '5vw', 'important');
+        quoteW.style.setProperty('z-index', '1300', 'important');
       }
       if (quote) {
         quote.style.setProperty('transform', 'none', 'important');
         quote.style.setProperty('font-size', '3.5vw', 'important');
         quote.style.setProperty('line-height', '1.3', 'important');
+        quote.style.setProperty('opacity', '1', 'important');
+        quote.style.setProperty('z-index', '1300', 'important');
       }
       if (startW) {
         startW.style.setProperty('display', 'flex', 'important');
         startW.style.setProperty('position', 'static', 'important');
         startW.style.setProperty('justify-content', 'center', 'important');
         startW.style.setProperty('margin-top', '4vw', 'important');
+        startW.style.setProperty('z-index', '1300', 'important');
       }
       if (start) {
         start.style.setProperty('font-size', '4.5vw', 'important');
         start.style.setProperty('line-height', '1.2', 'important');
+        start.style.setProperty('opacity', '1', 'important');
+        start.style.setProperty('z-index', '1300', 'important');
       }
     };
 

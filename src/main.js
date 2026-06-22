@@ -362,6 +362,13 @@ class App {
     requestAnimationFrame(apply);
     setTimeout(apply, 200);
     setTimeout(apply, 600);
+
+    setInterval(() => {
+      if (document.body.classList.contains('intro-second') ||
+          document.body.classList.contains('intro-dismissed')) {
+        apply();
+      }
+    }, 500);
   }
 }
 

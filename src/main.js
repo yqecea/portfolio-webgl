@@ -315,7 +315,6 @@ class App {
 
   fixMobileIntroBottomText() {
     if (this.page !== 'home') return;
-    if (!window.matchMedia('(max-width: 479px)').matches) return;
 
     const hero = document.querySelector('.hero');
     if (!hero) return;

@@ -6141,7 +6141,7 @@ html.w-mod-js [data-ix="text-0-2"] {
 
 @media screen and (min-width: 1200px) and (max-width: 1919px) {
   .h-start-w {
-    display: block;
+    display: block !important;
     right: 31.7vw;
     bottom: 7vw;
     cursor: pointer;

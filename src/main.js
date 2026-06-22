@@ -322,6 +322,13 @@ class App {
       const quote = document.querySelector('.h-quote');
       const startW = document.querySelector('.h-start-w');
       const start = document.querySelector('.h-start');
+      const overlay = document.querySelector('.load.hometoggler');
+
+      if (overlay) {
+        overlay.style.setProperty('display', 'none', 'important');
+        overlay.style.setProperty('opacity', '0', 'important');
+        overlay.style.setProperty('pointer-events', 'none', 'important');
+      }
 
       if (quoteW) {
         quoteW.style.setProperty('position', 'absolute', 'important');

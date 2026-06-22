@@ -9929,29 +9929,35 @@ body:not(.sound-on) .l-sound-state-off { display: inline-block; }
   position: fixed;
   left: 0;
   right: 0;
-  bottom: max(14px, env(safe-area-inset-bottom));
+  bottom: 0;
   z-index: 1300;
   display: none;
   pointer-events: none;
-  padding: 0 5vw;
+  height: 100%;
 }
 
-body.intro-second .mobile-intro-bottom {
+body.intro-second .mobile-intro-bottom,
+body.intro-dismissed .mobile-intro-bottom {
   display: block;
+}
+
+body.intro-dismissed .mobile-intro-bottom {
+  z-index: 3;
 }
 
 .mobile-intro-bottom .h-quote-w,
 .mobile-intro-bottom .h-start-w {
-  position: static;
-  left: auto;
-  right: auto;
-  bottom: auto;
+  position: absolute !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
   margin: 0;
   overflow: visible;
 }
 
 .mobile-intro-bottom .h-quote-w {
-  margin-bottom: 2vw;
+  left: 5vw !important;
+  bottom: 14vw !important;
   pointer-events: none;
 }
 
@@ -9968,9 +9974,12 @@ body.intro-second .mobile-intro-bottom {
 }
 
 .mobile-intro-bottom .h-start-w {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 6vw !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   pointer-events: auto;
 }
 

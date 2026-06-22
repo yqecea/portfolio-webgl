@@ -308,8 +308,46 @@ class App {
     this.initMobileAnimations();
     this.initAboutAnimationLock();
     this.initWebgl();
+    this.fixMobileIntroBottomText();
 
     loop.start();
+  }
+
+  fixMobileIntroBottomText() {
+    if (this.page !== 'home') return;
+    if (window.innerWidth > 767) return;
+
+    const apply = () => {
+      const quoteW = document.querySelector('.h-quote-w');
+      const quote = document.querySelector('.h-quote');
+      const startW = document.querySelector('.h-start-w');
+      const start = document.querySelector('.h-start');
+
+      if (quoteW) {
+        quoteW.style.setProperty('position', 'absolute', 'important');
+        quoteW.style.setProperty('bottom', '14vw', 'important');
+        quoteW.style.setProperty('left', '5vw', 'important');
+      }
+      if (quote) {
+        quote.style.setProperty('transform', 'none', 'important');
+        quote.style.setProperty('font-size', '3.5vw', 'important');
+        quote.style.setProperty('line-height', '1.3', 'important');
+      }
+      if (startW) {
+        startW.style.setProperty('display', 'flex', 'important');
+        startW.style.setProperty('position', 'static', 'important');
+        startW.style.setProperty('justify-content', 'center', 'important');
+        startW.style.setProperty('margin-top', '4vw', 'important');
+      }
+      if (start) {
+        start.style.setProperty('font-size', '4.5vw', 'important');
+        start.style.setProperty('line-height', '1.2', 'important');
+      }
+    };
+
+    requestAnimationFrame(apply);
+    setTimeout(apply, 100);
+    setTimeout(apply, 500);
   }
 }
 

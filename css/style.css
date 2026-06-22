@@ -9973,6 +9973,17 @@ body.intro-second .mobile-intro-bottom {
   display: block !important;
 }
 
+body.intro-second .hero {
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+
+body.intro-second .h-quote-w,
+body.intro-second .h-start-w {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
 body.intro-dismissed .mobile-intro-bottom {
   display: none !important;
 }

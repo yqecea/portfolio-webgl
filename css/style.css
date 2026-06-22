@@ -9990,6 +9990,7 @@ body.intro-second .h-wrap * {
   opacity: 1 !important;
   animation: none !important;
   transition: none !important;
+  color: #e2e2dd !important;
 }
 
 body.intro-second .h-quote-w,

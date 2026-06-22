@@ -62,6 +62,11 @@
         "source": "/favicon.ico",
         "destination": "/favicon.svg",
         "type": 301
+      },
+      {
+        "source": "/pages/credits.html",
+        "destination": "/pages/work.html",
+        "type": 301
       }
     ],
     "rewrites": [

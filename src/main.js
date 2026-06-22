@@ -317,58 +317,84 @@ class App {
     if (this.page !== 'home') return;
     if (window.innerWidth > 767) return;
 
-    const apply = () => {
-      const quoteW = document.querySelector('.h-quote-w');
-      const quote = document.querySelector('.h-quote');
-      const startW = document.querySelector('.h-start-w');
-      const start = document.querySelector('.h-start');
+    const injectClones = () => {
+      if (document.getElementById('mobile-bottom-clones')) return;
 
-      if (quoteW) {
-        quoteW.style.setProperty('position', 'absolute', 'important');
-        quoteW.style.setProperty('bottom', '14vw', 'important');
-        quoteW.style.setProperty('left', '5vw', 'important');
-        quoteW.style.setProperty('z-index', '1300', 'important');
+      const quoteW = document.querySelector('.h-quote-w');
+      const startW = document.querySelector('.h-start-w');
+      if (!quoteW || !startW) return;
+
+      const quoteClone = quoteW.cloneNode(true);
+      const startClone = startW.cloneNode(true);
+
+      quoteClone.id = 'mobile-quote-clone';
+      startClone.id = 'mobile-start-clone';
+      quoteClone.removeAttribute('class');
+      startClone.removeAttribute('class');
+      quoteClone.className = 'mobile-bottom-clone mobile-quote-clone';
+      startClone.className = 'mobile-bottom-clone mobile-start-clone';
+
+      quoteClone.style.cssText = `
+        position: fixed !important;
+        bottom: 14vw !important;
+        left: 5vw !important;
+        z-index: 1300 !important;
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        color: #f5f4ef !important;
+        font-family: "Ayer", sans-serif !important;
+        font-size: 3.5vw !important;
+        line-height: 1.3 !important;
+        text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.5) !important;
+      `;
+      startClone.style.cssText = `
+        position: fixed !important;
+        bottom: 6vw !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1300 !important;
+        display: flex !important;
+        justify-content: center !important;
+        opacity: 1 !important;
+        transform: none !important;
+      `;
+
+      const startLink = startClone.querySelector('.h-start');
+      if (startLink) {
+        startLink.style.cssText = `
+          font-family: "Ayer", sans-serif !important;
+          font-size: 4.5vw !important;
+          line-height: 1.2 !important;
+          font-weight: 500 !important;
+          color: #f5f4ef !important;
+          text-transform: none !important;
+          text-decoration: none !important;
+          text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.5) !important;
+        `;
       }
-      if (quote) {
-        quote.style.setProperty('transform', 'none', 'important');
-        quote.style.setProperty('font-size', '3.5vw', 'important');
-        quote.style.setProperty('line-height', '1.3', 'important');
-        quote.style.setProperty('opacity', '1', 'important');
-        quote.style.setProperty('z-index', '1300', 'important');
-      }
-      if (startW) {
-        startW.style.setProperty('display', 'flex', 'important');
-        startW.style.setProperty('position', 'static', 'important');
-        startW.style.setProperty('justify-content', 'center', 'important');
-        startW.style.setProperty('margin-top', '4vw', 'important');
-        startW.style.setProperty('z-index', '1300', 'important');
-      }
-      if (start) {
-        start.style.setProperty('font-size', '4.5vw', 'important');
-        start.style.setProperty('line-height', '1.2', 'important');
-        start.style.setProperty('opacity', '1', 'important');
-        start.style.setProperty('z-index', '1300', 'important');
+
+      const wrapper = document.createElement('div');
+      wrapper.id = 'mobile-bottom-clones';
+      wrapper.style.cssText = 'all: initial;';
+      wrapper.appendChild(quoteClone);
+      wrapper.appendChild(startClone);
+
+      document.body.appendChild(wrapper);
+    };
+
+    const tryInject = () => {
+      if (document.body.classList.contains('intro-second') ||
+          document.body.classList.contains('intro-dismissed')) {
+        injectClones();
       }
     };
 
-    const observer = new MutationObserver(() => {
-      if (document.body.classList.contains('intro-second') ||
-          document.body.classList.contains('intro-dismissed')) {
-        apply();
-      }
-    });
+    const observer = new MutationObserver(tryInject);
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-    requestAnimationFrame(apply);
-    setTimeout(apply, 200);
-    setTimeout(apply, 600);
-
-    setInterval(() => {
-      if (document.body.classList.contains('intro-second') ||
-          document.body.classList.contains('intro-dismissed')) {
-        apply();
-      }
-    }, 500);
+    tryInject();
+    setInterval(tryInject, 500);
   }
 }
 

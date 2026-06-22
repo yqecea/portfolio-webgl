@@ -9983,9 +9983,13 @@ body.intro-second .h-quote,
 body.intro-second .h-slant,
 body.intro-second .h-block,
 body.intro-second .h-row,
-body.intro-second .h-wrap {
+body.intro-second .h-wrap,
+body.intro-second .h-block *,
+body.intro-second .h-wrap * {
   transform: none !important;
   opacity: 1 !important;
+  animation: none !important;
+  transition: none !important;
 }
 
 body.intro-second .h-quote-w,

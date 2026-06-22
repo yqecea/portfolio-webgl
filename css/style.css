@@ -6139,6 +6139,15 @@ html.w-mod-js [data-ix="text-0-2"] {
   color: #f5f4ef;
 }
 
+@media screen and (min-width: 1200px) and (max-width: 1919px) {
+  .h-start-w {
+    display: block;
+    right: 31.7vw;
+    bottom: 7vw;
+    cursor: pointer;
+  }
+}
+
 ::-moz-selection {
   background-color: rgba(124, 58, 237, 0.35);
   color: #f5f4ef;
@@ -6355,6 +6364,7 @@ html.w-mod-js [data-ix="text-0-2"] {
   }
 
   .h-start-w {
+    display: block;
     right: 29.8vw;
     bottom: 5vw;
     cursor: pointer;

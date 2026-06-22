@@ -630,6 +630,31 @@
  
   <!-- ES Modules Entry Point -->
   <script type="module" src="./src/main.js"></script>
+
+  <script>
+    (function() {
+      function forceVisible() {
+        if (document.body.classList.contains('intro-second')) {
+          var sels = '.h-head, .h-quote, .h-quote-w, .h-slant, .h-block, .h-row, .h-wrap';
+          var els = document.querySelectorAll(sels);
+          for (var i = 0; i < els.length; i++) {
+            els[i].style.setProperty('transform', 'none', 'important');
+            els[i].style.setProperty('opacity', '1', 'important');
+            els[i].style.setProperty('animation', 'none', 'important');
+            els[i].style.setProperty('transition', 'none', 'important');
+          }
+        }
+      }
+      forceVisible();
+      var frames = 0;
+      function loop() {
+        forceVisible();
+        frames++;
+        if (frames < 300) requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+  </script>
 </body>
 
 </html>

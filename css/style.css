@@ -8608,10 +8608,13 @@ body[data-page="home"].intro-prompt-active .load.hometoggler {
 }
 
 /* Keep the first-screen .l-grid copy visible behind the second-prompt
-   overlay. The overlay (.l-over.hometoggler) sits on top at z-index 3
-   with a centered prompt; the first-screen text remains at z-index 0. */
+   overlay. Use display:block (not flex) so the .l-item children stack
+   vertically on narrow viewports and fit the viewport; on flex they
+   go row-by-row and overflow horizontally. The gsap.set(this.grid,
+   { display: 'none' }) from HomeIntroMotion runs inline; the !important
+   here wins and forces the grid back to block. */
 body[data-page="home"].intro-prompt-active .load.hometoggler .l-grid {
-  display: flex !important;
+  display: block !important;
   opacity: 1 !important;
   pointer-events: none !important;
 }

@@ -8625,7 +8625,10 @@ body[data-page="home"].intro-prompt-active .l-over.hometoggler .l-text-w {
   opacity: 0.78;
 }
 
-body[data-page="home"].intro-prompt-active .hero,
+/* Second intro screen: the "Click anywhere" overlay sits ON TOP of the
+   visible hero text (per CLAUDE.md legacy contract). Only hide the
+   WebGL canvas during the second prompt so it doesn't double-render
+   over the hero copy. */
 body[data-page="home"].intro-prompt-active .webglholder {
   opacity: 0 !important;
   visibility: hidden !important;
@@ -8645,8 +8648,36 @@ body[data-page="work"] .sidescrollbox {
   overscroll-behavior-inline: contain;
   scroll-behavior: auto;
   scrollbar-width: none;
-  touch-action: pan-x;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile and narrow viewports: the desktop horizontal trackpad scroll
+   controller doesn't run. Let the page scroll vertically so users can
+   actually reach the project cards. */
+@media screen and (max-width: 991px) {
+  body[data-page="work"] .sidescrollbox {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+  body[data-page="work"] .p-grid.scroller {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    padding: 6vw 4vw !important;
+    gap: 4vw !important;
+    justify-content: center !important;
+  }
+  body[data-page="work"] .p-col.pagelink {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: 80vh !important;
+    margin: 0 auto !important;
+  }
 }
 
 body[data-page="work"] .sidescrollbox::-webkit-scrollbar {
@@ -9507,6 +9538,32 @@ body[data-page="work"] {
 .l-over.hometoggler {
   display: none;
   pointer-events: auto;
+}
+
+/* "Click anywhere → to enable the sound" must remain legible on
+   narrow screens. Without this, the base rule lets it inherit a
+   5px body font and become invisible. The base rule sets no font-size
+   on .l-text — only the 1920px rule does. We add a mobile/tier rule
+   so the prompt is always readable. */
+@media screen and (max-width: 991px) {
+  .l-text {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+  .l-text-w {
+    bottom: 6vh;
+    width: 100%;
+    text-align: center;
+  }
+  .l-arrow {
+    width: 22px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .l-text {
+    font-size: 11px;
+  }
 }
 
 @media screen and (min-width: 1920px) {

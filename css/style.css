@@ -2450,18 +2450,6 @@ h5 {
   width: 5vw;
 }
 
-.nav-logo img {
-  /* The logo.svg fill is #e5e3dc (light), so it shows on dark bg.
-     Filter is a safety net for any rendering quirks. */
-  filter: brightness(1.05) contrast(1.05);
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-.nav-logo:hover img {
-  filter: brightness(1.2) contrast(1.1);
-  opacity: 0.9;
-}
-
 .nav-logo.w--current {
   position: relative;
   z-index: 1000;
@@ -2532,7 +2520,6 @@ h5 {
   font-size: 12vw;
   line-height: 10vw;
   font-weight: 400;
-  color: #e2e2dd;
 }
 
 .h-row {
@@ -3028,7 +3015,7 @@ h5 {
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 3;
+  z-index: 1;
   width: 100%;
   height: 100vh;
   pointer-events: none;
@@ -3037,6 +3024,7 @@ h5 {
 .webgl-static-poster {
   position: absolute;
   inset: 0;
+  display: none;
   background:
     radial-gradient(ellipse 60% 50% at 50% 45%,
       rgba(124, 58, 237, 0.12) 0%,
@@ -3049,6 +3037,7 @@ h5 {
 }
 
 .webglholder.webgl-fallback .webgl-static-poster {
+  display: block;
   z-index: 1;
 }
 
@@ -5882,41 +5871,6 @@ h5 {
   margin-top: 1vw;
 }
 
-.h-start-w {
-  position: absolute;
-  right: 31.7vw;
-  bottom: 7vw;
-  display: none;
-  overflow: hidden;
-}
-
-.html-embed-8 {
-  width: 2.3vw;
-  margin-left: 1vw;
-}
-
-.h-start-i {
-  position: relative;
-  height: 2.5vw;
-}
-
-.h-start {
-  font-family: Ayer, sans-serif;
-  font-size: 2vw;
-  line-height: 2vw;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: #f5f4ef;
-  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.5);
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.h-start:hover {
-  color: #c4b5fd;
-  text-shadow: 0 0 20px rgba(124, 58, 237, 0.5), 0 0 8px rgba(0, 0, 0, 0.5);
-}
-
 .menu-prompt {
   position: fixed;
   top: clamp(36px, 3.7vw, 50px);
@@ -6140,15 +6094,6 @@ html.w-mod-js [data-ix="text-0-2"] {
   color: #f5f4ef;
 }
 
-@media screen and (min-width: 1200px) and (max-width: 1919px) {
-  .h-start-w {
-    display: block !important;
-    right: 31.7vw;
-    bottom: 7vw;
-    cursor: pointer;
-  }
-}
-
 ::-moz-selection {
   background-color: rgba(124, 58, 237, 0.35);
   color: #f5f4ef;
@@ -6362,13 +6307,6 @@ html.w-mod-js [data-ix="text-0-2"] {
 
   .prsc-right {
     margin-left: 4vw;
-  }
-
-  .h-start-w {
-    display: block;
-    right: 29.8vw;
-    bottom: 5vw;
-    cursor: pointer;
   }
 
   .menu-prompt {
@@ -7291,11 +7229,6 @@ html.w-mod-js [data-ix="text-0-2"] {
   .html-embed-7 {
     width: 4vw;
     margin-top: 2vw;
-  }
-
-  .h-start {
-    font-size: 3vw;
-    line-height: 3vw;
   }
 
   .menu-prompt {
@@ -8560,16 +8493,6 @@ html.w-mod-js [data-ix="text-0-2"] {
   .div-block-11 {
     display: none;
   }
-
-  .h-start-w {
-    left: 11.4vw;
-    bottom: 11.6vw;
-  }
-
-  .h-start {
-    font-size: 6vw;
-    line-height: 6vw;
-  }
 }
 
 /* Portfolio repair overrides: keep Webflow identity while making responsive surfaces usable. */
@@ -8590,6 +8513,38 @@ body {
   z-index: 1002;
 }
 
+.menu {
+  opacity: 0;
+  transform: scale(0.992);
+  transform-origin: 100% 0%;
+  visibility: hidden;
+  pointer-events: none;
+  transition: none;
+  will-change: opacity, transform;
+}
+
+body.menu-open .menu {
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.menu-item,
+.menu-as {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: none;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+body.menu-open .menu-item,
+body.menu-open .menu-as {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
 .menu-grid {
   position: relative;
   z-index: 2;
@@ -8607,11 +8562,127 @@ body {
   padding: 0;
 }
 
+body:not([data-page="home"]) .trigger.burgerclickablein.on,
+body:not([data-page="home"]) .trigger.burgerclickableout.on {
+  z-index: 1005;
+  display: block;
+}
+
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-wrap,
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-wrap-2 {
+  isolation: isolate;
+}
+
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill,
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill-2 {
+  z-index: 1;
+}
+
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-stroke,
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-stroke-2 {
+  z-index: 2;
+  pointer-events: none;
+}
+
+body[data-page="home"].intro-load-active .load.hometoggler {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+body[data-page="home"].intro-load-active .hero {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body[data-page="home"].intro-prompt-active .load.hometoggler {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  width: 100vw;
+  height: 100svh;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+body[data-page="home"].intro-prompt-active .load.hometoggler .l-grid {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body[data-page="home"].intro-prompt-active .l-over.hometoggler {
+  display: flex !important;
+  width: 100%;
+  height: 100%;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+body[data-page="home"].intro-prompt-active .l-over.hometoggler .l-text-w {
+  opacity: 0.78;
+}
+
+body[data-page="home"].intro-prompt-active .hero,
+body[data-page="home"].intro-prompt-active .webglholder {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .p-col.pagelink {
   width: clamp(300px, 46vh, 430px);
   height: min(80vh, 760px);
   min-width: clamp(300px, 46vh, 430px);
   overflow: visible;
+}
+
+body[data-page="work"] .sidescrollbox {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-inline: contain;
+  scroll-behavior: auto;
+  scrollbar-width: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+body[data-page="work"] .sidescrollbox::-webkit-scrollbar {
+  display: none;
+}
+
+body[data-page="work"] .p-grid.scroller {
+  position: relative !important;
+  inset: auto !important;
+  overflow: visible !important;
+  width: max-content;
+  min-height: 100svh;
+  will-change: transform !important;
+}
+
+body[data-page="work"] .p-col.pagelink {
+  scroll-snap-align: center;
+}
+
+.native-touch-active {
+  opacity: 0.9 !important;
+  transform: scale(0.98) !important;
+  transition: opacity 0.12s ease, transform 0.12s ease !important;
+}
+
+@media screen and (min-width: 1200px) {
+  body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-inner {
+    margin-right: clamp(6px, 0.45vw, 14px);
+  }
+
+  body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-inner,
+  body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-wrap,
+  body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill,
+  body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-stroke {
+    width: max(22vw, 47vh);
+  }
 }
 
 .p-inner {
@@ -8676,155 +8747,6 @@ body {
 .c-text {
   margin-left: 0;
   white-space: nowrap;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 1200 !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  height: 100svh;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  cursor: pointer;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-grid {
-  position: relative;
-  z-index: 1;
-  transition: opacity 0.55s cubic-bezier(0.2, 0, 0, 1),
-    filter 0.55s cubic-bezier(0.2, 0, 0, 1),
-    transform 0.55s cubic-bezier(0.2, 0, 0, 1);
-  will-change: opacity, filter, transform;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-head,
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-inner,
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-inner-2 {
-  opacity: 0;
-  animation-name: introLineRise;
-  animation-duration: 0.9s;
-  animation-timing-function: cubic-bezier(0.2, 0.85, 0.18, 1);
-  animation-fill-mode: forwards;
-  will-change: transform, opacity;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-item:nth-child(1) .l-head {
-  animation-delay: 0.08s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-item:nth-child(2) .l-inner {
-  animation-delay: 0.18s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-item:nth-child(2) .l-head {
-  animation-delay: 0.3s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-item:nth-child(3) .l-head {
-  animation-delay: 0.42s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-item:nth-child(4) .l-head {
-  animation-delay: 0.54s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-item:nth-child(5) .l-inner-2 {
-  animation-delay: 0.66s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill,
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill-2 {
-  animation: introNameFill 1s cubic-bezier(0.2, 0.85, 0.18, 1) forwards;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill {
-  animation-delay: 0.48s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill-2 {
-  animation-delay: 0.82s;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler @keyframes introLineRise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 108%, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0%, 0);
-  }
-}
-
-@keyframes introNameFill {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-@keyframes introSecondTextIn {
-  to {
-    opacity: 0.86;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes introSecondWordIn {
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes introArrowPulse {
-  0%,
-  100% {
-    transform: translate3d(-4px, 0, 0) scaleX(0.82);
-    opacity: 0.52;
-  }
-  50% {
-    transform: translate3d(4px, 0, 0) scaleX(1);
-    opacity: 1;
-  }
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler::after {
-  content: "Click anywhere to continue";
-  position: absolute;
-  left: 50%;
-  bottom: max(34px, env(safe-area-inset-bottom));
-  z-index: 2;
-  transform: translate3d(-50%, 0, 0);
-  font-family: Ayer, sans-serif;
-  font-size: clamp(16px, 1.45vw, 24px);
-  line-height: 1;
-  color: #f5f4ef;
-  opacity: 0.95;
-  white-space: nowrap;
-  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.7);
-  letter-spacing: 0.05em;
-  font-weight: 500;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .hero,
-body[data-page="home"]:not(.intro-dismissed) .webglholder {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .nav-trigger,
-body[data-page="home"]:not(.intro-dismissed) .sound,
-body[data-page="home"]:not(.intro-dismissed) .trigger.burgerclickablein,
-body[data-page="home"]:not(.intro-dismissed) .trigger.burgerclickableout {
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
 
 body[data-page="home"].intro-dismissed .menu-prompt {
@@ -8996,22 +8918,6 @@ html[data-page="contact"] .contact {
     line-height: 1.1;
     text-align: center;
     transform: none !important;
-  }
-
-  body[data-page="home"] .h-start-w {
-    position: static;
-    display: flex;
-    justify-content: center;
-    margin-top: clamp(16px, 3vw, 28px);
-  }
-
-  body[data-page="home"] .h-start-i {
-    height: auto;
-  }
-
-  body[data-page="home"] .h-start {
-    font-size: clamp(20px, 3vw, 32px);
-    line-height: 1;
   }
 
   .menu {
@@ -9197,13 +9103,7 @@ html[data-page="contact"] .contact {
   body[data-page="home"]:not(.intro-dismissed) .l-inner-2 {
     width: clamp(120px, 44vw, 188px);
   }
-
-  body[data-page="home"]:not(.intro-dismissed) .load.hometoggler::after {
-    bottom: max(28px, env(safe-area-inset-bottom));
-    font-size: clamp(15px, 4vw, 18px);
-  }
-
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler }
+}
 
 body[data-page="contact"] .contact {
   min-height: auto !important;
@@ -9241,9 +9141,7 @@ body[data-page="contact"] .contact {
   body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-fill-2 {
     width: 100% !important;
   }
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w,
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text,
-  body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler }
+}
 
 @media (pointer: coarse) {
   .cursor.cursorcontainer {
@@ -9548,45 +9446,11 @@ body[data-page="home"] .intro-progress-dot:first-child {
 }
 
 
-/* === WORKS PAGE SCROLL FIX — ensure content is scrollable === */
-.p-grid.scroller {
-  min-height: 100vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-
-/* === MOBILE HIDE — MUST BE VERY LAST IN CSS (cascade depends on position) === */
-@media screen and (max-width: 991px) {
-  html body[data-page="home"] .intro-context,
-  html body[data-page="home"] .intro-frame,
-  html body[data-page="home"] .intro-frame.if-tr,
-  html body[data-page="home"] .intro-frame.if-bl,
-  html body[data-page="home"] .intro-frame.if-br,
-  html body[data-page="home"] .intro-progress,
-  html body[data-page="home"] .intro-progress-dot {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-}
-
-
-/* === WORK PAGE SCROLL FIX — ensure content is scrollable === */
-/* The page uses Locomotive Scroll. Ensure body can also scroll natively
-   as a fallback. The .p-grid.scroller is the Locomotive container. */
 body[data-page="work"] {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   height: auto !important;
   min-height: 100vh !important;
-}
-
-.p-grid.scroller {
-  min-height: 100vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* On mobile, make sure the page can scroll */
@@ -9595,73 +9459,15 @@ body[data-page="work"] {
     overflow-y: auto !important;
     height: auto !important;
   }
-  .p-grid.scroller {
-    overflow-y: auto !important;
-    height: auto !important;
-    min-height: 100vh;
-  }
 }
 
-
-/* === SECOND INTRO SCREEN — restored with sound + quick nav === */
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .l-over {
-  display: none !important;
-  align-items: flex-end;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-over {
-  display: flex !important;
-  pointer-events: auto !important;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler {
-  pointer-events: auto !important;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-quicknav,
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-sound-control {
-  pointer-events: auto !important;
-  z-index: 3001;
-}
-
-body[data-page="home"]:not(.intro-dismissed) .load.hometoggler::after {
-  content: "Click anywhere to continue";
-  position: absolute;
-  left: 50%;
-  bottom: max(34px, env(safe-area-inset-bottom));
-  z-index: 2;
-  transform: translate3d(-50%, 0, 0);
-  font-family: Ayer, sans-serif;
-  font-size: clamp(16px, 1.45vw, 24px);
-  line-height: 1;
-  color: #f5f4ef;
-  opacity: 0.95;
-  white-space: nowrap;
-  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.7);
-  letter-spacing: 0.05em;
-  font-weight: 500;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler::after {
-  content: none;
-}
 
 .l-text {
   z-index: 3000;
   margin-right: 1vw;
   margin-left: 1vw;
   float: left;
-  color: #f5f4ef;
-  font-size: 1.3vw;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  text-shadow: 0 0 20px rgba(124, 58, 237, 0.4), 0 0 12px rgba(0, 0, 0, 0.7);
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  color: #e2e2dd;
 }
 
 .l-text.lm {
@@ -9671,40 +9477,12 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler::aft
 .l-text-w {
   position: absolute;
   bottom: 12vh;
-  left: 0;
-  right: 0;
-  opacity: 0.95;
-  transition: opacity 0.4s ease;
-  background: linear-gradient(180deg,
-    rgba(10, 10, 14, 0.85) 0%,
-    rgba(10, 10, 14, 0.75) 100%);
-  padding: 24px 36px;
-  border-radius: 6px;
-  border-top: 1px solid rgba(196, 181, 253, 0.3);
-  border-bottom: 1px solid rgba(196, 181, 253, 0.3);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  max-width: 90vw;
-  margin: 0 auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-text-w {
-  animation: introSecondTextIn 0.82s cubic-bezier(0.2, 0.85, 0.18, 1) 0.12s forwards;
-}
-
-@keyframes introSecondTextIn {
-  to { opacity: 0.95; }
+  opacity: 0.7;
 }
 
 .l-arrow {
   width: 5vw;
   float: left;
-  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.3));
 }
 
 .l-over {
@@ -9714,119 +9492,32 @@ body[data-page="home"].intro-second:not(.intro-dismissed) .load.hometoggler .l-t
   right: 0;
   bottom: 0;
   z-index: 3;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  height: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+}
+
+.l-over.hometoggler {
+  display: none;
   pointer-events: auto;
 }
 
-/* Quick nav on second screen */
-.l-quicknav {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  gap: clamp(24px, 3vw, 48px);
-  z-index: 3001;
-  opacity: 0;
-  animation: introSecondNavIn 0.82s cubic-bezier(0.2, 0.85, 0.18, 1) 0.3s forwards;
-}
+@media screen and (min-width: 1920px) {
+  .l-text {
+    font-size: 2vh;
+  }
 
-@keyframes introSecondNavIn {
-  to { opacity: 1; }
+  .l-text-w {
+    bottom: 3.5vw;
+  }
 }
-
-.l-quicknav-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: #e5e3dc;
-  transition: color 0.3s ease, transform 0.3s ease;
-  cursor: pointer;
-}
-
-.l-quicknav-link:hover {
-  color: #c4b5fd;
-  transform: translateY(-4px);
-}
-
-.l-quicknav-no {
-  font-family: Ayer, sans-serif;
-  font-size: clamp(14px, 1.2vw, 18px);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  opacity: 0.6;
-}
-
-.l-quicknav-text {
-  font-family: Ayer, sans-serif;
-  font-size: clamp(20px, 2.2vw, 36px);
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3);
-}
-
-.l-quicknav-link:hover .l-quicknav-text {
-  text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
-}
-
-/* Sound control on second screen */
-.l-sound-control {
-  position: absolute;
-  top: clamp(28px, 3vw, 50px);
-  right: clamp(28px, 3vw, 50px);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 3001;
-  opacity: 0;
-  animation: introSecondNavIn 0.82s cubic-bezier(0.2, 0.85, 0.18, 1) 0.5s forwards;
-}
-
-.l-sound-label {
-  font-family: Ayer, sans-serif;
-  font-size: clamp(10px, 0.8vw, 12px);
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(229, 227, 220, 0.6);
-}
-
-.l-sound-toggle {
-  background: transparent;
-  border: 1px solid rgba(229, 227, 220, 0.3);
-  border-radius: 4px;
-  padding: 6px 14px;
-  font-family: Ayer, sans-serif;
-  font-size: clamp(11px, 0.9vw, 13px);
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #e5e3dc;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.l-sound-toggle:hover {
-  border-color: #c4b5fd;
-  color: #c4b5fd;
-}
-
-.l-sound-state-on,
-.l-sound-state-off {
-  display: inline-block;
-}
-
-.l-sound-state-on { display: none; }
-body.sound-on .l-sound-state-on { display: inline-block; }
-body.sound-on .l-sound-state-off { display: none; }
-body:not(.sound-on) .l-sound-state-on { display: none; }
-body:not(.sound-on) .l-sound-state-off { display: inline-block; }
 
 /* ==========================================================================
    Stage 2 surgical patches — user-reported issues
@@ -9955,130 +9646,30 @@ body:not(.sound-on) .l-sound-state-off { display: inline-block; }
   }
 }
 
-/* Mobile intro bottom text — relocate .h-quote-w/.h-start-w outside .hero
-   during the second intro screen so they remain visible while .hero is
-   opacity:0. The actual DOM move is done by src/main.js on ≤479px.
-   No HTML is touched and no duplicate content is created. */
-.mobile-intro-bottom {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1300;
-  display: none;
-  pointer-events: none;
-  height: 100%;
-}
-
-body.intro-second .mobile-intro-bottom {
-  display: block !important;
-}
-
-body.intro-second .hero {
-  opacity: 1 !important;
+/* Fix work/about/contact scroll: nav-trigger overlay was intercepting wheel events.
+   Keep it visible on home (menu still uses it), but disable pointer events elsewhere
+   so the horizontal work scroller and vertical Lenis scrollers receive wheel input. */
+body[data-page="work"] .nav-trigger,
+body[data-page="about"] .nav-trigger,
+body[data-page="contact"] .nav-trigger {
   pointer-events: none !important;
-  z-index: 4 !important;
 }
 
-body.intro-second .h-head,
-body.intro-second .h-quote,
-body.intro-second .h-slant,
-body.intro-second .h-block,
-body.intro-second .h-row,
-body.intro-second .h-wrap,
-body.intro-second .h-block *,
-body.intro-second .h-wrap * {
+/* Fix about "MY LATEST PROJECTS" overlap: stack .aw-block and .aw-grid
+   instead of floating them side-by-side. The base rule (line ~4190) floats
+   both left at 45vw width with 9vw grid margin-left, which collides with
+   the clamp(56px, 7.2vw, 132px) heading on desktop viewports. */
+body[data-page="about"] .a-award .aw-block {
+  float: none !important;
+  display: block;
+  width: 100% !important;
+  margin-top: 2vw !important;
+  margin-bottom: 3vw !important;
   transform: none !important;
-  opacity: 1 !important;
-  animation: none !important;
-  transition: none !important;
-  color: #e2e2dd !important;
 }
-
-body.intro-second .h-quote-w,
-body.intro-second .h-start-w {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-body.intro-second .h-start-w,
-body.intro-second .hero .h-start-w {
-  display: block !important;
-  visibility: visible !important;
-  position: absolute !important;
-  right: 31.7vw !important;
-  bottom: 7vw !important;
-  width: auto !important;
-  height: auto !important;
-  z-index: 10 !important;
-}
-
-body.intro-dismissed .mobile-intro-bottom {
-  display: none !important;
-}
-
-.mobile-intro-bottom .h-quote-w,
-.mobile-intro-bottom .h-start-w {
-  position: absolute !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  margin: 0;
-  overflow: visible;
-  opacity: 1 !important;
-}
-
-.mobile-intro-bottom .h-quote-w {
-  left: 5vw !important;
-  bottom: 14vw !important;
-  pointer-events: none;
-}
-
-.mobile-intro-bottom .h-quote {
-  font-family: Ayer, sans-serif;
-  font-size: 3.5vw;
-  line-height: 1.3;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: #f5f4ef;
-  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.5);
-  transform: none !important;
-  opacity: 1 !important;
-}
-
-.mobile-intro-bottom .h-start-w {
-  left: 50% !important;
-  right: auto !important;
-  bottom: 6vw !important;
-  transform: translateX(-50%);
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  pointer-events: auto;
-  opacity: 1 !important;
-}
-
-.mobile-intro-bottom .h-start-i {
-  height: auto;
-}
-
-.mobile-intro-bottom .h-start {
-  font-family: Ayer, sans-serif;
-  font-size: 4.5vw;
-  line-height: 1.2;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: #f5f4ef;
-  text-shadow: 0 0 16px rgba(124, 58, 237, 0.3), 0 0 8px rgba(0, 0, 0, 0.5);
-}
-
-.mobile-intro-bottom .h-start::after {
-  background-color: #f5f4ef;
-}
-
-.mobile-intro-bottom .html-embed-8 {
-  width: 4vw;
-  margin-left: 2vw;
+body[data-page="about"] .a-award .aw-grid {
+  float: none !important;
+  display: block;
+  width: 100% !important;
+  margin-left: 0 !important;
 }

@@ -8607,9 +8607,12 @@ body[data-page="home"].intro-prompt-active .load.hometoggler {
   cursor: pointer;
 }
 
+/* Keep the first-screen .l-grid copy visible behind the second-prompt
+   overlay. The overlay (.l-over.hometoggler) sits on top at z-index 3
+   with a centered prompt; the first-screen text remains at z-index 0. */
 body[data-page="home"].intro-prompt-active .load.hometoggler .l-grid {
-  display: none !important;
-  opacity: 0 !important;
+  display: flex !important;
+  opacity: 1 !important;
   pointer-events: none !important;
 }
 
@@ -8625,10 +8628,14 @@ body[data-page="home"].intro-prompt-active .l-over.hometoggler .l-text-w {
   opacity: 0.78;
 }
 
-/* Second intro screen: the "Click anywhere" overlay sits ON TOP of the
-   visible hero text (per CLAUDE.md legacy contract). Only hide the
-   WebGL canvas during the second prompt so it doesn't double-render
-   over the hero copy. */
+/* Second intro screen: the legacy "Click anywhere" overlay sits ON TOP
+   of the first-screen intro copy (per CLAUDE.md legacy contract).
+   The first-screen .l-grid copy stays visible behind the prompt; the
+   WebGL canvas is hidden so it does not double-render over the
+   oversized intro copy; the hero (which carries a different set of
+   blocks for the post-intro state) is hidden so we do not see two
+   compositions stacked. */
+body[data-page="home"].intro-prompt-active .hero,
 body[data-page="home"].intro-prompt-active .webglholder {
   opacity: 0 !important;
   visibility: hidden !important;

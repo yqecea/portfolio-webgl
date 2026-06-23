@@ -30,8 +30,8 @@ must(!/\bintro-frame\b|\bintro-progress\b|\bintro-context\b/.test(index), 'index
 
 must(css.includes('body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-stroke'), 'css/style.css must keep the home intro stroke-over-fill rule');
 must(css.includes('body[data-page="home"].intro-load-active .hero'), 'css/style.css must hide the underlying hero while the first intro overlay is active');
-must(css.includes('body[data-page="home"].intro-prompt-active .webglholder'), 'css/style.css must hide the WebGL canvas during the second intro prompt so it does not double-render over the visible hero copy');
-must(!css.includes('body[data-page="home"].intro-prompt-active .hero'), 'css/style.css must NOT hide the hero during the second intro prompt — the legacy contract keeps the oversized intro copy visible behind the "Click anywhere" overlay');
+must(css.includes('body[data-page="home"].intro-prompt-active .hero'), 'css/style.css must hide the underlying hero during the old second intro prompt');
+must(css.includes('body[data-page="home"].intro-prompt-active .load.hometoggler .l-grid'), 'css/style.css must keep the first-screen intro copy visible behind the second-prompt overlay');
 must(css.includes('body[data-page="home"].intro-prompt-active .l-over.hometoggler'), 'css/style.css must show the old l-over prompt as the second intro screen');
 must(css.includes('transition: none;'), 'css/style.css must keep CSS menu transitions disabled in favor of GSAP-controlled motion');
 must(css.includes('body:not([data-page="home"]) .trigger.burgerclickablein.on'), 'css/style.css must keep the non-home trigger visibility guard');

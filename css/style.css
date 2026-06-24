@@ -8688,6 +8688,20 @@ body[data-page="work"] .sidescrollbox {
     max-height: 80vh !important;
     margin: 0 auto !important;
   }
+  /* The .elastic decorative line uses `right: -100px` to peek past the
+     card edge on desktop. On mobile the card is full viewport width,
+     so the negative offset causes 100px horizontal overflow that
+     breaks the scroll and overlaps text. Pull the elastic back into
+     the card boundary on mobile, or hide it entirely since it's a
+     desktop-only hover affordance. */
+  body[data-page="work"] .elastic {
+    right: 0 !important;
+    width: 60px !important;
+    opacity: 0.35;
+  }
+  body[data-page="work"] .elastic canvas {
+    max-width: 100% !important;
+  }
 }
 
 body[data-page="work"] .sidescrollbox::-webkit-scrollbar {
@@ -8841,7 +8855,7 @@ body[data-page="contact"] {
   position: relative !important;
   height: auto !important;
   min-height: 100svh;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   overflow-y: auto !important;
   overscroll-behavior-y: auto;
   touch-action: pan-y;
@@ -9488,10 +9502,29 @@ body[data-page="home"] .intro-progress-dot:first-child {
 
 
 body[data-page="work"] {
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   overflow-y: auto !important;
   height: auto !important;
   min-height: 100vh !important;
+  /* Chromium ships a `transition: all 0s` default on body/html that, for
+     properties the cascade has not yet settled on, can pin the computed
+     value to the initial state. Disabling the transition forces the
+     computed overflow-x to update immediately. */
+  transition: none !important;
+}
+
+/* The actual scroll root on every page is the <html> element (verified
+   at runtime: document.scrollingElement is HTML, not BODY). The Webflow
+   base rule at line 9 sets `html { overflow-x: hidden }` which is a known
+   iOS Safari killer for vertical scroll. Override it on the work/about/
+   contact subpages with `clip` (which prevents horizontal overflow
+   without creating a scroll container). The body rules above also use
+   `clip` for parity. */
+html:has(body[data-page="work"]),
+html:has(body[data-page="about"]),
+html:has(body[data-page="contact"]) {
+  overflow-x: clip !important;
+  transition: none !important;
 }
 
 /* On mobile, make sure the page can scroll */
@@ -9720,6 +9753,462 @@ body[data-page="work"] .nav-trigger,
 body[data-page="about"] .nav-trigger,
 body[data-page="contact"] .nav-trigger {
   pointer-events: none !important;
+}
+
+/* Mobile hero: keep a compact, non-overlapping text composition. The full
+   "WEB / experiences / landing / pages" composition is desktop-only; on
+   mobile we show only the headline ("YUSUF. / creative developer / from
+   Kazakhstan") as a single centered block, sized to fit the viewport. */
+@media screen and (max-width: 767px) {
+  body[data-page="home"] .hero .h-quote-w {
+    display: none !important;
+  }
+  body[data-page="home"] .hero .h-row .h-block.hb-1,
+  body[data-page="home"] .hero .h-row .h-block.hb-3,
+  body[data-page="home"] .hero .h-row .h-block.hb,
+  body[data-page="home"] .hero .h-row .h-block.hb-2 {
+    display: none !important;
+  }
+  body[data-page="home"] .hero {
+    justify-content: center;
+    align-items: center;
+  }
+  body[data-page="home"] .hero .h-row .h-block.hb-side,
+  body[data-page="home"] .hero .h-row .h-block.hb-side2 {
+    display: block;
+    float: none;
+    clear: both;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+  body[data-page="home"] .hero .h-row .h-block.hb-side .h-head,
+  body[data-page="home"] .hero .h-row .h-block.hb-side2 .h-head {
+    font-size: clamp(38px, 11vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    padding: 0;
+    margin: 0;
+  }
+  body[data-page="home"] .hero .h-row .h-block.hb-side2 {
+    margin-top: 0.3em;
+  }
+}
+
+/* Contact CTA: the .contact-cta block replaced the Webflow form (resolved in
+   plan 003). The .contact-button was a dead <a> with no CSS so it rendered
+   at 0x0 — invisible and unclickable. Give it real styles, an underline
+   hover, and force pointer-events: auto so nothing in the Webflow inline
+   transform tree can block the hit area. */
+
+/* The .c-list parent is targeted by a Webflow IX2 inline `<style>` rule
+   (`html.w-mod-js:not(.w-mod-ix) [data-w-id="8c729379-..."]`) that sets
+   `opacity: 0; transform: translate3d(0, 20%, 0)`. With Webflow runtime
+   gone, the element is no longer `w-mod-js`, so the IX2 rule no longer
+   matches — but the residual stylesheet is still there as a stale fallback.
+   The .f-block and .contact-cta inside the .c-list are also flagged by
+   the Webflow form-success/fail CSS (`display: none`) even though no
+   form was ever submitted. Force everything to display: block so the
+   CTA renders. The form-success / form-fail blocks themselves stay
+   hidden — they would otherwise leak the "Thank you! Your submission
+   has been received!" / "Oops! Something went wrong" copy onto the
+   page because no form is ever submitted. */
+.contact .c-list,
+.contact .c-list .f-block,
+.contact .c-list .contact-cta,
+.contact .c-list .contact-button,
+.contact .c-list .contact-note {
+  display: block !important;
+}
+/* The dead Webflow form blocks (success / error messages) were leaked
+   into the page after the form was replaced with the mailto CTA. They
+   contain "Thank you! Your submission has been received!" and "Oops!
+   Something went wrong while submitting the form." copy that has no
+   meaning now. Hide them everywhere on the contact page. */
+.contact .c-list .w-form-done,
+.contact .c-list .w-form-fail {
+  display: none !important;
+}
+.contact .c-list {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+.contact-cta {
+  display: inline-block;
+  clear: both;
+  margin-top: 1.5vw;
+}
+
+.contact-button {
+  display: inline-block;
+  padding: 0.9vw 1.6vw;
+  border: 1px solid #e2e2dd;
+  border-radius: 999px;
+  color: #e2e2dd;
+  font-size: 1.2vw;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.contact-button:hover,
+.contact-button:focus-visible {
+  background: #e2e2dd;
+  color: #0a0a0a;
+  border-color: #e2e2dd;
+  outline: none;
+}
+
+.contact-note {
+  display: block;
+  margin-top: 1vw;
+  font-size: 0.9vw;
+  line-height: 1.4;
+  color: #b6b6b0;
+  max-width: 36vw;
+}
+
+@media screen and (max-width: 767px) {
+  .contact-cta { margin-top: 4vw; }
+  .contact-button {
+    padding: 3vw 5vw;
+    font-size: 4vw;
+  }
+  .contact-note {
+    margin-top: 3vw;
+    font-size: 3vw;
+    max-width: 90%;
+  }
+}
+
+/* Belt-and-suspenders for the .c-email-w hit area: even after the Webflow
+   inline style is stripped, ensure no parent can swallow the click. */
+.c-email-w,
+.c-email-w * {
+  pointer-events: auto !important;
+}
+
+/* Visible close button injected by src/ui/Menu.js. Positioned over the
+   same top-right corner as the burger so the user has a clear close
+   affordance. The button has a 40x40 hit area per the make-interfaces-
+   feel-better guideline (minimum 40px). */
+.menu-close {
+  position: fixed;
+  top: 3vw;
+  right: 3vw;
+  z-index: 1001;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(226, 226, 221, 0.35);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.45);
+  color: #e2e2dd;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+  outline: none;
+}
+.menu-close:hover,
+.menu-close:focus-visible {
+  background: rgba(226, 226, 221, 0.95);
+  color: #0a0a0a;
+  border-color: #e2e2dd;
+  transform: scale(1.05);
+}
+.menu-close:active {
+  transform: scale(0.96);
+}
+.menu-close svg {
+  display: block;
+}
+
+/* "Start explore" CTA — surfaced on the home page after the user dismisses
+   the intro. Anchor to the bottom center of the viewport so it reads
+   as a clear next action (matches the user-requested flow: tap once on
+   the intro → land on the post-intro with a visible button → tap the
+   button to go to /pages/about.html). */
+.intro-explore-cta {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(40px, 7vw, 88px);
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px 14px 28px;
+  border: 1px solid rgba(226, 226, 221, 0.6);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.35);
+  color: #e2e2dd;
+  font-family: Ayer, sans-serif;
+  font-size: clamp(15px, 1.2vw, 19px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateX(-50%);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+  cursor: pointer;
+  outline: none;
+}
+.intro-explore-cta:hover,
+.intro-explore-cta:focus-visible {
+  background: #e2e2dd;
+  color: #0a0a0a;
+  border-color: #e2e2dd;
+  transform: translateX(-50%) scale(1.04);
+}
+.intro-explore-cta:active {
+  transform: translateX(-50%) scale(0.97);
+}
+.intro-explore-cta__arrow {
+  width: 22px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.intro-explore-cta__label {
+  display: inline-block;
+}
+
+@media screen and (max-width: 767px) {
+  .intro-explore-cta {
+    bottom: clamp(24px, 6vw, 40px);
+    padding: 12px 18px 12px 22px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    gap: 10px;
+  }
+  .intro-explore-cta__arrow {
+    width: 18px;
+    height: 12px;
+  }
+}
+
+/* Latest-work featured grid on the home page. Sits below the WebGL
+   hero (which is position: fixed) so users can scroll past the ball
+   to see what the portfolio is about. Each card mirrors the work-page
+   card language (screenshot, number, client, title, desc, CTA). */
+.latest-work {
+  position: relative;
+  z-index: 3;
+  padding: clamp(80px, 14vw, 200px) clamp(24px, 5vw, 80px);
+  background: linear-gradient(180deg,
+    rgba(10, 10, 42, 0) 0%,
+    #0a0a2e 24%,
+    #12123d 60%,
+    #1a1a4e 100%);
+  color: #e2e2dd;
+}
+.lw-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.lw-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: clamp(40px, 6vw, 72px);
+  padding-bottom: clamp(20px, 2vw, 32px);
+  border-bottom: 1px solid rgba(226, 226, 221, 0.15);
+}
+.lw-eyebrow {
+  flex: 1 1 100%;
+  font-family: Ayer, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: rgba(226, 226, 221, 0.55);
+  margin-bottom: 8px;
+}
+.lw-title {
+  font-family: Ayer, sans-serif;
+  font-size: clamp(40px, 5.6vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  max-width: 16ch;
+  margin: 0;
+  text-wrap: balance;
+}
+.lw-all {
+  font-family: Ayer, sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e2e2dd;
+  text-decoration: none;
+  padding: 12px 20px;
+  border: 1px solid rgba(226, 226, 221, 0.4);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.lw-all:hover,
+.lw-all:focus-visible {
+  background: #e2e2dd;
+  color: #0a0a0a;
+  border-color: #e2e2dd;
+  transform: translateY(-1px);
+}
+
+.lw-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.4vw, 36px);
+}
+.lw-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 20px 24px;
+  border-radius: 18px;
+  background: rgba(10, 10, 10, 0.35);
+  border: 1px solid rgba(226, 226, 221, 0.12);
+  color: #e2e2dd;
+  text-decoration: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  overflow: hidden;
+}
+.lw-card:hover,
+.lw-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: rgba(226, 226, 221, 0.4);
+  background: rgba(10, 10, 10, 0.55);
+}
+.lw-card:active {
+  transform: translateY(-1px) scale(0.99);
+}
+.lw-shot {
+  margin: -20px -20px 8px;
+  width: calc(100% + 40px);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0a0a0a;
+  border-bottom: 1px solid rgba(226, 226, 221, 0.1);
+}
+.lw-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.lw-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-family: Ayer, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(226, 226, 221, 0.7);
+}
+.lw-num {
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: #e2e2dd;
+}
+.lw-card-title {
+  margin: 0;
+  font-family: Ayer, sans-serif;
+  font-size: clamp(22px, 1.6vw, 28px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  color: #e2e2dd;
+}
+.lw-card-title span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.7em;
+  color: rgba(226, 226, 221, 0.75);
+  font-weight: 400;
+}
+.lw-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(226, 226, 221, 0.72);
+  text-wrap: pretty;
+}
+.lw-cta {
+  margin-top: 6px;
+  align-self: flex-start;
+  font-family: Ayer, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #e2e2dd;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(226, 226, 221, 0.4);
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.lw-card:hover .lw-cta {
+  color: #fff;
+  border-color: #fff;
+}
+
+@media screen and (max-width: 991px) {
+  .lw-grid {
+    grid-template-columns: 1fr;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .lw-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .latest-work {
+    padding: 80px 18px 100px;
+  }
+  .lw-title {
+    font-size: 38px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .menu-close {
+    top: 5vw;
+    right: 5vw;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Work/about/contact mobile scroll fix: the Webflow-exported `overflow-x: hidden`
+   on html/body is a known iOS Safari killer for vertical scroll (the browser
+   refuses to scroll when x and y overflow contexts conflict on the root).
+   Replace `hidden` with `clip` on the scroll root for subpages: `overflow-x:
+   clip` prevents horizontal overflow without creating a scroll container,
+   so vertical scrolling works natively. The inner .sidescrollbox/.p-grid
+   wrappers still gate their own horizontal overflow. */
+body[data-page="work"],
+body[data-page="about"],
+body[data-page="contact"] {
+  overflow-x: clip !important;
+  overflow-y: auto !important;
 }
 
 /* Fix about "MY LATEST PROJECTS" overlap: stack .aw-block and .aw-grid

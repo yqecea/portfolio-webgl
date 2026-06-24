@@ -24,19 +24,26 @@ the v2 refactor was not fully completed.
   `about/`, `work/`
 - Three.js r125 (CDN) for the WebGL sphere
 - GSAP 3.13.0 + EaselPlugin (CDN) for animation
-- Locomotive Scroll 4.0.3 (CDN) for smooth scroll on home + work
+- Lenis 1.3.23 (pinned CDN) for vertical smooth scrolling on home/about/contact,
+  integrated through GSAP ticker in `src/scroll/LenisSmoothScroll.js`.
+- `src/scroll/NativeScrollMotion.js` handles lightweight IntersectionObserver +
+  GSAP reveal motion; it must not hijack wheel/keyboard scrolling or animate
+  every `[data-scroll]` element.
+- Work uses bounded smooth horizontal transform motion through
+  `src/work/DesktopHorizontalScrollController.js`; RAF starts on wheel input and
+  stops after interpolation settles.
 - jQuery 3.5.1 (CDN, has SRI hash) for the Webflow runtime
 - Webflow runtime (CDN) for legacy form + IX2 animations
 
 ## Pages
 
-| Path                  | Purpose             | WebGL? | Locomotive? |
-|-----------------------|---------------------|--------|-------------|
-| `index.html`          | Home / hero         | Yes (`index.html:597` `.webglholder`) | Yes (home) |
-| `pages/work.html`     | 10 project cards (horizontal scroll on desktop) | No | Yes (work) |
-| `pages/about.html`    | About               | No  | No (custom SmoothVerticalScroll) |
-| `pages/contact.html`  | Contact form        | No  | No (custom SmoothVerticalScroll) |
-| `pages/cookie.html`   | Cookie notice       | No  | No |
+| Path                  | Purpose             | WebGL? | Scroll |
+|-----------------------|---------------------|--------|--------|
+| `index.html`          | Home / hero         | Yes (`index.html:597` `.webglholder`) | Lenis vertical |
+| `pages/work.html`     | 10 project cards (horizontal scroll on desktop) | No | Smooth horizontal transform |
+| `pages/about.html`    | About               | No  | Lenis vertical + data-scroll parallax |
+| `pages/contact.html`  | Contact form        | No  | Lenis vertical |
+| `pages/cookie.html`   | Cookie notice       | No  | Native vertical |
 
 The work page ships **10 cards** (not 7 — `GEMINI.md` is stale on this).
 Verified at `pages/work.html:283, 310, 337, 365, 393, 420, 447, 475, 504, 533`.
@@ -48,10 +55,32 @@ cd portfolio-webgl
 npm ci
 npm run lint:html   # html-validate on index.html + pages/*.html
 npm run check:js    # node --check on every .js under src/ and javascript/
+npm run check:ui-contracts
+npm run verify      # check:js + lint:html + check:ui-contracts
 npm run lint:links  # linkinator against the live deploy
 ```
 
 (Setup is in `plan 001`.)
+
+## Current UI Contracts
+
+- The home intro is the restored legacy two-step intro: oversized
+  `Hello my name is / YUSUF. creative / developer / from Kazakhstan / 16 y.o.`
+  first screen, then the old `Click anywhere -> to enable the sound` overlay.
+  Do not replace it with generated quicknav/progress/frame controls.
+- The global menu has two separate concepts: `.trigger.burgerclickablein` /
+  `.trigger.burgerclickableout` are the fixed hitboxes, while
+  `.menu-prompt.burgerclickablein` is visual copy only. Do not bind menu logic
+  to the first `.burgerclickablein` in the DOM.
+- `src/ui/Menu.js` owns the canvas burger and legacy curtain animation.
+  Hover must never remove the active `.on` class from the fixed hitbox. Open and
+  close line targets must stay immutable; do not use the mutable current
+  `this.lines` values as close targets.
+- Do not reintroduce Locomotive Scroll or the old custom global wheel/keyboard
+  hijackers. The stable path is pinned Lenis for vertical smoothness, GSAP-owned
+  menu/intro timelines, and bounded work-page horizontal interpolation.
+- Run `npm run check:ui-contracts` after any intro/menu work; it exists to
+  catch the regressions that previously broke the restored intro and menu.
 
 ## Known issues
 

@@ -1,27 +1,24 @@
-/**
- * Menu.js - Burger Menu Logic
- * 
- * Handles the animated canvas-based burger menu.
- * Extracted from legacy inline scripts.
- * 
- * @target .burgercontainer
- */
 import loop from '../core/Loop.js';
+
+const MENU_ANIMATION_SECONDS = 0.8;
+const MENU_PANEL_SECONDS = 0.28;
 
 export default class Menu {
     constructor() {
         this.container = document.querySelector('.burgercontainer');
         this.menuPanel = document.querySelector('.menu');
-        this.burgerIn = document.querySelector('.burgerclickablein');
-        this.burgerOut = document.querySelector('.burgerclickableout');
+        this.menuPrompt = document.querySelector('.menu-prompt.burgerclickablein');
+        this.burgerIn = document.querySelector('.trigger.burgerclickablein') || document.querySelector('.burgerclickablein');
+        this.burgerOut = document.querySelector('.trigger.burgerclickableout') || document.querySelector('.burgerclickableout');
         this.navTrigger = document.querySelector('.nav-trigger');
+        this.panelTimeline = null;
+        this.menuItems = [];
 
         if (!this.container) {
             console.warn('Menu: .burgercontainer not found');
             return;
         }
 
-        // Create canvas
         this.canvas = document.createElement('canvas');
         this.container.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
@@ -42,23 +39,17 @@ export default class Menu {
             this.simplex = noopNoise;
         }
 
-        // DPI scaling
         this.dpi = window.devicePixelRatio || 1;
 
-        // State
         this.isOpen = false;
-        this.isAnimating = false;
         this.fillColor = '#0A0A0A';
-        this.targetColor = '#E5E3DC';
-        this.lastDistance = 2000; // Hover detection state - reset on resize
+        this.lastDistance = 2000;
 
-        // Animation values
         this.y = { value: 0 };
         this.buttonAlpha = { value: 1 };
         this.lineColor = { value: 230 };
         this.noiseAmplitude = { value: 1 };
 
-        // Burger menu config - responsive breakpoints
         this.breakpoints = [
             { sWidth: 0, burgerRad: 30 * this.dpi, burgerMargin: 40 * this.dpi, burgerBigRad: 80 * this.dpi, burgerBigMargin: 50 * this.dpi },
             { sWidth: 479, burgerRad: 35 * this.dpi, burgerMargin: 35 * this.dpi, burgerBigRad: 100 * this.dpi, burgerBigMargin: 60 * this.dpi },
@@ -77,7 +68,6 @@ export default class Menu {
             noiseSpeed: 0.0003
         };
 
-        // Line positions for hamburger icon
         this.lines = {
             top: [
                 { value: -12 * this.dpi }, { value: -5 * this.dpi },
@@ -89,19 +79,15 @@ export default class Menu {
             ]
         };
 
-        // X positions when menu is open
-        this.xLines = {
-            top: [
-                { value: -10 * this.dpi }, { value: -10 * this.dpi },
-                { value: 10 * this.dpi }, { value: 10 * this.dpi }
-            ],
-            bottom: [
-                { value: -10 * this.dpi }, { value: 10 * this.dpi },
-                { value: 10 * this.dpi }, { value: -10 * this.dpi }
-            ]
+        this.closedLineValues = {
+            top: [-12, -5, 12, -5],
+            bottom: [-12, 5, 12, 5]
+        };
+        this.openLineValues = {
+            top: [-10, -10, 10, 10],
+            bottom: [-10, 10, 10, -10]
         };
 
-        // Small config for closed state
         this.smallConfig = {
             burgerMargin: this.config.burgerMargin,
             burgerRad: this.config.burgerRad
@@ -112,22 +98,22 @@ export default class Menu {
 
     init() {
         this.resize();
+        this.setupPanelMotion();
         this.bindEvents();
-        this.setActiveHitbox(this.burgerIn, true);
-        this.setActiveHitbox(this.burgerOut, false);
+        this.setOpenTriggerActive(true);
+        this.setCloseTriggerActive(false);
 
-        // Subscribe to render loop
         loop.subscribe('menuUpdate', () => this.update());
     }
 
     bindEvents() {
-        // Click handlers
-        if (this.burgerIn) {
-            this.burgerIn.addEventListener('click', (e) => {
+        const openTriggers = new Set([this.burgerIn, this.menuPrompt].filter(Boolean));
+        openTriggers.forEach((trigger) => {
+            trigger.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.toggle();
             });
-        }
+        });
         if (this.burgerOut) {
             this.burgerOut.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -139,7 +125,6 @@ export default class Menu {
             link.addEventListener('click', () => this.closeForNavigation());
         });
 
-        // Resize
         window.addEventListener('resize', () => this.resize());
 
         // Mouse hover detection (desktop only)
@@ -157,13 +142,11 @@ export default class Menu {
 
                 if (distance <= threshold && this.lastDistance > threshold) {
                     document.body.style.cursor = 'pointer';
-                    if (this.burgerIn) this.burgerIn.classList.add('on');
                     this.animateNoise(0);
                 }
 
                 if (distance > threshold && this.lastDistance <= threshold) {
                     document.body.style.cursor = 'inherit';
-                    if (this.burgerIn) this.burgerIn.classList.remove('on');
                     this.animateNoise(1);
                 }
 
@@ -174,96 +157,269 @@ export default class Menu {
 
     animateNoise(target) {
         if (typeof gsap !== 'undefined') {
-            gsap.to(this.noiseAmplitude, { value: target, duration: 0.15 });
+            gsap.to(this.noiseAmplitude, { value: target, duration: 0.15, overwrite: 'auto' });
         } else {
             this.noiseAmplitude.value = target;
         }
     }
 
     toggle() {
-        if (this.isAnimating) return;
-        this.isAnimating = true;
-        this.isOpen = !this.isOpen;
+        this.isOpen ? this.close() : this.open();
+    }
 
-        if (this.isOpen) {
-            this.dismissIntroOverlay();
-            document.body.classList.add('menu-open');
+    open() {
+        if (this.isOpen) return;
+        this.isOpen = true;
+
+        this.dismissIntroOverlay();
+        this.showMenuPanel();
+        this.animatePanel(true);
+        this.animateBurger(true);
+        this.showCloseButton();
+
+        if (this.navTrigger) this.navTrigger.classList.add('on');
+        this.setOpenTriggerActive(false);
+        this.setCloseTriggerActive(true);
+    }
+
+    close() {
+        if (!this.isOpen) return;
+        this.isOpen = false;
+
+        this.animatePanel(false);
+        this.animateBurger(false);
+        this.hideCloseButton();
+
+        if (this.navTrigger) this.navTrigger.classList.remove('on');
+        this.setCloseTriggerActive(false);
+        this.setOpenTriggerActive(true);
+    }
+
+    ensureCloseButton() {
+        if (this.closeButton) return this.closeButton;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'menu-close';
+        btn.setAttribute('aria-label', 'Close menu');
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+                <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+            </svg>
+        `;
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.close();
+        });
+        // Mount the button at the document root so it escapes the
+        // .burgercontainer stacking context (the .menu panel is a
+        // sibling inside the same container and would otherwise sit on
+        // top of the close button despite the higher z-index).
+        document.body.appendChild(btn);
+        this.closeButton = btn;
+        return btn;
+    }
+
+    showCloseButton() {
+        const btn = this.ensureCloseButton();
+        if (typeof gsap !== 'undefined') {
+            gsap.killTweensOf(btn);
+            gsap.fromTo(btn, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.22, ease: 'power2.out' });
+        } else {
+            btn.style.opacity = '1';
         }
+        btn.style.pointerEvents = 'auto';
+    }
 
-        const duration = 0.4;
-        const targetY = this.isOpen ? 1 : 0;
-        const targetRad = this.isOpen ? this.config.burgerBigRad : this.smallConfig.burgerRad;
-        const targetMargin = this.isOpen ? this.config.burgerBigMargin : this.smallConfig.burgerMargin;
-        const targetLines = this.isOpen ? this.xLines : this.lines;
-        const unlockDelay = (duration + 0.5) * 1000;
+    hideCloseButton() {
+        if (!this.closeButton) return;
+        const btn = this.closeButton;
+        if (typeof gsap !== 'undefined') {
+            gsap.killTweensOf(btn);
+            gsap.to(btn, {
+                opacity: 0,
+                scale: 0.85,
+                duration: 0.18,
+                ease: 'power2.in',
+                onComplete: () => { btn.style.pointerEvents = 'none'; }
+            });
+        } else {
+            btn.style.opacity = '0';
+            btn.style.pointerEvents = 'none';
+        }
+    }
+
+    animateBurger(isOpening) {
+        const targetY = isOpening ? 1 : 0;
+        const targetRad = isOpening ? this.config.burgerBigRad : this.smallConfig.burgerRad;
+        const targetMargin = isOpening ? this.config.burgerBigMargin : this.smallConfig.burgerMargin;
+        const targetLines = isOpening ? this.openLineValues : this.closedLineValues;
 
         if (typeof gsap !== 'undefined') {
-            gsap.to(this.y, { value: targetY, ease: "power4.inOut", duration: duration });
-            gsap.to(this.config, { burgerRad: targetRad,
+            const lineTargets = [...this.lines.top, ...this.lines.bottom];
+            gsap.killTweensOf([this.y, this.config, ...lineTargets]);
+            gsap.to(this.y, {
+                value: targetY,
+                ease: "power4.inOut",
+                duration: MENU_ANIMATION_SECONDS,
+                overwrite: 'auto'
+            });
+            gsap.to(this.config, {
+                burgerRad: targetRad,
                 burgerMargin: targetMargin,
-                ease: "power4.inOut", duration: duration });
+                ease: "power4.inOut",
+                duration: MENU_ANIMATION_SECONDS,
+                overwrite: 'auto'
+            });
 
-            // Animate lines
             this.lines.top.forEach((line, i) => {
-                gsap.to(line, { value: targetLines.top[i].value, ease: "power4.inOut", duration: duration });
+                gsap.to(line, {
+                    value: targetLines.top[i] * this.dpi,
+                    ease: "power4.inOut",
+                    duration: MENU_ANIMATION_SECONDS,
+                    overwrite: 'auto'
+                });
             });
             this.lines.bottom.forEach((line, i) => {
-                gsap.to(line, { value: targetLines.bottom[i].value, ease: "power4.inOut", duration: duration });
+                gsap.to(line, {
+                    value: targetLines.bottom[i] * this.dpi,
+                    ease: "power4.inOut",
+                    duration: MENU_ANIMATION_SECONDS,
+                    overwrite: 'auto'
+                });
             });
         } else {
             this.y.value = targetY;
             this.config.burgerRad = targetRad;
             this.config.burgerMargin = targetMargin;
             this.lines.top.forEach((line, i) => {
-                line.value = targetLines.top[i].value;
+                line.value = targetLines.top[i] * this.dpi;
             });
             this.lines.bottom.forEach((line, i) => {
-                line.value = targetLines.bottom[i].value;
+                line.value = targetLines.bottom[i] * this.dpi;
             });
         }
+    }
 
-        // Toggle nav visibility
-        if (this.navTrigger) {
-            if (this.isOpen) {
-                if (this.menuPanel) this.menuPanel.style.display = 'flex';
-                this.navTrigger.classList.add('on');
-            } else {
-                setTimeout(() => {
-                    this.navTrigger.classList.remove('on');
-                    document.body.classList.remove('menu-open');
-                    if (this.menuPanel) this.menuPanel.style.display = 'none';
-                }, 500);
+    setupPanelMotion() {
+        this.menuItems = Array.from(document.querySelectorAll('.menu-item, .menu-as'));
+
+        if (!this.menuPanel) return;
+
+        this.menuPanel.style.display = 'none';
+        this.menuPanel.style.visibility = 'hidden';
+        this.menuPanel.style.pointerEvents = 'none';
+
+        if (typeof gsap !== 'undefined') {
+            // Clear any inline Webflow IX2 initial state on the menu items
+            // (data-w-id elements had `transform: translate3d(0, 50%, 0); opacity: 0`).
+            // The WebflowIX2Stripper should have already removed the style attribute,
+            // but call clearProps defensively in case items are added later.
+            if (this.menuItems.length) {
+                gsap.set(this.menuItems, { clearProps: 'transform,opacity' });
             }
+            gsap.set(this.menuPanel, { opacity: 0, scale: 0.992, transformOrigin: '100% 0%' });
+            gsap.set(this.menuItems, { opacity: 0, y: 18 });
+        }
+    }
+
+    animatePanel(isOpening) {
+        if (!this.menuPanel) return;
+
+        if (this.panelTimeline) {
+            this.panelTimeline.kill();
+            this.panelTimeline = null;
         }
 
-        // Keep only one active clickable layer during transition.
-        if (this.isOpen) {
-            this.setActiveHitbox(this.burgerIn, false);
-            setTimeout(() => this.setActiveHitbox(this.burgerOut, true), 500);
-        } else {
-            this.setActiveHitbox(this.burgerOut, false);
-            setTimeout(() => this.setActiveHitbox(this.burgerIn, true), 500);
+        if (typeof gsap === 'undefined') {
+            if (isOpening) {
+                this.menuPanel.style.display = 'flex';
+                this.menuPanel.style.visibility = 'visible';
+                this.menuPanel.style.pointerEvents = 'auto';
+                document.body.classList.add('menu-open');
+            } else {
+                this.hideMenuPanel();
+                document.body.classList.remove('menu-open');
+                if (this.navTrigger) this.navTrigger.classList.remove('on');
+            }
+            return;
         }
 
-        setTimeout(() => {
-            this.isAnimating = false;
-        }, unlockDelay);
+        gsap.killTweensOf([this.menuPanel, ...this.menuItems]);
+
+        if (isOpening) {
+            this.menuPanel.style.display = 'flex';
+            this.menuPanel.style.visibility = 'visible';
+            this.menuPanel.style.pointerEvents = 'auto';
+            document.body.classList.add('menu-open');
+
+            this.panelTimeline = gsap.timeline({
+                defaults: { overwrite: 'auto' }
+            });
+            this.panelTimeline
+                .set(this.menuPanel, { opacity: 0, scale: 0.992, transformOrigin: '100% 0%' })
+                .set(this.menuItems, { opacity: 0, y: 18, willChange: 'opacity, transform' })
+                .to(this.menuPanel, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: MENU_PANEL_SECONDS,
+                    ease: 'power3.out'
+                }, 0)
+                .to(this.menuItems, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.28,
+                    ease: 'power3.out',
+                    stagger: 0.025,
+                    clearProps: 'transform,opacity,willChange'
+                }, 0.03);
+            return;
+        }
+
+        this.panelTimeline = gsap.timeline({
+            defaults: { overwrite: 'auto' },
+            onComplete: () => {
+                this.hideMenuPanel();
+                document.body.classList.remove('menu-open');
+                if (this.navTrigger) this.navTrigger.classList.remove('on');
+            }
+        });
+        this.panelTimeline
+            .to(this.menuItems, {
+                opacity: 0,
+                y: -10,
+                duration: 0.16,
+                ease: 'power2.in',
+                stagger: { each: 0.025, from: 'end' }
+            }, 0)
+            .to(this.menuPanel, {
+                opacity: 0,
+                scale: 0.992,
+                duration: 0.2,
+                ease: 'power2.in'
+            }, 0.05);
     }
 
     closeForNavigation() {
+        if (this.panelTimeline) {
+            this.panelTimeline.kill();
+            this.panelTimeline = null;
+        }
+        if (typeof gsap !== 'undefined') {
+            gsap.killTweensOf([this.menuPanel, ...this.menuItems]);
+        }
         this.isOpen = false;
-        this.isAnimating = false;
         document.body.classList.remove('menu-open');
-        if (this.menuPanel) this.menuPanel.style.display = 'none';
+        this.hideMenuPanel();
         if (this.navTrigger) this.navTrigger.classList.remove('on');
-        this.setActiveHitbox(this.burgerOut, false);
-        this.setActiveHitbox(this.burgerIn, true);
+        this.setCloseTriggerActive(false);
+        this.setOpenTriggerActive(true);
 
         this.y.value = 0;
         this.config.burgerRad = this.smallConfig.burgerRad;
         this.config.burgerMargin = this.smallConfig.burgerMargin;
-        const closedTop = [-12, -5, 12, -5].map((value) => value * this.dpi);
-        const closedBottom = [-12, 5, 12, 5].map((value) => value * this.dpi);
+        const closedTop = this.closedLineValues.top.map((value) => value * this.dpi);
+        const closedBottom = this.closedLineValues.bottom.map((value) => value * this.dpi);
         this.lines.top.forEach((line, index) => {
             line.value = closedTop[index];
         });
@@ -273,8 +429,24 @@ export default class Menu {
         this.resize();
     }
 
+    showMenuPanel() {
+        if (this.menuPanel) {
+            this.menuPanel.style.display = 'flex';
+            this.menuPanel.style.visibility = 'visible';
+            this.menuPanel.style.pointerEvents = 'auto';
+        }
+    }
+
+    hideMenuPanel() {
+        if (!this.menuPanel) return;
+        this.menuPanel.style.display = 'none';
+        this.menuPanel.style.visibility = 'hidden';
+        this.menuPanel.style.pointerEvents = 'none';
+    }
+
     dismissIntroOverlay() {
         document.body.classList.add('intro-dismissed');
+        document.body.classList.remove('intro-load-active');
         document.body.classList.remove('intro-second');
         document.querySelectorAll('.load.hometoggler, .l-over.hometoggler').forEach((element) => {
             element.style.display = 'none';
@@ -290,7 +462,6 @@ export default class Menu {
         this.height = this.ctx.canvas.height = this.container.offsetHeight * this.dpi;
         this.ctx.lineWidth = this.dpi;
 
-        // Apply responsive breakpoints FIRST
         this.breakpoints.forEach(bp => {
             if (window.innerWidth > bp.sWidth) {
                 this.config.burgerRad = bp.burgerRad;
@@ -308,7 +479,6 @@ export default class Menu {
             this.config.burgerRad = this.config.burgerBigRad;
         }
 
-        // Update burger position AFTER breakpoints are applied
         this.config.burgerPosition.x = this.width - this.config.burgerMargin;
         this.config.burgerPosition.y = this.config.burgerMargin;
 
@@ -326,15 +496,36 @@ export default class Menu {
         ctx.clearRect(0, 0, this.width, this.height);
         ctx.lineWidth = this.dpi;
 
-        // Background fill
         ctx.beginPath();
         ctx.fillStyle = this.fillColor;
         ctx.rect(0, 0, this.width, this.height);
         if (this.isOpen) ctx.fill();
         ctx.closePath();
 
-        // Animated curtain
-        ctx.fillStyle = '#0A0A0A';
+        this.drawMenuCurtain(ctx);
+
+        // Skip noise circles when menu is closed and idle: 2 full paths at
+        // 60Hz is wasted work that competes with the WebGL/GSAP renderers.
+        if (this.shouldRenderNoise()) {
+            this.drawNoiseCircles(ctx);
+        }
+
+        this.drawLines(ctx);
+
+        this.updateClickableAreas();
+    }
+
+    shouldRenderNoise() {
+        if (this.isOpen) return true;
+        if (this.y.value > 0.001) return true;
+        if (this.noiseAmplitude.value < 0.99) return true;
+        return false;
+    }
+
+    drawMenuCurtain(ctx) {
+        if (this.y.value === 0) return;
+
+        ctx.fillStyle = this.fillColor;
         ctx.beginPath();
         ctx.moveTo(0, this.height * this.y.value);
 
@@ -349,15 +540,6 @@ export default class Menu {
         ctx.lineTo(0, 0);
         ctx.closePath();
         ctx.fill();
-
-        // Draw noise circles
-        this.drawNoiseCircles(ctx);
-
-        // Draw hamburger lines
-        this.drawLines(ctx);
-
-        // Update clickable area size
-        this.updateClickableAreas();
     }
 
     drawNoiseCircles(ctx) {
@@ -395,14 +577,12 @@ export default class Menu {
     drawLines(ctx) {
         const pos = this.config.burgerPosition;
 
-        // Top line
         ctx.beginPath();
         ctx.moveTo(this.lines.top[0].value + pos.x, this.lines.top[1].value + pos.y);
         ctx.lineTo(this.lines.top[2].value + pos.x, this.lines.top[3].value + pos.y);
         ctx.stroke();
         ctx.closePath();
 
-        // Bottom line
         ctx.beginPath();
         ctx.moveTo(this.lines.bottom[0].value + pos.x, this.lines.bottom[1].value + pos.y);
         ctx.lineTo(this.lines.bottom[2].value + pos.x, this.lines.bottom[3].value + pos.y);
@@ -433,5 +613,17 @@ export default class Menu {
         if (!el) return;
         el.classList.toggle('on', isActive);
         el.style.pointerEvents = isActive ? 'auto' : 'none';
+    }
+
+    setOpenTriggerActive(isActive) {
+        this.setActiveHitbox(this.burgerIn, isActive);
+        if (this.menuPrompt && this.menuPrompt !== this.burgerIn) {
+            this.menuPrompt.classList.toggle('on', isActive);
+            this.menuPrompt.style.pointerEvents = 'none';
+        }
+    }
+
+    setCloseTriggerActive(isActive) {
+        this.setActiveHitbox(this.burgerOut, isActive);
     }
 }

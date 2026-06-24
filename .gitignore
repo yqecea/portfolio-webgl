@@ -11,3 +11,8 @@ firebase-debug.*.log
 .cache
 artifacts/
 *.log
+
+# Verification artifacts (large screenshots + dev scratch)
+evidence/
+audit-*.png
+.playwright-mcp/

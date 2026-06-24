@@ -1,14 +1,14 @@
 import loop from './core/Loop.js';
-import MobileFix from './core/MobileFix.js';
-import MobileAnimations from './core/MobileAnimations.js';
+import stripWebflowIX2InitialStates from './core/WebflowIX2Stripper.js';
 import WebGLApp from './webgl/WebGLApp.js';
 import Menu from './ui/Menu.js';
 import SoundReactor from './audio/SoundReactor.js';
 import SoundToggler from './audio/SoundToggler.js';
 import CursorCanvas from './ui/CursorCanvas.js';
 import PageTransition from './ui/PageTransition.js';
-import LocomotiveBridge from './scroll/LocomotiveBridge.js';
-import SmoothVerticalScroll from './scroll/SmoothVerticalScroll.js';
+import HomeIntroMotion from './ui/HomeIntroMotion.js';
+import LenisSmoothScroll from './scroll/LenisSmoothScroll.js';
+import NativeScrollMotion from './scroll/NativeScrollMotion.js';
 import ElasticLines from './work/ElasticLines.js';
 import AnimationLock from './about/AnimationLock.js';
 import DesktopHorizontalScrollController from './work/DesktopHorizontalScrollController.js';
@@ -24,8 +24,6 @@ class App {
 
     this.soundReactor = null;
     this.soundToggler = null;
-    this.mobileAnimations = null;
-    this.boundResponsiveAnimationsResize = this.ensureResponsiveAnimations.bind(this);
   }
 
   detectPage() {
@@ -49,7 +47,6 @@ class App {
       !ua.includes('android');
 
     window.isMobile = this.isMobile;
-    window.isMobileDevice = this.isMobile;
     window.isSafari = isSafari;
   }
 
@@ -64,67 +61,6 @@ class App {
   setPageFlags() {
     document.documentElement.dataset.page = this.page;
     document.body.classList.remove('menu-open');
-  }
-
-  initIntroDismiss() {
-    if (this.page !== 'home') return;
-
-    const showSecondIntroScreen = () => {
-      if (document.body.classList.contains('intro-dismissed')) return;
-      document.body.classList.add('intro-second');
-    };
-
-    const dismissIntro = () => {
-      if (document.body.classList.contains('intro-dismissed')) return;
-      document.body.classList.add('intro-dismissed');
-      document.body.classList.remove('intro-second');
-    };
-
-    const advanceIntro = (event) => {
-      if (document.body.classList.contains('intro-dismissed')) return;
-      if (event && event.type === 'keydown') {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
-        event.preventDefault();
-      }
-      // If clicking a quicknav link, let the link navigate naturally.
-      // The link's default behavior will load the page and the intro
-      // will be dismissed on the next page load (since intro-dismissed
-      // is not persisted, we add a sessionStorage flag).
-      if (event && event.target && event.target.closest('.l-quicknav-link')) {
-        // Mark as dismissed for this session so the next page doesn't show intro
-        try { sessionStorage.setItem('intro-dismissed', '1'); } catch (e) {}
-        return; // let the link navigate
-      }
-      // If clicking the sound toggle, toggle sound and stay on second screen
-      if (event && event.target && event.target.closest('.l-sound-toggle')) {
-        document.body.classList.toggle('sound-on');
-        return; // don't advance intro
-      }
-      if (!document.body.classList.contains('intro-second')) {
-        showSecondIntroScreen();
-        return;
-      }
-      dismissIntro();
-    };
-
-    // Check if intro was already dismissed this session (via quicknav)
-    try {
-      if (sessionStorage.getItem('intro-dismissed') === '1') {
-        document.body.classList.add('intro-dismissed');
-        return;
-      }
-    } catch (e) {}
-
-    const introOverlay = document.querySelector('.load.hometoggler');
-    if (introOverlay) {
-      introOverlay.addEventListener('pointerdown', advanceIntro);
-    }
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      advanceIntro(event);
-    });
   }
 
   hideRotateOverlayDesktop() {
@@ -160,6 +96,7 @@ class App {
     this.soundToggler.init(this.soundReactor, {
       allowAutoplayByMouse: this.page !== 'home' && !window.isSafari
     });
+    window.soundToggler = this.soundToggler;
 
     this.instances.push(this.soundToggler);
 
@@ -168,6 +105,7 @@ class App {
       if (!homeToggler) return;
 
       homeToggler.addEventListener('click', async () => {
+        if (!document.body.classList.contains('intro-dismissed')) return;
         await this.soundReactor.resumeContextIfNeeded();
         const started = await this.soundReactor.play({ restore: false });
         if (started && this.soundToggler) {
@@ -211,24 +149,28 @@ class App {
     this.instances.push(transition);
   }
 
-  initLocomotive() {
-    if (this.page === 'about' || this.page === 'contact') return;
+  initHomeIntroMotion() {
+    if (this.page !== 'home') return;
 
-    const locomotive = new LocomotiveBridge();
-    locomotive.init();
-    this.instances.push(locomotive);
+    const introMotion = new HomeIntroMotion();
+    const started = introMotion.init();
+    if (started) this.instances.push(introMotion);
   }
 
-  initSmoothVerticalScroll() {
-    if (this.page !== 'about' && this.page !== 'contact') return;
+  initNativeScrollMotion() {
+    const scrollMotion = new NativeScrollMotion();
+    const started = scrollMotion.init();
+    if (started) this.instances.push(scrollMotion);
+  }
 
-    const smoothScroll = new SmoothVerticalScroll();
+  initLenisSmoothScroll() {
+    const smoothScroll = new LenisSmoothScroll();
     const started = smoothScroll.init();
     if (started) this.instances.push(smoothScroll);
   }
 
-  initWorkDesktopScroll() {
-    if (this.page !== 'work' || this.isMobile) return;
+  initWorkScroll() {
+    if (this.page !== 'work') return;
 
     const scroller = new DesktopHorizontalScrollController();
     const started = scroller.init();
@@ -244,29 +186,6 @@ class App {
 
     elastic.init();
     this.instances.push(elastic);
-  }
-
-  initWorkMobileFix() {
-    if (this.page !== 'work' || !this.isMobile) return;
-
-    const mobileFix = new MobileFix();
-    this.instances.push(mobileFix);
-  }
-
-  initMobileAnimations() {
-    this.ensureResponsiveAnimations();
-    window.addEventListener('resize', this.boundResponsiveAnimationsResize);
-  }
-
-  ensureResponsiveAnimations() {
-    if (this.mobileAnimations) return;
-    if (!this.isMobile && window.innerWidth > 1199) return;
-
-    this.mobileAnimations = new MobileAnimations({
-      force: true,
-      maxWidth: 1199
-    });
-    this.instances.push(this.mobileAnimations);
   }
 
   initAboutAnimationLock() {
@@ -287,62 +206,35 @@ class App {
   }
 
   init() {
+    // Strip the Webflow-exported inline `style="transform: translate3d(0, N%, 0)..."`
+    // initial states from every `[data-w-id]` element. The Webflow runtime
+    // cannot re-trigger IX2 on a static page reload, so those inline styles
+    // are stuck and would otherwise push every animated element off-screen
+    // (the post-intro hero, the menu items, the contact page reveals, etc.).
+    // Must run before any module reads element computed styles or GSAP sets
+    // initial values.
+    stripWebflowIX2InitialStates();
+
     this.page = this.detectPage();
     this.setPageFlags();
     this.setEnvironmentFlags();
     this.setupGlobalLifecycle();
     this.hideRotateOverlayDesktop();
-    this.initIntroDismiss();
-
     this.initMenu();
     this.initSound();
     this.initCursor();
     this.initPageTransition();
-    this.initLocomotive();
-    this.initSmoothVerticalScroll();
+    this.initHomeIntroMotion();
+    this.initLenisSmoothScroll();
+    this.initNativeScrollMotion();
 
-    this.initWorkDesktopScroll();
+    this.initWorkScroll();
     this.initWorkElasticLines();
-    this.initWorkMobileFix();
 
-    this.initMobileAnimations();
     this.initAboutAnimationLock();
     this.initWebgl();
-    setTimeout(() => this.fixMobileIntroBottomText(), 0);
-    this.forceStartButtonVisible();
 
     loop.start();
-  }
-
-  fixMobileIntroBottomText() {
-    if (this.page !== 'home') return;
-
-    const hero = document.querySelector('.hero');
-    if (!hero) return;
-
-    const quote = hero.querySelector('.h-quote-w');
-    const start = hero.querySelector('.h-start-w');
-    if (!quote && !start) return;
-
-    if (document.body.classList.contains('intro-dismissed')) return;
-
-    const container = document.createElement('div');
-    container.className = 'mobile-intro-bottom';
-    container.setAttribute('aria-hidden', 'true');
-    if (quote) container.appendChild(quote);
-    if (start) container.appendChild(start);
-    document.body.appendChild(container);
-  }
-
-  forceStartButtonVisible() {
-    if (this.page !== 'home') return;
-    const force = () => {
-      const start = document.querySelector('.h-start-w');
-      if (start && document.body.classList.contains('intro-second')) {
-        start.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: absolute !important; right: 31.7vw !important; bottom: 7vw !important; width: auto !important; height: auto !important; z-index: 10 !important; pointer-events: auto !important;';
-      }
-    };
-    setInterval(force, 50);
   }
 }
 

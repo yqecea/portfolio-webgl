@@ -113,11 +113,13 @@ export default class HomeIntroMotion {
 
     if (typeof gsap !== 'undefined') {
       gsap.killTweensOf(cta);
-      gsap.fromTo(cta, { opacity: 0, y: 18 }, {
+      gsap.fromTo(cta, { opacity: 0, xPercent: -50, y: 18, scale: 0.96 }, {
         opacity: 1,
+        xPercent: -50,
         y: 0,
-        duration: 0.34,
-        ease: 'power3.out',
+        scale: 1,
+        duration: 0.48,
+        ease: 'back.out(1.35)',
         overwrite: 'auto'
       });
       return;
@@ -130,21 +132,31 @@ export default class HomeIntroMotion {
   async dismissIntro() {
     if (!this.root) return;
 
-    document.body.classList.add('intro-dismissed');
+    document.body.classList.add('intro-dismissed', 'intro-revealing');
     document.body.classList.remove('intro-load-active', 'intro-prompt-active', 'intro-second');
 
     this.startSoundFromGesture();
 
     if (typeof gsap !== 'undefined') {
       gsap.killTweensOf([this.root, this.grid, this.prompt, this.promptText].filter(Boolean));
+      gsap.to([this.grid, this.promptText].filter(Boolean), {
+        opacity: 0,
+        y: -14,
+        duration: 0.34,
+        ease: 'power3.inOut',
+        overwrite: 'auto'
+      });
       gsap.to(this.root, {
         opacity: 0,
-        duration: 0.22,
-        ease: 'power2.out',
+        scale: 0.985,
+        duration: 0.52,
+        delay: 0.04,
+        ease: 'power3.inOut',
         overwrite: 'auto',
         onComplete: () => {
           this.hideIntroElements();
           this.showAboutCta();
+          document.body.classList.remove('intro-revealing');
         }
       });
       return;
@@ -152,6 +164,7 @@ export default class HomeIntroMotion {
 
     this.hideIntroElements();
     this.showAboutCta();
+    document.body.classList.remove('intro-revealing');
   }
 
   async startSoundFromGesture() {

@@ -149,6 +149,12 @@ export default class MobileWorkScrollGuard {
       button.classList.toggle('is-active', index === this.index);
       button.setAttribute('aria-current', index === this.index ? 'true' : 'false');
     });
+
+    this.cards.forEach((card, index) => {
+      card.classList.toggle('is-mobile-active', index === this.index);
+      card.classList.toggle('is-mobile-before', index < this.index);
+      card.classList.toggle('is-mobile-after', index > this.index);
+    });
   }
 
   onPrev() {

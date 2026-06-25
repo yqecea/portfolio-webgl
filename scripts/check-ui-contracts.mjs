@@ -24,14 +24,17 @@ must(
   'index.html must keep the restored legacy home intro copy and order'
 );
 must(index.includes('class="l-over hometoggler"'), 'index.html must keep the second intro overlay');
-must(index.includes('Click anywhere') && index.includes('to enable the sound'), 'index.html must keep the legacy second intro prompt');
+must(index.includes('Click anywhere') && index.includes('to start'), 'index.html must keep the intro click-to-start prompt');
 must(!/\bl-quicknav\b|\bl-sound-control\b/.test(index), 'index.html must not reintroduce generated quicknav/sound-control intro UI');
 must(!/\bintro-frame\b|\bintro-progress\b|\bintro-context\b/.test(index), 'index.html home intro must not use generated frame/progress intro UI');
 
 must(css.includes('body[data-page="home"]:not(.intro-dismissed) .load.hometoggler .text-stroke'), 'css/style.css must keep the home intro stroke-over-fill rule');
 must(css.includes('body[data-page="home"].intro-load-active .hero'), 'css/style.css must hide the underlying hero while the first intro overlay is active');
 must(css.includes('body[data-page="home"].intro-prompt-active .hero'), 'css/style.css must hide the underlying hero during the old second intro prompt');
-must(css.includes('body[data-page="home"].intro-prompt-active .load.hometoggler .l-grid'), 'css/style.css must keep the first-screen intro copy visible behind the second-prompt overlay');
+must(
+  /body\[data-page="home"\]\.intro-prompt-active \.load\.hometoggler \.l-grid\s*\{[\s\S]*display:\s*none\s*!important/.test(css),
+  'css/style.css must hide the first intro copy while the second intro prompt is active'
+);
 must(css.includes('body[data-page="home"].intro-prompt-active .l-over.hometoggler'), 'css/style.css must show the old l-over prompt as the second intro screen');
 must(css.includes('transition: none;'), 'css/style.css must keep CSS menu transitions disabled in favor of GSAP-controlled motion');
 must(css.includes('body:not([data-page="home"]) .trigger.burgerclickablein.on'), 'css/style.css must keep the non-home trigger visibility guard');
@@ -59,6 +62,7 @@ must(!nativeScrollMotion.includes("addEventListener('wheel'"), 'NativeScrollMoti
 must(workScroll.includes('translate3d'), 'work scroll controller must use smoothed transform motion');
 must(workScroll.includes('Math.abs(diff) < 0.25'), 'work scroll controller must stop RAF after interpolation settles');
 must(!workScroll.includes('this.animate();'), 'work scroll controller must not start a permanent RAF transform loop');
+must(workScroll.includes('(min-width: 992px)'), 'work scroll controller must stay desktop-only so mobile work can scroll vertically');
 
 for (const [path, html] of pages) {
   must(html.includes('class="trigger burgerclickablein'), `${path} must include the fixed open trigger hitbox`);

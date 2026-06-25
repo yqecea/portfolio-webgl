@@ -2,6 +2,7 @@ export default class DesktopHorizontalScrollController {
   constructor(options = {}) {
     this.wrapperSelector = options.wrapperSelector || '.sidescrollbox';
     this.scrollerSelector = options.scrollerSelector || '.scroller, .p-grid';
+    this.desktopQuery = options.desktopQuery || '(min-width: 992px)';
     this.lerp = options.lerp || 0.085;
     this.wheelMultiplier = options.wheelMultiplier || 1;
 
@@ -18,6 +19,8 @@ export default class DesktopHorizontalScrollController {
   }
 
   init() {
+    if (!this.isDesktop()) return false;
+
     this.wrapper = document.querySelector(this.wrapperSelector);
     this.scroller = document.querySelector(this.scrollerSelector);
 
@@ -45,6 +48,11 @@ export default class DesktopHorizontalScrollController {
   }
 
   onResize() {
+    if (!this.isDesktop()) {
+      this.destroy();
+      return;
+    }
+
     this.maxScroll = Math.max(0, this.scroller.scrollWidth - window.innerWidth);
     this.targetScrollX = this.clamp(this.targetScrollX);
     this.scrollX = this.clamp(this.scrollX);
@@ -88,6 +96,30 @@ export default class DesktopHorizontalScrollController {
     this.scroller.style.transform = `translate3d(${-this.scrollX.toFixed(2)}px, 0, 0)`;
   }
 
+  isDesktop() {
+    return window.matchMedia(this.desktopQuery).matches;
+  }
+
+  resetInlineStyles() {
+    if (this.wrapper) {
+      this.wrapper.style.width = '';
+      this.wrapper.style.height = '';
+      this.wrapper.style.overflowX = '';
+      this.wrapper.style.overflowY = '';
+      this.wrapper.style.overscrollBehavior = '';
+      this.wrapper.style.webkitOverflowScrolling = '';
+    }
+
+    if (this.scroller) {
+      this.scroller.style.display = '';
+      this.scroller.style.flexDirection = '';
+      this.scroller.style.flexWrap = '';
+      this.scroller.style.height = '';
+      this.scroller.style.willChange = '';
+      this.scroller.style.transform = '';
+    }
+  }
+
   clamp(value) {
     return Math.max(0, Math.min(value, this.maxScroll));
   }
@@ -102,5 +134,6 @@ export default class DesktopHorizontalScrollController {
       this.wrapper.classList.remove('native-horizontal-scroll');
     }
     window.removeEventListener('resize', this.onResize);
+    this.resetInlineStyles();
   }
 }

@@ -12,6 +12,7 @@ import NativeScrollMotion from './scroll/NativeScrollMotion.js';
 import ElasticLines from './work/ElasticLines.js';
 import AnimationLock from './about/AnimationLock.js';
 import DesktopHorizontalScrollController from './work/DesktopHorizontalScrollController.js';
+import MobileWorkScrollGuard from './work/MobileWorkScrollGuard.js';
 
 const SOUND_URL = '../assets/sound/mainSound.mp3';
 const ROLLOVER_URL = '../assets/sound/rollovers/rol05.mp3';
@@ -175,6 +176,10 @@ class App {
     const scroller = new DesktopHorizontalScrollController();
     const started = scroller.init();
     if (started) this.instances.push(scroller);
+
+    const mobileGuard = new MobileWorkScrollGuard();
+    const mobileGuardStarted = mobileGuard.init();
+    if (mobileGuardStarted) this.instances.push(mobileGuard);
   }
 
   initWorkElasticLines() {

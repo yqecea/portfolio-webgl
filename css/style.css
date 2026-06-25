@@ -8607,15 +8607,11 @@ body[data-page="home"].intro-prompt-active .load.hometoggler {
   cursor: pointer;
 }
 
-/* Keep the first-screen .l-grid copy visible behind the second-prompt
-   overlay. Use display:block (not flex) so the .l-item children stack
-   vertically on narrow viewports and fit the viewport; on flex they
-   go row-by-row and overflow horizontally. The gsap.set(this.grid,
-   { display: 'none' }) from HomeIntroMotion runs inline; the !important
-   here wins and forces the grid back to block. */
+/* The two home intro screens are separate: the first-screen .l-grid copy
+   must not sit behind the legacy "Click anywhere" prompt. */
 body[data-page="home"].intro-prompt-active .load.hometoggler .l-grid {
-  display: block !important;
-  opacity: 1 !important;
+  display: none !important;
+  opacity: 0 !important;
   pointer-events: none !important;
 }
 
@@ -8631,13 +8627,8 @@ body[data-page="home"].intro-prompt-active .l-over.hometoggler .l-text-w {
   opacity: 0.78;
 }
 
-/* Second intro screen: the legacy "Click anywhere" overlay sits ON TOP
-   of the first-screen intro copy (per CLAUDE.md legacy contract).
-   The first-screen .l-grid copy stays visible behind the prompt; the
-   WebGL canvas is hidden so it does not double-render over the
-   oversized intro copy; the hero (which carries a different set of
-   blocks for the post-intro state) is hidden so we do not see two
-   compositions stacked. */
+/* Second intro screen: show only the legacy "Click anywhere" overlay.
+   Hide the hero/WebGL layer until the second click dismisses the intro. */
 body[data-page="home"].intro-prompt-active .hero,
 body[data-page="home"].intro-prompt-active .webglholder {
   opacity: 0 !important;
@@ -9935,69 +9926,6 @@ body[data-page="contact"] .nav-trigger {
   display: block;
 }
 
-/* "Start explore" CTA — surfaced on the home page after the user dismisses
-   the intro. Anchor to the bottom center of the viewport so it reads
-   as a clear next action (matches the user-requested flow: tap once on
-   the intro → land on the post-intro with a visible button → tap the
-   button to go to /pages/about.html). */
-.intro-explore-cta {
-  position: fixed;
-  left: 50%;
-  bottom: clamp(40px, 7vw, 88px);
-  z-index: 1000;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 24px 14px 28px;
-  border: 1px solid rgba(226, 226, 221, 0.6);
-  border-radius: 999px;
-  background: rgba(10, 10, 10, 0.35);
-  color: #e2e2dd;
-  font-family: Ayer, sans-serif;
-  font-size: clamp(15px, 1.2vw, 19px);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transform: translateX(-50%);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
-  cursor: pointer;
-  outline: none;
-}
-.intro-explore-cta:hover,
-.intro-explore-cta:focus-visible {
-  background: #e2e2dd;
-  color: #0a0a0a;
-  border-color: #e2e2dd;
-  transform: translateX(-50%) scale(1.04);
-}
-.intro-explore-cta:active {
-  transform: translateX(-50%) scale(0.97);
-}
-.intro-explore-cta__arrow {
-  width: 22px;
-  height: 14px;
-  flex-shrink: 0;
-}
-.intro-explore-cta__label {
-  display: inline-block;
-}
-
-@media screen and (max-width: 767px) {
-  .intro-explore-cta {
-    bottom: clamp(24px, 6vw, 40px);
-    padding: 12px 18px 12px 22px;
-    font-size: 13px;
-    letter-spacing: 0.1em;
-    gap: 10px;
-  }
-  .intro-explore-cta__arrow {
-    width: 18px;
-    height: 12px;
-  }
-}
-
 /* Latest-work featured grid on the home page. Sits below the WebGL
    hero (which is position: fixed) so users can scroll past the ball
    to see what the portfolio is about. Each card mirrors the work-page
@@ -10211,6 +10139,186 @@ body[data-page="contact"] {
   overflow-y: auto !important;
 }
 
+body[data-page="home"]:not(.intro-dismissed) {
+  overflow: hidden !important;
+}
+
+body[data-page="home"]:not(.intro-dismissed) .load.hometoggler {
+  background: transparent !important;
+}
+
+body[data-page="home"]:not(.intro-dismissed) .latest-work {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body[data-page="home"].intro-load-active .l-over.hometoggler {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  z-index: 9998 !important;
+}
+
+body[data-page="home"].intro-load-active .l-over.hometoggler .l-text-w {
+  opacity: 0.78 !important;
+}
+
+.intro-about-cta {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(28px, 5vw, 68px);
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 168px;
+  min-height: 52px;
+  padding: 0 28px;
+  border: 1px solid rgba(226, 226, 221, 0.62);
+  border-radius: 999px;
+  background: rgba(10, 10, 42, 0.45);
+  color: #e2e2dd;
+  font-family: Ayer, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateX(-50%);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.intro-about-cta:hover,
+.intro-about-cta:focus-visible {
+  background: #e2e2dd;
+  color: #0a0a2e;
+  outline: none;
+}
+
+.mobile-work-controls {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 14px;
+  pointer-events: none;
+}
+
+.mobile-work-arrow,
+.mobile-work-dot {
+  border: 1px solid rgba(226, 226, 221, 0.55);
+  background: rgba(10, 10, 42, 0.42);
+  color: #e2e2dd;
+  font-family: Ayer, sans-serif;
+  text-transform: uppercase;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.mobile-work-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  min-width: 82px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  pointer-events: auto;
+}
+
+.mobile-work-dots {
+  display: grid;
+  grid-template-columns: repeat(5, 30px);
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.mobile-work-dot {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 30px;
+}
+
+.mobile-work-dot.is-active {
+  background: #e2e2dd;
+  color: #0a0a2e;
+}
+
+@media screen and (max-width: 991px) {
+  body[data-page="work"] .mobile-work-controls {
+    display: flex;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  html[data-page="work"],
+  body[data-page="work"] {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: clip !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+  }
+
+  body[data-page="work"] .sidescrollbox {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100svh !important;
+    overflow: visible !important;
+    overscroll-behavior: auto !important;
+    touch-action: pan-y !important;
+  }
+
+  body[data-page="work"] .p-grid,
+  body[data-page="work"] .p-grid.scroller {
+    position: relative !important;
+    inset: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 24px !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 88px 16px 120px !important;
+    overflow: visible !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  body[data-page="work"] .p-col.pagelink {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 520px !important;
+    height: auto !important;
+    min-height: 76svh !important;
+    max-height: none !important;
+    margin: 0 auto !important;
+    scroll-snap-align: none !important;
+    touch-action: pan-y !important;
+  }
+
+  body[data-page="work"] .p-inner {
+    min-height: 76svh !important;
+  }
+}
+
 /* Fix about "MY LATEST PROJECTS" overlap: stack .aw-block and .aw-grid
    instead of floating them side-by-side. The base rule (line ~4190) floats
    both left at 45vw width with 9vw grid margin-left, which collides with
@@ -10228,4 +10336,82 @@ body[data-page="about"] .a-award .aw-grid {
   display: block;
   width: 100% !important;
   margin-left: 0 !important;
+}
+
+/* FINAL mobile work carousel guard. Keep this at the end so old Webflow
+   breakpoint blocks cannot put the work page back into a locked vertical track. */
+@media screen and (max-width: 991px) {
+  html[data-page="work"],
+  body[data-page="work"] {
+    height: 100% !important;
+    min-height: 100% !important;
+    overflow: hidden !important;
+    touch-action: pan-y !important;
+  }
+
+  body[data-page="work"] .rotate {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  body[data-page="work"] .sidescrollbox {
+    position: relative !important;
+    display: block !important;
+    width: 100vw !important;
+    height: 100svh !important;
+    min-height: 100svh !important;
+    overflow: hidden !important;
+    overscroll-behavior: contain !important;
+    touch-action: pan-y !important;
+  }
+
+  body[data-page="work"] .p-grid,
+  body[data-page="work"] .p-grid.scroller {
+    position: relative !important;
+    inset: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    width: 1000vw !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 74px 0 112px !important;
+    overflow: visible !important;
+    will-change: transform !important;
+  }
+
+  body[data-page="work"] .p-col.pagelink {
+    flex: 0 0 100vw !important;
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 18px !important;
+    scroll-snap-align: none !important;
+    touch-action: pan-y !important;
+  }
+
+  body[data-page="work"] .p-inner {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  body[data-page="work"] .p-shot {
+    max-height: 38svh !important;
+  }
+
+  body[data-page="work"].mobile-work-carousel-active .p-grid.scroller {
+    flex-direction: row !important;
+    transform: translate3d(0, 0, 0);
+  }
+
+  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink {
+    flex-basis: 100vw !important;
+  }
 }

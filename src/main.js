@@ -52,6 +52,13 @@ class App {
   }
 
   setupGlobalLifecycle() {
+    // plan 011 P1.3: spike confirmed full reload on bfcache back is required.
+    // Tests/bfcache.mjs asserts that event.persisted -> reload fires; if
+    // you remove this listener, the spike will start passing and the
+    // home intro state + scroll position + sound context will desync
+    // (the module-level gsap timelines + sound reactor are initialized
+    // once in the original page load, not re-initialized on bfcache
+    // restore). Re-evaluate when module lifecycle is refactored.
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
         window.location.reload();

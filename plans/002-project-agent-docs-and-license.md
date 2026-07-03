@@ -85,7 +85,7 @@ this is fixed. The `improve` skill's audit-playbook explicitly flags missing
 - `GEMINI.md` — leave it as historical context; future agents will read
   `CLAUDE.md` first. Removing GEMINI is a separate, longer plan (it
   encodes a 4-month refactor history).
-- `index.html`, `pages/*.html`, `src/**`, `css/**`, `javascript/**` — this
+- `index.html`, `pages/*.html`, `src/**`, `css/**` — this
   plan adds docs, it does not change code.
 - The Firebase-deployed files.
 
@@ -153,7 +153,7 @@ Verified at `pages/work.html:283, 310, 337, 365, 393, 420, 447, 475, 504, 533`.
 cd portfolio-webgl
 npm ci
 npm run lint:html   # html-validate on index.html + pages/*.html
-npm run check:js    # node --check on every .js under src/ and javascript/
+npm run check:js    # node --check on every .js under src/
 npm run lint:links  # linkinator against the live deploy
 ```
 
@@ -169,9 +169,6 @@ npm run lint:links  # linkinator against the live deploy
   (plus ~15 more in the broader `bolt*` / `bolt/*` family) are
   AI-agent collision on the same RAF consolidation. Do not merge them;
   pick a winner or close.
-- The `javascript/` directory holds legacy `cursor/` and `webglball/`
-  implementations. The active code in `src/ui/CursorCanvas.js` and
-  `src/webgl/WebGLApp.js` supersedes them. Plan 003 (deferred) removes them.
 
 ## Do not
 

@@ -54,7 +54,7 @@ Verified at `pages/work.html:283, 310, 337, 365, 393, 420, 447, 475, 504, 533`.
 cd portfolio-webgl
 npm ci
 npm run lint:html   # html-validate on index.html + pages/*.html
-npm run check:js    # node --check on every .js under src/ and javascript/
+npm run check:js    # node --check on every .js under src/
 npm run check:ui-contracts
 npm run verify      # check:js + lint:html + check:ui-contracts
 npm run lint:links  # linkinator against the live deploy
@@ -91,9 +91,6 @@ npm run lint:links  # linkinator against the live deploy
 - Stale `bolt-optimize-scroll-loop-*` remote-tracking branches (5 visible
   on `origin/`) are AI-agent collision on the same RAF consolidation.
   Do not merge them; pick a winner or close.
-- The `javascript/` directory holds legacy `cursor/` and `webglball/`
-  implementations. The active code in `src/ui/CursorCanvas.js` and
-  `src/webgl/WebGLApp.js` supersedes them. Plan 003 (deferred) removes them.
 - The 4 self-hosted assets in `assets/sound/` and `assets/sphere/`
   originated from `niccolomiranda/chiara-luzzana` on GitHub. See
   `LICENSE` for the redistribution-rights note.

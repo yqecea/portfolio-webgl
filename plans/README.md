@@ -27,6 +27,7 @@ conditions, and update your row when done.
 | 008  | Ignore unreferenced root PNGs (REJ-15) + Firebase security headers (REJ-08 p2) | P1 | S | — | DONE |
 | 009  | Oracle follow-up: CSP gaps, CLAUDE.md stale, LICENSE third-party note, aria-hidden | P1 | S | — | DONE |
 | 010  | Upgrade GSAP 3.2.6 → 3.13.0, migrate API (REJ-12, CVE-2020-28478) | P1 | M | — | DONE |
+| 011  | Refactor cycle S7: Lenis SRI, CSP prune, delete javascript/, linkinator upgrade, intro contract reconciliation, frontend polish, SEO baseline | P0 | L | 001-010 | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line
 reason) | REJECTED (with one-line rationale — finding fixed

@@ -64,10 +64,15 @@ npm run lint:links  # linkinator against the live deploy
 
 ## Current UI Contracts
 
-- The home intro is the restored legacy two-step intro: oversized
-  `Hello my name is / YUSUF. creative / developer / from Kazakhstan / 16 y.o.`
-  first screen, then the old `Click anywhere -> to enable the sound` overlay.
-  Do not replace it with generated quicknav/progress/frame controls.
+- **Home intro contract (resolved — plan 011 Phase 1, 2026-07-03): Option B — single-tap CTA.**
+  The first screen shows the oversized `Hello my name is / YUSUF. creative /
+  developer / from Kazakhstan / 16 y.o.` overlay. A single tap on the overlay
+  dismisses the intro, starts sound, and reveals the `.intro-explore-cta`
+  element (a "Start explore" link to `pages/about.html`). The legacy
+  `.l-over.hometoggler` "Click anywhere to enable the sound" prompt markup
+  is still present in the DOM as a fallback (used by `showPrompt()` when the
+  intro root becomes invisible) but is NOT the active first-tap behavior.
+  Do not replace the active single-tap flow with quicknav/progress/frame controls.
 - The global menu has two separate concepts: `.trigger.burgerclickablein` /
   `.trigger.burgerclickableout` are the fixed hitboxes, while
   `.menu-prompt.burgerclickablein` is visual copy only. Do not bind menu logic

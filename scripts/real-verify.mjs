@@ -68,7 +68,7 @@ function check(name, condition, detail) {
     const intro = document.querySelector('.load.hometoggler');
     const hero = document.querySelector('.hero');
     const heroStyle = hero ? window.getComputedStyle(hero) : null;
-    const cta = document.querySelector('.intro-explore-cta');
+    const cta = document.querySelector('.intro-about-cta');
     return {
       introHidden: intro ? window.getComputedStyle(intro).display === 'none' : true,
       introOpacity: intro ? window.getComputedStyle(intro).opacity : null,
@@ -85,7 +85,7 @@ function check(name, condition, detail) {
   // Step 3: click Start Explore → should navigate to about
   if (postState.ctaVisible && postState.ctaHref) {
     const navPromise = page.waitForURL(/about/, { timeout: 8000 }).catch(() => null);
-    await page.click('.intro-explore-cta');
+    await page.click('.intro-about-cta');
     await navPromise;
     await page.waitForTimeout(2000);
     const aboutUrl = page.url();

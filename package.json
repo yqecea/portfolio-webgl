@@ -6,8 +6,9 @@
   "scripts": {
     "lint:html": "html-validate \"index.html\" \"pages/**/*.html\"",
     "check:js": "node --check src/main.js && find src javascript -name '*.js' -exec node --check {} \\;",
+    "check:cdn-sri": "node scripts/check-cdn-sri.mjs",
     "check:ui-contracts": "node scripts/check-ui-contracts.mjs",
-    "verify": "npm run check:js && npm run lint:html && npm run check:ui-contracts",
+    "verify": "npm run check:js && npm run lint:html && npm run check:cdn-sri && npm run check:ui-contracts",
     "lint:links": "linkinator https://yqecea-portfolio.web.app --skip '^(https?://(?!yqecea-portfolio\\.web\\.app|niccolomiranda|chiaraluzzana|aitu-halogens|inko|overprint|ciridae|kazakhstan-unesco|oysana|requiem|vent|zero-to-infinity|aipay-landing))'"
   },
   "devDependencies": {

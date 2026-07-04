@@ -1,8 +1,8 @@
 # Portfolio Refactor Cycle S7 — Final Report
 
-**Branch:** `feat/portfolio-refactor-s7`
+**Branch:** `feat/portfolio-refactor-s7` (pushed to `origin/feat/portfolio-refactor-s7`)
 **Base:** `origin/master` @ `8a59917` (3 commits ahead of local before pull)
-**HEAD:** `437584c` (16 commits ahead)
+**HEAD:** `9840e4d` (19 commits ahead of `origin/master`)
 **Date:** 2026-07-04
 **Plan:** `plans/011-portfolio-refactor-cycle-S7.md` (1721 lines, 23 tasks, all completed except 4B.4 which was deliberately cancelled)
 
@@ -120,7 +120,7 @@ None. All upgrades were devDeps or additive SRI attributes. Lenis upgrade was SR
 
 | Area | Files | Problem | Fix | Risk |
 |---|---|---|---|---|
-| SEO baseline | `robots.txt` (new), `sitemap.xml` (new), `site.webmanifest` (new), `index.html`, `pages/{about,work,contact,cookie}.html` | No `robots.txt` (Google bot instructions), no `sitemap.xml` (search engine discovery), no `site.webmanifest` (PWA install metadata), no canonical link, no JSON-LD Person schema, og:image + twitter:image paths referenced assets/og-card.png which doesn't exist yet. | Created the three text files. Added og:image, twitter:image, canonical, manifest link, apple-touch-icon link, JSON-LD Person to `index.html`. Added canonical to each `pages/*.html` matching its `og:url`. **DEFERRED**: actual generation of `assets/og-card.png` (1200×630 brand card) and `favicon-180.png` (rasterized from `favicon.svg`) — needs `npx sharp-cli` or design tool. Link references are in place. | **Low** — text files + meta additions. |
+| SEO baseline | `robots.txt` (new), `sitemap.xml` (new), `site.webmanifest` (new), `index.html`, `pages/{about,work,contact,cookie}.html` | No `robots.txt` (Google bot instructions), no `sitemap.xml` (search engine discovery), no `site.webmanifest` (PWA install metadata), no canonical link, no JSON-LD Person schema, og:image + twitter:image paths referenced assets/og-card.png which doesn't exist yet. | Created the three text files. Added og:image, twitter:image, canonical, manifest link, apple-touch-icon link, JSON-LD Person to `index.html`. Added canonical to each `pages/*.html` matching its `og:url`. **Completed in follow-up commit `134ad9c`**: `npx sharp-cli` rasterized `assets/og-card.png` (18 KB) and `favicon-180.png` (1.8 KB) from `favicon.svg`. All meta references now resolve to real assets. | **Low** — text files + meta additions + PNG rasterization. |
 | Archive wip-snapshot | `plans/wip-snapshot/` → `plans/archive/wip-snapshot-2026-07/` | `plans/wip-snapshot/` held the recovery script + patch from commits 4798cdf/c99420a/f62517c. Historical record; not actionable. | Git-tracked rename to `plans/archive/wip-snapshot-2026-07/`. Working plans/ directory now focuses on 001-011. | **Low** — pure move. |
 | 4B.4 Flatten latest-work gradient | `css/style.css:10005-10013` | artistic-critic flagged the latest-work section's 4-stop gradient as creating "hard color shift on scroll-past-hero". | **CANCELLED.** The colors are all near-black (#0a0a2e / #12123d / #1a1a4e) — no visible banding. The user's screenshot of the live deploy shows the gradient working as the intentional design. Per R3 consensus ("H5 gradient: protected signature design, REFRAME 4B.4 as polish banding not replace gradient"). | **N/A** — skipped per user evidence. |
 
@@ -232,9 +232,12 @@ On branch feat/portfolio-refactor-s7
 nothing to commit, working tree clean
 ```
 
-### Commit graph (16 commits ahead of origin/master)
+### Commit graph (19 commits ahead of origin/master, pushed)
 
 ```
+9840e4d fix(links): update latest-work oysana landing URL to landing-oysana.vercel.app
+134ad9c feat(seo): add og-card.png + favicon-180.png rasterized from favicon.svg
+4f27921 docs: add S7 refactor cycle final report
 437584c chore(cleanup): archive plans/wip-snapshot to plans/archive/wip-snapshot-2026-07
 ae48b3b feat(seo): add robots, sitemap, manifest, JSON-LD, canonical links
 fe38a4b feat(404): brand-styled 404 page served at project root
@@ -253,10 +256,30 @@ e5f307d fix(security): add SRI + crossorigin to Lenis 1.3.23 CDN tags
 d770be3 docs(plans): add refactor cycle S7 plan 011
 ```
 
-### Suggested commit for the report itself
+Branch tracking: `origin/feat/portfolio-refactor-s7`. PR ready at:
+https://github.com/yqecea/portfolio-webgl/pull/new/feat/portfolio-refactor-s7
+
+### Suggested merge commit message
 
 ```
-docs: add refactor cycle S7 final report
+Merge branch 'feat/portfolio-refactor-s7' into master
+
+Closes refactor cycle S7:
+- Lenis SRI + crossorigin on 8 CDN tags (sha384 hashes)
+- CSP pruned 2 dead allowlist entries (jQuery CDN + GTM)
+- 812-LOC legacy javascript/ deleted (superseded by src/)
+- linkinator 6.3.0 -> 7.6.1 (closes 2 moderate audit advisories)
+- Intro contract split-brain reconciled (Option B single-tap CTA)
+- Cookie banner a11y (button + section landmark + aria-live + grammar)
+- Sound toggle aria-pressed
+- 16 decorative SVGs aria-hidden + focusable=false
+- Menu.js prefers-reduced-motion gate
+- Cookie page shared nav + main.js entry
+- Brand-styled 404.html at root
+- SEO baseline (robots.txt, sitemap.xml, site.webmanifest, canonical, JSON-LD, og-card.png, favicon-180.png)
+- plans/wip-snapshot archived
+
+All 5 npm run verify gates green, 0 npm audit vulnerabilities.
 ```
 
 ---
@@ -265,14 +288,14 @@ docs: add refactor cycle S7 final report
 
 Ordered by leverage × reversibility × dependency on this cycle's outputs:
 
-1. **Generate `assets/og-card.png` + `favicon-180.png`** (small, immediately unblocks social preview + PWA install). ~30 minutes.
-2. **Operator hygiene: clean up 27 stale remote branches** per CLAUDE.md "Known issues". `git branch -d` on a clean clone. ~15 minutes.
-3. **Three.js r125 → r170+ migration** — dedicated visual migration plan. New baseline screenshots before/after; pin import-map or vendor `vendor/three-rXXX/`. ~2-4 hours.
-4. **CSS purge (REJ-06)** — 10,231 LOC `css/style.css`. With Three migrated and styles stable, a careful manual pass can remove unused Webflow-exported selectors. High regression risk; needs visual QA harness first.
-5. **Asset provenance decision** (owner) — confirm redistribution rights for `niccolomiranda/chiara-luzzana` assets per `LICENSE`. Replace with owned assets if commercializing.
-6. **P1.4 Phase B font self-host** — the 3 `@font-face` declarations still pull from `uploads-ssl.webflow.com`. Self-host into `assets/fonts/`. Closes the last CDN external dep.
-7. **Lighthouse perf** — accept current WebGL main-thread cost OR find a path to defer or simplify the hero WebGL.
+1. **Operator hygiene: clean up 27 stale remote branches** per CLAUDE.md "Known issues". `git branch -d` on a clean clone. ~15 minutes.
+2. **Three.js r125 → r170+ migration** — dedicated visual migration plan. New baseline screenshots before/after; pin import-map or vendor `vendor/three-rXXX/`. ~2-4 hours.
+3. **CSS purge (REJ-06)** — 10,231 LOC `css/style.css`. With Three migrated and styles stable, a careful manual pass can remove unused Webflow-exported selectors. High regression risk; needs visual QA harness first.
+4. **Asset provenance decision** (owner) — confirm redistribution rights for `niccolomiranda/chiara-luzzana` assets per `LICENSE`. Replace with owned assets if commercializing.
+5. **P1.4 Phase B font self-host** — the 3 `@font-face` declarations still pull from `uploads-ssl.webflow.com`. Self-host into `assets/fonts/`. Closes the last CDN external dep.
+6. **Lighthouse perf** — accept current WebGL main-thread cost OR find a path to defer or simplify the hero WebGL.
+7. **Deploy to Firebase** — owner decision. Once merged to master, run `firebase deploy --only hosting` to make the link fix + Lenis SRI + CSP prune + a11y improvements + SEO baseline live.
 
 ---
 
-**End of report. Repo state: clean, all 5 verify gates green, 0 npm audit vulns, 16 commits ahead on `feat/portfolio-refactor-s7` ready for review + merge.**
+**End of report. Repo state: clean, all 5 verify gates green, 0 npm audit vulns, 19 commits ahead on `feat/portfolio-refactor-s7` pushed to remote, ready for PR review + merge + deploy.**

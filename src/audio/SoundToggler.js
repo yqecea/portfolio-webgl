@@ -68,6 +68,11 @@ export default class SoundToggler {
     this.ctx.lineWidth = this.dpi;
   }
 
+  syncAriaPressed() {
+    if (!this.container) return;
+    this.container.setAttribute('aria-pressed', String(this.soundFlag));
+  }
+
   animateAmp(target) {
     if (typeof gsap !== 'undefined') {
       gsap.to(this.amp, { value: target, duration: 0.5 });
@@ -121,11 +126,13 @@ export default class SoundToggler {
       this.soundFlag = false;
       this.animateAmp(targetAmp);
     }
+    this.syncAriaPressed();
   }
 
   started() {
     this.soundFlag = true;
     this.animateAmp(30);
+    this.syncAriaPressed();
   }
 
   update() {

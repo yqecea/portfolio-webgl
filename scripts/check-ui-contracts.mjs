@@ -55,6 +55,11 @@ const homeIntroMotion = read('src/ui/HomeIntroMotion.js');
 must(homeIntroMotion.includes('intro-load-active'), 'HomeIntroMotion must own the first-intro active state');
 must(homeIntroMotion.includes('intro-prompt-active'), 'HomeIntroMotion must own the old second intro prompt state');
 must(homeIntroMotion.includes('stopImmediatePropagation'), 'HomeIntroMotion must prevent Webflow from replacing responsive intro with hero');
+// Plan 011 Option B: single-tap dismiss reveals Start Explore CTA
+must(homeIntroMotion.includes('this.dismissIntro()'), 'HomeIntroMotion must own the single-tap dismiss path (Option B)');
+must(homeIntroMotion.includes('intro-about-cta'), 'HomeIntroMotion must build the .intro-about-cta element on dismiss');
+must(homeIntroMotion.includes("cta.href = './pages/about.html'"), 'Start Explore CTA must link to /pages/about');
+must(homeIntroMotion.includes("cta.textContent = 'Start explore'"), 'Start Explore CTA must show "Start explore" text');
 must(lenisSmoothScroll.includes('new window.Lenis'), 'LenisSmoothScroll must initialize the pinned Lenis runtime');
 must(lenisSmoothScroll.includes('gsap.ticker.add'), 'LenisSmoothScroll must use GSAP ticker integration');
 must(nativeScrollMotion.includes('IntersectionObserver'), 'NativeScrollMotion must use IntersectionObserver for reveal motion');

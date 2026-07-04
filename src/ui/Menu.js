@@ -14,6 +14,11 @@ export default class Menu {
         this.panelTimeline = null;
         this.menuItems = [];
 
+        this.reducedMotion =
+            typeof window !== 'undefined' &&
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         if (!this.container) {
             console.warn('Menu: .burgercontainer not found');
             return;
@@ -323,12 +328,26 @@ export default class Menu {
         }
     }
 
+    showPanelImmediate(isOpening) {
+        if (typeof gsap === 'undefined') return;
+        gsap.set(this.menuPanel, {
+            opacity: isOpening ? 1 : 0,
+            scale: 1,
+            clearProps: 'transform'
+        });
+        gsap.set(this.menuItems, { opacity: 1, y: 0, clearProps: 'transform' });
+    }
+
     animatePanel(isOpening) {
         if (!this.menuPanel) return;
 
         if (this.panelTimeline) {
             this.panelTimeline.kill();
             this.panelTimeline = null;
+        }
+
+        if (this.reducedMotion) {
+            this.showPanelImmediate(isOpening);
         }
 
         if (typeof gsap === 'undefined') {

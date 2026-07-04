@@ -1,0 +1,16 @@
+{
+  "name": "Yusuf — Creative Developer",
+  "short_name": "yqecea",
+  "description": "Personal portfolio — WebGL experiences + selected client work",
+  "start_url": "/",
+  "display": "fullscreen",
+  "background_color": "#0a0a2e",
+  "theme_color": "#0a0a2e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

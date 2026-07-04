@@ -54,7 +54,7 @@ Verified at `pages/work.html:283, 310, 337, 365, 393, 420, 447, 475, 504, 533`.
 cd portfolio-webgl
 npm ci
 npm run lint:html   # html-validate on index.html + pages/*.html
-npm run check:js    # node --check on every .js under src/ and javascript/
+npm run check:js    # node --check on every .js under src/
 npm run check:ui-contracts
 npm run verify      # check:js + lint:html + check:ui-contracts
 npm run lint:links  # linkinator against the live deploy
@@ -64,10 +64,15 @@ npm run lint:links  # linkinator against the live deploy
 
 ## Current UI Contracts
 
-- The home intro is the restored legacy two-step intro: oversized
-  `Hello my name is / YUSUF. creative / developer / from Kazakhstan / 16 y.o.`
-  first screen, then the old `Click anywhere -> to enable the sound` overlay.
-  Do not replace it with generated quicknav/progress/frame controls.
+- **Home intro contract (resolved — plan 011 Phase 1, 2026-07-03): Option B — single-tap CTA.**
+  The first screen shows the oversized `Hello my name is / YUSUF. creative /
+  developer / from Kazakhstan / 16 y.o.` overlay. A single tap on the overlay
+  dismisses the intro, starts sound, and reveals the `.intro-explore-cta`
+  element (a "Start explore" link to `pages/about.html`). The legacy
+  `.l-over.hometoggler` "Click anywhere to enable the sound" prompt markup
+  is still present in the DOM as a fallback (used by `showPrompt()` when the
+  intro root becomes invisible) but is NOT the active first-tap behavior.
+  Do not replace the active single-tap flow with quicknav/progress/frame controls.
 - The global menu has two separate concepts: `.trigger.burgerclickablein` /
   `.trigger.burgerclickableout` are the fixed hitboxes, while
   `.menu-prompt.burgerclickablein` is visual copy only. Do not bind menu logic
@@ -91,9 +96,6 @@ npm run lint:links  # linkinator against the live deploy
 - Stale `bolt-optimize-scroll-loop-*` remote-tracking branches (5 visible
   on `origin/`) are AI-agent collision on the same RAF consolidation.
   Do not merge them; pick a winner or close.
-- The `javascript/` directory holds legacy `cursor/` and `webglball/`
-  implementations. The active code in `src/ui/CursorCanvas.js` and
-  `src/webgl/WebGLApp.js` supersedes them. Plan 003 (deferred) removes them.
 - The 4 self-hosted assets in `assets/sound/` and `assets/sphere/`
   originated from `niccolomiranda/chiara-luzzana` on GitHub. See
   `LICENSE` for the redistribution-rights note.

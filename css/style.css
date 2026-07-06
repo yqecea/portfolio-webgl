@@ -1,4 +1,59 @@
-/*! v=2026-06-21T01:58:00Z round14-cache-bust */
+/*! v=2026-07-06T13:52:00Z round15-token-system */
+
+:root {
+  --color-bg: #0a0a0a;
+  --color-text: #f5f4ef;
+  --color-text-muted: #e5e3dc;
+  --color-text-dim: #999999;
+  --color-surface: #e2e2dd;
+  --color-border: #222222;
+  --color-accent: #7c3aed;
+  --color-focus: var(--color-accent);
+
+  --font-display: "Ayer", "Roslindale Display Condensed", sans-serif;
+  --font-display-alt: "Roslindale Display Condensed", sans-serif;
+  --font-body: "Neue Montreal", sans-serif;
+  --font-mono: monospace, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 18px;
+  --space-5: 24px;
+  --space-6: 40px;
+  --space-7: 64px;
+  --space-8: 96px;
+
+  --motion-fast: 180ms;
+  --motion-base: 320ms;
+  --motion-slow: 520ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --tap-target-min: 44px;
+}
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: 2px;
+}
+
+.tap-target {
+  position: relative;
+}
+
+.tap-target::before {
+  content: "";
+  position: absolute;
+  inset: 50% 0 0 50%;
+  width: max(100%, var(--tap-target-min));
+  height: max(100%, var(--tap-target-min));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
 
 html {
   font-family: sans-serif;
@@ -51,7 +106,7 @@ a {
 
 a:active,
 a:hover {
-  outline: 0;
+  outline-color: transparent;
 }
 
 abbr[title] {
@@ -1353,7 +1408,6 @@ textarea.w-select {
 
 .w-slider-arrow-left:focus,
 .w-slider-arrow-right:focus {
-  outline: 0;
 }
 
 .w-slider-arrow-left {
@@ -1426,7 +1480,6 @@ textarea.w-select {
 }
 
 .w-dropdown-toggle:focus {
-  outline: 0;
 }
 
 .w-icon-dropdown-toggle {
@@ -1461,7 +1514,6 @@ textarea.w-select {
 }
 
 .w-dropdown-link:focus {
-  outline: 0;
 }
 
 @media screen and (max-width: 767px) {
@@ -1498,7 +1550,6 @@ textarea.w-select {
   text-align: center;
   background: rgba(0, 0, 0, 0.9);
   z-index: 2000;
-  outline: 0;
   opacity: 0;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -2025,7 +2076,6 @@ textarea.w-select {
 }
 
 .w-nav-button:focus {
-  outline: 0;
 }
 
 .w-nav-button.w--open {
@@ -2110,7 +2160,6 @@ textarea.w-select {
 }
 
 .w-tab-link:focus {
-  outline: 0;
 }
 
 .w-tab-content {
@@ -2671,6 +2720,20 @@ h5 {
   font-weight: 400;
   text-align: center;
   text-transform: none;
+}
+
+.p-tagline {
+  max-width: 34vh;
+  margin-top: 0.3vh;
+  font-family: "Neue Montreal", sans-serif;
+  color: #0a0a0a;
+  font-size: clamp(11px, 1.4vh, 13px);
+  line-height: 1.2;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: none;
+  opacity: 0.72;
 }
 
 .contact {

@@ -74,5 +74,37 @@ class Loop {
 
 // Export singleton instance
 const loop = new Loop();
+
+// ⚡ Bolt Optimization: Hijack legacy RAF loop to prevent double-execution
+// The legacy RAFClass (in inline scripts) starts its own loop. We merge it here.
+if (typeof window !== 'undefined' && window.RAF) {
+    console.log('⚡ [Bolt] Optimizing: Hijacking legacy RAF loop');
+
+    // 1. Migrate existing legacy callbacks
+    if (window.RAF.callbacks && window.RAF.callbacks.length > 0) {
+        window.RAF.callbacks.forEach(item => {
+            loop.subscribe(item.name, item.callback);
+        });
+        // Clear to avoid double-run during transition
+        window.RAF.callbacks = [];
+    }
+
+    // 2. Kill the legacy loop
+    // Overwriting render with no-op stops the NEXT frame from scheduling a new one
+    // (Existing frame in queue will run once, call this no-op, and stop)
+    window.RAF.render = () => {};
+
+    // 3. Redirect future subscriptions to the central loop
+    window.RAF.subscribe = (name, callback) => loop.subscribe(name, callback);
+
+    // 4. Fix the bug in legacy unsubscribe (and redirect to central loop)
+    window.RAF.unsubscribe = (name) => loop.unsubscribe(name);
+
+    // 5. Sync 'dt' property because legacy scripts read RAF.dt
+    Object.defineProperty(window.RAF, 'dt', {
+        get: () => loop.dt
+    });
+}
+
 export default loop;
 export { Loop };

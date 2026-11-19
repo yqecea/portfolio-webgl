@@ -9264,7 +9264,7 @@ body[data-page="contact"] .contact {
     url("https://uploads-ssl.webflow.com/5ea69b4027484b2df2b45806/5ea6a1d9808bdf61c698db90_RoslindaleDisplayCondensed-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
-  font-display: auto;
+  font-display: swap;
 }
 
 @font-face {
@@ -9273,7 +9273,7 @@ body[data-page="contact"] .contact {
     url("https://uploads-ssl.webflow.com/5ea69b4027484b2df2b45806/5ea6a1d9f0e208637f59ca5d_Ayer-Medium.woff") format("woff");
   font-weight: 500;
   font-style: normal;
-  font-display: auto;
+  font-display: swap;
 }
 
 @font-face {
@@ -9282,7 +9282,7 @@ body[data-page="contact"] .contact {
     url("https://uploads-ssl.webflow.com/5ea69b4027484b2df2b45806/5ea6a1d9088154c745bdec23_NeueMontreal-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
-  font-display: auto;
+  font-display: swap;
 }
 
 @font-face {
@@ -9291,7 +9291,7 @@ body[data-page="contact"] .contact {
     url("https://uploads-ssl.webflow.com/5ea69b4027484b2df2b45806/5eaaae08fbbd835abfc5f258_RoslindaleDisplayCondensed-Medium.woff") format("woff");
   font-weight: 500;
   font-style: normal;
-  font-display: auto;
+  font-display: swap;
 }
 
 
@@ -10277,146 +10277,6 @@ body[data-page="home"].intro-revealing .webglholder {
   transform: translateX(-50%) translateY(1px) scale(0.97);
 }
 
-@keyframes mobileWorkControlsIn {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes mobileWorkDotPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(226, 226, 221, 0);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(226, 226, 221, 0.12);
-  }
-}
-
-.mobile-work-controls {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: max(16px, env(safe-area-inset-bottom));
-  z-index: 1200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 0 14px;
-  pointer-events: none;
-}
-
-.mobile-work-arrow,
-.mobile-work-dot {
-  border: 1px solid rgba(226, 226, 221, 0.55);
-  background: rgba(10, 10, 42, 0.42);
-  color: #e2e2dd;
-  font-family: Ayer, sans-serif;
-  text-transform: uppercase;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  cursor: pointer;
-  transition:
-    background-color 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    color 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.mobile-work-arrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 42px;
-  min-width: 82px;
-  padding: 0 14px;
-  border-radius: 999px;
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  pointer-events: auto;
-}
-
-.mobile-work-arrow:hover,
-.mobile-work-arrow:focus-visible,
-.mobile-work-dot:hover,
-.mobile-work-dot:focus-visible {
-  background: rgba(226, 226, 221, 0.94);
-  border-color: #e2e2dd;
-  color: #0a0a2e;
-  outline: none;
-  transform: translate3d(0, -2px, 0);
-}
-
-.mobile-work-arrow:active,
-.mobile-work-dot:active {
-  transform: translate3d(0, 1px, 0) scale(0.96);
-}
-
-.mobile-work-dots {
-  display: grid;
-  grid-template-columns: repeat(10, minmax(24px, 30px));
-  gap: 6px;
-  order: 3;
-  width: min(100%, 354px);
-  justify-content: center;
-  pointer-events: auto;
-}
-
-.mobile-work-dot {
-  width: 100%;
-  height: 30px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 11px;
-  line-height: 30px;
-}
-
-.mobile-work-dot.is-active {
-  background: #e2e2dd;
-  color: #0a0a2e;
-  animation: mobileWorkDotPulse 1.7s ease-in-out infinite;
-}
-
-@media screen and (max-width: 991px) {
-  body[data-page="work"] .mobile-work-controls {
-    display: flex;
-    animation: mobileWorkControlsIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
-  }
-}
-
-@media screen and (max-width: 380px) {
-  .mobile-work-controls {
-    gap: 8px;
-    padding: 0 10px;
-  }
-
-  .mobile-work-arrow {
-    min-width: 74px;
-    height: 38px;
-    padding: 0 11px;
-    font-size: 10px;
-  }
-
-  .mobile-work-dots {
-    grid-template-columns: repeat(10, minmax(22px, 1fr));
-    gap: 4px;
-  }
-
-  .mobile-work-dot {
-    height: 26px;
-    font-size: 10px;
-    line-height: 26px;
-  }
-}
-
 @media screen and (max-width: 991px) {
   html[data-page="work"],
   body[data-page="work"] {
@@ -10491,142 +10351,4 @@ body[data-page="about"] .a-award .aw-grid {
   display: block;
   width: 100% !important;
   margin-left: 0 !important;
-}
-
-/* FINAL mobile work carousel guard. Keep this at the end so old Webflow
-   breakpoint blocks cannot put the work page back into a locked vertical track. */
-@media screen and (max-width: 991px) {
-  html[data-page="work"],
-  body[data-page="work"] {
-    height: 100% !important;
-    min-height: 100% !important;
-    overflow: hidden !important;
-    touch-action: pan-y !important;
-  }
-
-  body[data-page="work"] .rotate {
-    display: none !important;
-    pointer-events: none !important;
-  }
-
-  body[data-page="work"] .sidescrollbox {
-    position: relative !important;
-    display: block !important;
-    width: 100vw !important;
-    height: 100svh !important;
-    min-height: 100svh !important;
-    overflow: hidden !important;
-    overscroll-behavior: contain !important;
-    touch-action: pan-y !important;
-  }
-
-  body[data-page="work"] .p-grid,
-  body[data-page="work"] .p-grid.scroller {
-    position: relative !important;
-    inset: auto !important;
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-    gap: 0 !important;
-    width: 1000vw !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    padding: 74px 0 112px !important;
-    overflow: visible !important;
-    will-change: transform !important;
-  }
-
-  body[data-page="work"] .p-col.pagelink {
-    flex: 0 0 100vw !important;
-    width: 100vw !important;
-    min-width: 100vw !important;
-    max-width: none !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 18px !important;
-    scroll-snap-align: none !important;
-    touch-action: pan-y !important;
-  }
-
-  body[data-page="work"] .p-inner {
-    height: 100% !important;
-    min-height: 0 !important;
-  }
-
-  body[data-page="work"] .p-shot {
-    max-height: 38svh !important;
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-grid.scroller {
-    flex-direction: row !important;
-    transform: translate3d(0, 0, 0);
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink {
-    flex-basis: 100vw !important;
-    opacity: 0.42 !important;
-    filter: saturate(0.72) brightness(0.78);
-    transform: translate3d(0, 10px, 0) scale(0.94);
-    transition:
-      opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.42s cubic-bezier(0.22, 1, 0.36, 1) !important;
-    will-change: opacity, filter, transform;
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active {
-    opacity: 1 !important;
-    filter: none;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-before {
-    transform: translate3d(-14px, 10px, 0) scale(0.94);
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-after {
-    transform: translate3d(14px, 10px, 0) scale(0.94);
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink .p-shot,
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink .p-numb-w,
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink .p-block,
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink .p-side {
-    opacity: 0.36;
-    transform: translate3d(0, 16px, 0);
-    transition:
-      opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.48s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.48s cubic-bezier(0.22, 1, 0.36, 1) !important;
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink .p-shot {
-    filter: brightness(0.82) contrast(0.92);
-    transform: translate3d(0, 18px, 0) scale(0.98);
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-shot,
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-numb-w,
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-block,
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-side {
-    opacity: 1;
-    filter: none;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-numb-w {
-    transition-delay: 0.04s !important;
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-block {
-    transition-delay: 0.08s !important;
-  }
-
-  body[data-page="work"].mobile-work-carousel-active .p-col.pagelink.is-mobile-active .p-side {
-    transition-delay: 0.12s !important;
-  }
 }

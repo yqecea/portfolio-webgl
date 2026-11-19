@@ -4,7 +4,8 @@ const MENU_ANIMATION_SECONDS = 0.8;
 const MENU_PANEL_SECONDS = 0.28;
 
 export default class Menu {
-    constructor() {
+    constructor(dismissIntro) {
+        this.dismissIntro = dismissIntro;
         this.container = document.querySelector('.burgercontainer');
         this.menuPanel = document.querySelector('.menu');
         this.menuPrompt = document.querySelector('.menu-prompt.burgerclickablein');
@@ -44,7 +45,7 @@ export default class Menu {
             this.simplex = noopNoise;
         }
 
-        this.dpi = window.devicePixelRatio || 1;
+        this.dpi = Math.min(window.devicePixelRatio || 1, 1.5);
 
         this.isOpen = false;
         this.fillColor = '#0A0A0A';
@@ -112,13 +113,7 @@ export default class Menu {
     }
 
     bindEvents() {
-        const openTriggers = new Set([this.burgerIn, this.menuPrompt].filter(Boolean));
-        openTriggers.forEach((trigger) => {
-            trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.toggle();
-            });
-        });
+        this.burgerIn.addEventListener('click', () => this.toggle());
         if (this.burgerOut) {
             this.burgerOut.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -131,6 +126,7 @@ export default class Menu {
         });
 
         window.addEventListener('resize', () => this.resize());
+        document.addEventListener('keydown', (event) => this.handleKey(event));
 
         // Mouse hover detection (desktop only)
         // Use inline User-Agent detection instead of relying on external global
@@ -176,7 +172,7 @@ export default class Menu {
         if (this.isOpen) return;
         this.isOpen = true;
 
-        this.dismissIntroOverlay();
+        this.dismissIntro();
         this.showMenuPanel();
         this.animatePanel(true);
         this.animateBurger(true);
@@ -185,6 +181,7 @@ export default class Menu {
         if (this.navTrigger) this.navTrigger.classList.add('on');
         this.setOpenTriggerActive(false);
         this.setCloseTriggerActive(true);
+        this.closeButton.focus({ preventScroll: true });
     }
 
     close() {
@@ -198,6 +195,24 @@ export default class Menu {
         if (this.navTrigger) this.navTrigger.classList.remove('on');
         this.setCloseTriggerActive(false);
         this.setOpenTriggerActive(true);
+        this.burgerIn.focus({ preventScroll: true });
+    }
+
+    handleKey(event) {
+        if (!this.isOpen) return;
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            this.close();
+            return;
+        }
+        if (event.key !== 'Tab') return;
+
+        const links = [...this.menuPanel.querySelectorAll('a[href]')];
+        const items = [this.closeButton, ...links];
+        const index = items.indexOf(document.activeElement);
+        const offset = event.shiftKey ? -1 : 1;
+        event.preventDefault();
+        items[(index + offset + items.length) % items.length].focus();
     }
 
     ensureCloseButton() {
@@ -205,6 +220,7 @@ export default class Menu {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'menu-close';
+        btn.setAttribute('aria-controls', this.menuPanel.id);
         btn.setAttribute('aria-label', 'Close menu');
         btn.innerHTML = `
             <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
@@ -227,7 +243,8 @@ export default class Menu {
 
     showCloseButton() {
         const btn = this.ensureCloseButton();
-        if (typeof gsap !== 'undefined') {
+        btn.hidden = false;
+        if (!this.reducedMotion && window.gsap) {
             gsap.killTweensOf(btn);
             gsap.fromTo(btn, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.22, ease: 'power2.out' });
         } else {
@@ -239,19 +256,8 @@ export default class Menu {
     hideCloseButton() {
         if (!this.closeButton) return;
         const btn = this.closeButton;
-        if (typeof gsap !== 'undefined') {
-            gsap.killTweensOf(btn);
-            gsap.to(btn, {
-                opacity: 0,
-                scale: 0.85,
-                duration: 0.18,
-                ease: 'power2.in',
-                onComplete: () => { btn.style.pointerEvents = 'none'; }
-            });
-        } else {
-            btn.style.opacity = '0';
-            btn.style.pointerEvents = 'none';
-        }
+        window.gsap?.killTweensOf(btn);
+        btn.hidden = true;
     }
 
     animateBurger(isOpening) {
@@ -260,7 +266,7 @@ export default class Menu {
         const targetMargin = isOpening ? this.config.burgerBigMargin : this.smallConfig.burgerMargin;
         const targetLines = isOpening ? this.openLineValues : this.closedLineValues;
 
-        if (typeof gsap !== 'undefined') {
+        if (!this.reducedMotion && window.gsap) {
             const lineTargets = [...this.lines.top, ...this.lines.bottom];
             gsap.killTweensOf([this.y, this.config, ...lineTargets]);
             gsap.to(this.y, {
@@ -346,11 +352,8 @@ export default class Menu {
             this.panelTimeline = null;
         }
 
-        if (this.reducedMotion) {
+        if (this.reducedMotion || !window.gsap) {
             this.showPanelImmediate(isOpening);
-        }
-
-        if (typeof gsap === 'undefined') {
             if (isOpening) {
                 this.menuPanel.style.display = 'flex';
                 this.menuPanel.style.visibility = 'visible';
@@ -428,6 +431,7 @@ export default class Menu {
             gsap.killTweensOf([this.menuPanel, ...this.menuItems]);
         }
         this.isOpen = false;
+        this.hideCloseButton();
         document.body.classList.remove('menu-open');
         this.hideMenuPanel();
         if (this.navTrigger) this.navTrigger.classList.remove('on');
@@ -461,17 +465,6 @@ export default class Menu {
         this.menuPanel.style.display = 'none';
         this.menuPanel.style.visibility = 'hidden';
         this.menuPanel.style.pointerEvents = 'none';
-    }
-
-    dismissIntroOverlay() {
-        document.body.classList.add('intro-dismissed');
-        document.body.classList.remove('intro-load-active');
-        document.body.classList.remove('intro-second');
-        document.querySelectorAll('.load.hometoggler, .l-over.hometoggler').forEach((element) => {
-            element.style.display = 'none';
-            element.style.opacity = '0';
-            element.style.pointerEvents = 'none';
-        });
     }
 
     resize() {
@@ -535,6 +528,7 @@ export default class Menu {
     }
 
     shouldRenderNoise() {
+        if (this.reducedMotion) return false;
         if (this.isOpen) return true;
         if (this.y.value > 0.001) return true;
         if (this.noiseAmplitude.value < 0.99) return true;
@@ -636,6 +630,8 @@ export default class Menu {
 
     setOpenTriggerActive(isActive) {
         this.setActiveHitbox(this.burgerIn, isActive);
+        this.burgerIn.setAttribute('aria-expanded', String(this.isOpen));
+        this.burgerIn.tabIndex = isActive ? 0 : -1;
         if (this.menuPrompt && this.menuPrompt !== this.burgerIn) {
             this.menuPrompt.classList.toggle('on', isActive);
             this.menuPrompt.style.pointerEvents = 'none';

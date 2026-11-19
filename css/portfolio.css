@@ -1,0 +1,457 @@
+/* Portfolio-specific behavior overrides after the archived Webflow export. */
+body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) .load.hometoggler {
+  display: none !important;
+}
+
+body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) {
+  overflow-y: auto !important;
+}
+
+body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) .latest-work {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.intro-enter {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid rgba(255, 255, 255, .44);
+  border-radius: 999px;
+  background: #205bd1;
+  color: #fff;
+  box-shadow: inset 0 1px 5px rgba(255, 255, 255, .26), 0 3px 8px rgba(0, 0, 0, .3);
+  font: 600 15px/1.2 system-ui, sans-serif;
+  letter-spacing: .01em;
+  text-transform: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary-action:hover {
+  background: #1c50bc;
+  color: #fff;
+  border-color: #b3ceff;
+}
+
+.primary-action:focus-visible,
+.hero-work-link:focus-visible,
+.trigger.burgerclickablein:focus-visible,
+.menu-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+.hero-actions {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+body[data-page="home"] .hero-actions .intro-about-cta {
+  position: static;
+  min-width: 0;
+  transform: none;
+  backdrop-filter: none;
+  border-color: rgba(255, 255, 255, .44);
+  background: #205bd1;
+  color: white;
+}
+
+.hero-work-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 0 10px;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: .22em;
+  font: 500 14px/1.2 system-ui, sans-serif;
+}
+
+.webglholder {
+  height: 100svh;
+}
+
+.webglholder .webgl-static-poster {
+  animation: none;
+  background: none;
+}
+
+.webgl-static-poster::before {
+  content: "";
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  width: min(61vw, 45svh, 420px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: repeating-linear-gradient(157deg, transparent 0 8px, #210f43ad 9px 11px),
+    radial-gradient(circle at 28% 24%, #d5b8ff, #7742ef 34%, #381b83 65%, #17113b 87%);
+  box-shadow: inset -14px -20px 50px #100b31, 0 0 65px #9957f23d;
+}
+
+.webglholder.webgl-fallback canvas {
+  visibility: hidden;
+}
+
+.trigger.burgerclickablein {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.menu {
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 991px), (pointer: coarse) {
+  body[data-page="work"] .p-grid.scroller {
+    padding: 20px 16px 32px !important;
+    gap: 18px !important;
+  }
+
+  body[data-page="work"] .p-col.pagelink,
+  body[data-page="work"] .p-inner {
+    min-height: 0 !important;
+  }
+
+  body[data-page="work"] .p-inner {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    height: auto;
+    padding: 0 0 14px !important;
+  }
+
+  body[data-page="work"] .p-shot {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 10;
+    grid-column: 1 / -1;
+    order: 0;
+    margin: 0 0 12px !important;
+  }
+
+  body[data-page="work"] .p-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  body[data-page="work"] .p-numb-w,
+  body[data-page="work"] .elastic {
+    display: none;
+  }
+
+  body[data-page="work"] .p-block,
+  body[data-page="work"] .p-side {
+    position: static !important;
+    width: auto !important;
+    min-width: 0;
+    height: auto !important;
+    padding: 0 12px !important;
+    transform: none !important;
+  }
+
+  body[data-page="work"] .p-title,
+  body[data-page="work"] .p-tagline {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary-action, .webglholder, .menu *, .load * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.menu-close[hidden],
+.cookie-c[hidden] {
+  display: none !important;
+}
+
+body.intro-load-active .cookie-c {
+  display: none;
+}
+
+.cookie-c:not([hidden]) {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  gap: 12px;
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #151424;
+}
+
+.cookie-c .cookie-t {
+  font: 14px/1.4 system-ui, sans-serif;
+}
+
+.cookie-c .confirm {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (pointer: coarse) and (min-width: 992px) {
+  html:has(body[data-page="work"]),
+  body[data-page="work"] {
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+
+  body[data-page="work"] .sidescrollbox,
+  body[data-page="work"] .p-grid.scroller {
+    position: relative !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body[data-page="work"] .p-col.pagelink {
+    display: block;
+    width: min(100%, 680px) !important;
+    min-width: 0 !important;
+    height: auto !important;
+    margin: 12px auto;
+  }
+}
+
+body[data-page="home"] .nav-logo img,
+body[data-page="work"] .nav-logo img {
+  filter: invert(1);
+}
+
+body[data-page="home"] .hero {
+  color: #e2e2dd;
+}
+
+body[data-page="home"] .hero .h-head {
+  color: inherit;
+}
+
+body[data-page="home"].intro-load-active .load.hometoggler,
+body[data-page="home"].intro-revealing .load.hometoggler {
+  display: block;
+  padding: 0;
+}
+
+.intro-copy {
+  position: absolute;
+  z-index: 2;
+  top: 31%;
+  left: clamp(32px, 10vw, 172px);
+  color: #f7f4ff;
+}
+
+.intro-copy p {
+  margin: 0;
+}
+
+.intro-location {
+  font: 500 clamp(13px, 2.1vw, 17px)/1.4 system-ui, sans-serif;
+}
+
+.intro-name {
+  font: 500 clamp(84px, 15vw, 228px)/.83 "Roslindale Display Condensed", Georgia, serif;
+}
+
+.intro-name span {
+  color: #c5abff;
+}
+
+.intro-role {
+  padding-top: .35em;
+  font: 400 clamp(23px, 4vw, 55px)/1.1 "Neue Montreal", system-ui, sans-serif;
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .intro-copy {
+    top: 19%;
+    inset-inline: 20px;
+    text-align: center;
+  }
+
+  body[data-page="home"]:not(.intro-dismissed) .webgl-static-poster::before {
+    top: 61%;
+    left: 50%;
+  }
+
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .intro-copy {
+    top: 24%;
+  }
+
+  .intro-name {
+    font-size: min(18svh, 100px);
+  }
+
+  .intro-enter {
+    bottom: 10px;
+  }
+
+  .hero-actions {
+    padding-bottom: 12px;
+  }
+}
+
+body[data-page="home"] .hero.hero-stage {
+  position: relative;
+  min-height: 100svh;
+  height: auto;
+  align-items: start;
+  padding: 108px clamp(24px, 10vw, 172px) 44px;
+}
+
+.hero-summary {
+  position: relative;
+  z-index: 2;
+  max-width: min(43vw, 580px);
+}
+
+.hero-summary > p {
+  margin: 0 0 8px;
+  color: #d5c8f3;
+  font: 500 16px/1.4 system-ui, sans-serif;
+}
+
+.hero-summary h1 {
+  margin: 0 0 26px;
+  color: #fff;
+  font: 500 clamp(40px, 7vw, 108px)/.96 "Roslindale Display Condensed", Georgia, serif;
+  text-wrap: balance;
+}
+
+body[data-page="home"] .webglholder {
+  left: 35%;
+  width: 65%;
+}
+
+body[data-page="work"] .p-col {
+  color: #f6f2fc;
+}
+
+body[data-page="work"] :is(.p-title, .p-client, .p-tagline, .p-numb, .p-desc) {
+  color: #f6f2fc;
+}
+
+body[data-page="work"] .p-arrow {
+  filter: invert(1);
+}
+
+body[data-page="work"] .work-heading {
+  position: absolute;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 991px), (pointer: coarse) {
+  body[data-page="work"] {
+    overflow: visible !important;
+  }
+
+  body[data-page="work"] .work-heading {
+    position: static;
+    clip-path: none;
+    width: min(100% - 32px, 520px);
+    margin: 0 auto;
+    padding-top: 82px;
+    color: #f6f2fc;
+    font: 500 clamp(34px, 10vw, 55px)/1 "Roslindale Display Condensed", Georgia, serif;
+  }
+
+  body[data-page="work"] .p-col.pagelink {
+    overflow: hidden;
+    border: 1px solid rgba(232, 218, 255, .25);
+    border-radius: 14px;
+    background: #19143c;
+  }
+
+  body[data-page="work"] .p-client {
+    font: 600 12px/1.3 system-ui, sans-serif !important;
+    letter-spacing: .025em;
+  }
+
+  body[data-page="work"] .p-title {
+    font: 500 clamp(24px, 7vw, 36px)/1.03 "Roslindale Display Condensed", Georgia, serif !important;
+  }
+
+  body[data-page="work"] .p-tagline,
+  body[data-page="work"] .p-desc {
+    margin-top: 5px;
+    font: 400 14px/1.35 system-ui, sans-serif;
+  }
+
+  body[data-page="work"] .p-side {
+    align-self: end;
+  }
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  body[data-page="home"] .hero.hero-stage {
+    align-items: center;
+    padding: 100px 20px max(44px, env(safe-area-inset-bottom));
+  }
+
+  body[data-page="home"] .webglholder {
+    left: 0;
+    width: 100%;
+  }
+
+  .hero-summary {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+  }
+
+  .hero-summary h1 {
+    font-size: clamp(40px, 11vw, 62px);
+  }
+
+  .hero-actions {
+    flex-wrap: nowrap;
+    margin-top: auto;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  body[data-page="home"] .hero.hero-stage {
+    padding: 70px 32px 22px;
+  }
+
+  .hero-summary h1 {
+    font-size: min(12svh, 52px);
+    margin-bottom: 14px;
+  }
+}

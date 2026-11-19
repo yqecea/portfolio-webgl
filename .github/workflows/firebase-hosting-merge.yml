@@ -13,16 +13,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - name: Install
         run: npm ci
-      - name: Verify
-        run: |
-          npm run lint:html
-          npm run check:js
-          # linkinator needs a live server; skip in CI, run manually
-          # npm run lint:links
+      - name: Verify source
+        run: npm run check:static
+      - name: Build
+        run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

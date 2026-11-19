@@ -2,7 +2,9 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on PR
-on: pull_request
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 permissions:
   checks: write
   contents: read
@@ -11,21 +13,21 @@ jobs:
   build_and_preview:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - name: Install
         run: npm ci
+      - name: Install Chromium
+        run: npx playwright install chromium --with-deps
       - name: Verify
-        run: |
-          npm run lint:html
-          npm run check:js
-          # linkinator needs a live server; skip in CI, run manually
-          # npm run lint:links
+        run: npm run verify
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: ${{ !github.event.pull_request.draft }}
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GEN_LANG_CLIENT_0698883101 }}

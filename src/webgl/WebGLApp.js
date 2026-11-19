@@ -7,6 +7,7 @@
  * @target .webglholder
  */
 import loop from '../core/Loop.js';
+import * as THREE from './vendor/three.js';
 
 // === SHADER CODE ===
 const noise = `
@@ -233,281 +234,149 @@ class CameraController {
 
 // === MAIN WEBGL APP ===
 export default class WebGLApp {
-    constructor() {
-        this.container = document.querySelector('.webglholder');
-        this.simplex = new SimplexNoise();
-        this.soundActor = 0.2;
-        this.initZScale = 1;
+    constructor(container, motion) {
+        this.container = container;
+        this.motion = motion;
+        this.compact = matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+        this.sliceCount = this.compact ? 24 : 40;
+        this.frameInterval = this.compact ? 1000 / 30 : 0;
+        this.lastFrame = 0;
+        this.state = 'loading';
 
-        // GUI config
-        this.config = {
-            SLICE_NUMBER: 40,
-            sliceThickness: 0.45,
-            noiseSpeed: 2.5,
-            noiseDetail: 25,
-            noiseRoof: 1.8,
-            noiseDepth: 0,
-            noiseShadow: -0.8,
-            noiseOffset: 2,
-            matCap: 0,
-            lightIntensity: 1.34,
-            lightAmbient: 0,
-            camSpeed: 0.05,
-            camSensitivity: 0.002,
-            highFreqIntensity: 0.0017 * 0.01,
-            lowFreqIntensity: 0.008 * 0.1,
-            colorChangingFrequency: 0.01
-        };
-
-        this.colorPool = [new THREE.Color(0x5e2ced)];
-        this.matCaps = [];
-
-        this.init = this.init.bind(this);
         this.update = this.update.bind(this);
         this.resizeCanvas = this.resizeCanvas.bind(this);
     }
 
     init() {
-        if (!this.container) {
-            console.warn('WebGLApp: .webglholder not found');
-            return;
-        }
-
-        this._matCapLoaded = false;
-        this._modelLoaded = false;
-        this._paused = false;
-
-        // Load matcaps
-        const loader = new THREE.TextureLoader();
-        const matCapUrl = '../../assets/sphere/matCap0.jpg';
-        loader.load(
-            matCapUrl,
-            (texture) => {
-                this.matCaps.push(texture);
-                this._markMatCapLoaded();
-            },
-            undefined,
-            (error) => {
-                console.warn('[WebGLApp] Matcap load failed:', error);
-                this._showFallback('matcap');
-            }
-        );
-
-        // Setup renderer (with fallback for headless / no-WebGL browsers)
         try {
-            this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        } catch (e) {
-            console.warn('[WebGLApp] WebGL context creation failed:', e);
-            this._showFallback('context-creation-failed');
+            this.renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: !this.compact,
+                powerPreference: 'low-power',
+            });
+        } catch {
+            this.showFallback('unavailable');
             return;
         }
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.debug.checkShaderErrors = true;
-        this.container.appendChild(this.renderer.domElement);
 
-        this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
+        const canvas = this.renderer.domElement;
+        canvas.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
-            console.warn('[WebGLApp] WebGL context lost');
-            this._showFallback('context-loss');
-            this._paused = true;
+            if (this.state === 'failed') return;
+            this.state = 'context-lost';
+            this.showFallback('context-loss');
         });
-
-        this.renderer.domElement.addEventListener('webglcontextrestored', () => {
-            console.log('[WebGLApp] WebGL context restored');
-            this._paused = false;
-            this._hideFallback();
-            // Re-load assets that were tied to the lost context.
-            this.loadSphereModel();
+        canvas.addEventListener('webglcontextrestored', () => {
+            if (this.state !== 'context-lost') return;
+            this.state = this.sphere.parent ? 'active' : 'loading';
         });
+        this.container.append(canvas);
 
-        if (window.isMobile) {
-            const cap = 1.5;
-            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
-        }
-
-        // Setup scene
         this.scene = new THREE.Scene();
-
-        // Setup camera
-        this.camera = new THREE.PerspectiveCamera(
-            30,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
+        this.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 1000);
         this.camera.position.set(0, 0, 7);
+        this.sphere = new THREE.Group();
+        this.sphere.rotation.set(0, -0.8, 1);
+        this.sphere.scale.setScalar(this.compact ? 0.8 : 1);
+        if (!this.compact) this.cameraController = new CameraController(this.camera);
 
-        // Camera controller (only on desktop)
-        if (!window.isMobile) {
-            this.camController = new CameraController(this.camera);
-        }
-
-        // Lighting
-        const light = new THREE.AmbientLight();
-        const pointLight = new THREE.PointLight();
-        pointLight.position.set(10, 10, 0);
-        this.scene.add(light, pointLight);
-
-        // Create sliced sphere
-        this.sliceGeom = new THREE.Group();
-        this.loadSphereModel();
-
-        if (window.isMobile) {
-            this.sliceGeom.scale.set(0.8, 0.8, 0.8);
-        }
-
-        // Events
+        this.resizeCanvas();
         window.addEventListener('resize', this.resizeCanvas);
-
-        // Subscribe to animation loop
-        loop.subscribe('webglUpdate', this.update);
-        if (this.camController) {
-            loop.subscribe('cameraControllerUpdate', this.camController.update);
-        }
+        this.loadSphere();
     }
 
-    loadSphereModel() {
-        const fbxLoader = new THREE.FBXLoader();
-        const sphereRad = 1;
-
-        fbxLoader.load(
-            '../../assets/sphere/slice2.fbx',
-            (obj) => {
-                this._markModelLoaded();
-                let inc = 0;
-                for (let i = -sphereRad; i <= sphereRad; i += (sphereRad * 2) / this.config.SLICE_NUMBER) {
-                    const n = Math.round(((this.simplex.noise2D(inc * 0.1, 1) + 1) / 2) * (this.colorPool.length - 1));
-
-                    const uniforms = {
+    async loadSphere() {
+        try {
+            const [matcap, model] = await Promise.all([
+                new THREE.TextureLoader().loadAsync('/assets/sphere/matCap0.jpg'),
+                fetch('/assets/sphere/slice.json', { signal: AbortSignal.timeout(8000) }).then(response => {
+                    if (!response.ok) throw new Error('Sphere geometry returned HTTP ' + response.status);
+                    return response.json();
+                }),
+            ]);
+            const geometry = new THREE.BufferGeometryLoader().parse(model.geometry);
+            for (let index = 1; index < this.sliceCount; index += 1) {
+                const y = -1 + 2 * index / this.sliceCount;
+                const radius = Math.sqrt(1 - y * y);
+                const material = new THREE.ShaderMaterial({
+                    vertexShader: vertexShader(),
+                    fragmentShader: fragmentShader(),
+                    transparent: true,
+                    uniforms: {
                         u_tex: { value: null },
-                        u_matCap: { value: this.matCaps[this.config.matCap] },
+                        u_matCap: { value: matcap },
                         u_nSpeed: { value: 0 },
-                        u_offset: { value: inc },
-                        u_sliceNumber: { value: this.config.SLICE_NUMBER },
-                        u_offsetInt: { value: this.config.noiseOffset },
-                        u_color: { value: this.colorPool[n] },
-                        u_nDet: { value: this.config.noiseDetail },
-                        u_nRoof: { value: this.config.noiseRoof },
-                        u_nDepth: { value: this.config.noiseDepth },
-                        u_nShadow: { value: this.config.noiseShadow },
-                        u_lInt: { value: this.config.lightIntensity },
-                        u_lTresh: { value: this.config.lightAmbient }
-                    };
-
-                    const r = Math.sqrt(2 * sphereRad * (i + sphereRad) - Math.pow(i + sphereRad, 2));
-
-                    if (r > 0) {
-                        const cyl = obj.children[0].clone();
-                        cyl.material = new THREE.ShaderMaterial({
-                            vertexShader: vertexShader(),
-                            fragmentShader: fragmentShader(),
-                            uniforms: uniforms,
-                            transparent: true
-                        });
-
-                        this.initZScale = cyl.scale.z;
-                        cyl.position.y = i;
-                        cyl.scale.x *= r;
-                        cyl.scale.y *= r;
-                        cyl.scale.z = this.initZScale * this.config.sliceThickness;
-                        this.sliceGeom.add(cyl);
-                    }
-                    inc++;
-                }
-
-                this.sliceGeom.rotation.z = 1;
-                this.sliceGeom.rotation.y = -0.8;
-                this.scene.add(this.sliceGeom);
-            },
-            undefined,
-            (error) => {
-                console.warn('[WebGLApp] FBX load failed:', error);
-                this._showFallback('model');
+                        u_offset: { value: index },
+                        u_sliceNumber: { value: this.sliceCount },
+                        u_offsetInt: { value: 2 },
+                        u_color: { value: new THREE.Color(0x5e2ced) },
+                        u_nDet: { value: 25 },
+                        u_nRoof: { value: 1.8 },
+                        u_nDepth: { value: 0 },
+                        u_nShadow: { value: -0.8 },
+                        u_lInt: { value: 1.34 },
+                        u_lTresh: { value: 0 },
+                    },
+                });
+                const slice = new THREE.Mesh(geometry, material);
+                slice.scale.fromArray(model.scale);
+                slice.quaternion.fromArray(model.rotation);
+                slice.position.y = y;
+                slice.scale.x *= radius;
+                slice.scale.y *= radius;
+                slice.scale.z *= 0.45;
+                this.sphere.add(slice);
             }
-        );
+            this.scene.add(this.sphere);
+            if (this.state === 'loading') this.state = 'active';
+            loop.subscribe('webglUpdate', this.update);
+        } catch (error) {
+            this.state = 'failed';
+            this.showFallback('asset');
+            console.warn('[WebGL] Static sphere retained', error);
+        }
     }
 
     update() {
-        if (this._paused) return;
-        if (!this.renderer) return;
-
-        this.renderer.render(this.scene, this.camera);
-
-        // Update slices
-        this.sliceGeom.children.forEach((child, i) => {
-            const n = Math.round(
-                ((this.simplex.noise2D(i * this.config.colorChangingFrequency, 1) + 1) / 2) *
-                (this.colorPool.length - 1)
-            );
-
-            child.scale.z = this.initZScale * this.config.sliceThickness;
-            child.material.uniforms.u_nSpeed.value += loop.dt * 0.0001 * this.config.noiseSpeed * this.soundActor;
-            child.material.uniforms.u_nDet.value = this.config.noiseDetail;
-            child.material.uniforms.u_nRoof.value = this.config.noiseRoof;
-            child.material.uniforms.u_nDepth.value = this.config.noiseDepth;
-            child.material.uniforms.u_nShadow.value = this.config.noiseShadow;
-            child.material.uniforms.u_matCap.value = this.matCaps[this.config.matCap];
-            child.material.uniforms.u_lInt.value = this.config.lightIntensity;
-            child.material.uniforms.u_lTresh.value = this.config.lightAmbient;
-            child.material.uniforms.u_offsetInt.value = this.config.noiseOffset;
-            child.material.uniforms.u_color.value = this.colorPool[n];
-
-            // Sound reactivity (shared global instance from app bootstrap)
-            const reactor = window.soundReactor;
-            if (reactor && reactor.fdata) {
-                const highFreqIdx = Math.min(500, reactor.fdata.length - 1);
-                const lowFreqIdx = Math.min(10, reactor.fdata.length - 1);
-                child.material.uniforms.u_nDet.value =
-                    this.config.noiseDetail + (reactor.fdata[highFreqIdx] || 0) * this.config.highFreqIntensity;
-                child.material.uniforms.u_nRoof.value =
-                    this.config.noiseRoof - (reactor.fdata[lowFreqIdx] || 0) * this.config.lowFreqIntensity;
-
-                if (reactor.audio && !reactor.audio.paused) {
-                    this.soundActor = 1;
-                } else {
-                    this.soundActor = 0.2;
-                }
-            }
-        });
-
-        // Update camera controller
-        if (this.camController) {
-            this.camController.sensitivity = this.config.camSensitivity;
-            this.camController.ease = this.config.camSpeed;
+        if (this.state !== 'active' || document.hidden) return;
+        if (this.motion.matches) {
+            this.showFallback('reduced-motion');
+            return;
         }
-    }
+        if (document.body.classList.contains('menu-open') || scrollY > this.container.clientHeight) return;
+        const now = performance.now();
+        const elapsed = now - this.lastFrame;
+        if (elapsed < this.frameInterval - 1) return;
+        this.lastFrame = now;
 
-    _showFallback(reason) {
-        if (!this.container) return;
-        this.container.classList.add('webgl-fallback');
-        this.container.dataset.fallbackReason = reason;
-    }
+        const reactor = window.soundReactor;
+        const playing = reactor?.audio && !reactor.audio.paused;
+        const high = playing ? reactor.fdata?.[500] || 0 : 0;
+        const low = playing ? reactor.fdata?.[10] || 0 : 0;
+        for (const slice of this.sphere.children) {
+            const uniforms = slice.material.uniforms;
+            uniforms.u_nSpeed.value += Math.min(elapsed, 50) * (playing ? 0.00025 : 0.00005);
+            uniforms.u_nDet.value = 25 + high * 0.000017;
+            uniforms.u_nRoof.value = 1.8 - low * 0.0008;
+        }
 
-    _hideFallback() {
-        if (!this.container) return;
+        this.cameraController?.update();
+        this.renderer.render(this.scene, this.camera);
         this.container.classList.remove('webgl-fallback');
         delete this.container.dataset.fallbackReason;
     }
 
-    _markMatCapLoaded() {
-        this._matCapLoaded = true;
-        if (this._modelLoaded) this._hideFallback();
-    }
-
-    _markModelLoaded() {
-        this._modelLoaded = true;
-        if (this._matCapLoaded) this._hideFallback();
+    showFallback(reason) {
+        this.container.classList.add('webgl-fallback');
+        this.container.dataset.fallbackReason = reason;
     }
 
     resizeCanvas() {
-        if (!this.renderer || !this.camera) return;
-
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        if (window.isMobile) {
-            const cap = 1.5;
-            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
-        }
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+        const { clientWidth: width, clientHeight: height } = this.container;
+        if (!width || !height) return;
+        this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, this.compact ? 1 : 1.5));
+        this.renderer.setSize(width, height);
+        this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
     }
 }

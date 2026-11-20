@@ -158,15 +158,62 @@
   </style>
 </head>
 
-<body class="body" data-page="home" style="background-image: linear-gradient(to right top, #0a0a2e, #12123d, #1a1a4e, #2d1b69, #5e2ced);">
+<body class="body" data-page="home">
   <a href="#main" class="skip-to-content tap-target">Skip to content</a>
   <div class="load hometoggler">
-    <div class="intro-copy">
-      <p class="intro-location">Based in Kazakhstan</p>
-      <p class="intro-name">Yusuf<span>.</span></p>
-      <p class="intro-role">Creative developer</p>
+    <div class="l-grid" aria-hidden="true">
+      <div class="l-item">
+        <h2 class="l-head">
+          Hello my name is
+        </h2>
+      </div>
+      <div class="l-item">
+        <figure class="l-inner">
+          <div class="text-wrap">
+            <h2 class="text-stroke">YUSUF.</h2>
+            <h2 class="text-fill">
+              YUSUF.
+            </h2>
+          </div>
+        </figure>
+        <h2 class="l-head">
+          creative
+        </h2>
+      </div>
+      <div class="l-item">
+        <h2 class="l-head">
+          developer
+        </h2>
+      </div>
+      <div class="l-item">
+        <h2 class="l-head">
+          from Kazakhstan
+        </h2>
+      </div>
+      <div class="l-item">
+        <figure class="l-inner-2">
+          <div class="text-wrap-2">
+            <h2 class="text-stroke-2">16 y.o.</h2>
+            <h2 class="text-fill-2">
+              16 y.o.
+            </h2>
+          </div>
+        </figure>
+      </div>
     </div>
-    <button class="intro-enter primary-action" type="button">Enter portfolio</button>
+  </div>
+  <div class="l-over hometoggler">
+    <p class="sr-only" id="intro-description">Yusuf, creative developer from Kazakhstan</p>
+    <button type="button" class="l-text-w w-clearfix intro-enter" aria-describedby="intro-description">
+      <span class="l-text">Click anywhere</span>
+      <span class="l-arrow w-embed">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 10" aria-hidden="true" focusable="false">
+          <defs />
+          <path fill="#e2e2dd" d="M59.2,9.6V6.2h-58v-2c0,0,0,0,0,0h58V0.7L67,5.1L59.2,9.6z" />
+        </svg>
+      </span>
+      <span class="l-text lt-r">to start</span>
+    </button>
   </div>
   <button type="button" class="sound soundtoggler w-inline-block" aria-label="Toggle sound" aria-pressed="false"></button>
     <button type="button" class="trigger burgerclickablein w-inline-block" aria-label="Open menu" aria-controls="site-menu" aria-expanded="false"></button>
@@ -237,7 +284,7 @@
                       top: calc(3.5vw + 0.1vw);
                       bottom: 0;
                       left: 0;
-                      background-color: #7c3aed;
+                      background-color: var(--color-accent);
                       transform-origin: bottom right;
                       transition: transform 0.35s ease-out;
                     }
@@ -258,7 +305,7 @@
                       top: calc(6vh + 0.1vh);
                       bottom: 0;
                       left: 0;
-                      background-color: #7c3aed;
+                      background-color: var(--color-accent);
                       transform-origin: bottom right;
                       transition: transform 0.35s ease-out;
                     }
@@ -282,16 +329,67 @@
   </div>
 
   <main id="main" tabindex="-1">
-    <section class="hero hero-stage" aria-labelledby="hero-title">
-      <div class="hero-summary">
-        <p>Yusuf · Creative developer</p>
-        <h1 id="hero-title">Immersive work for the web.</h1>
-        <div class="hero-actions">
-          <a class="intro-about-cta primary-action" href="./pages/about.html">Start exploring</a>
-          <a class="hero-work-link" href="./pages/work.html">View projects <span aria-hidden="true">→</span></a>
+  <div class="hero-stage">
+    <h1 class="sr-only">Yusuf, creative developer</h1>
+  <div class="hero" aria-hidden="true">
+    <div class="h-row">
+      <div class="h-block hb-1">
+        <div class="h-slant hh1 w-embed">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 154 165" aria-hidden="true" focusable="false">
+            <defs />
+            <g fill="#0a0a0a">
+              <path
+                d="M10.7 60.4l.2-1.4 19.2-20h1.7l-2.9 17.9h16.3l-.8 3.5H28.3l-13.2 80.4c-1.4 8.5.4 13.2 5.6 13.2 4.1 0 7-3.1 9.9-7.2l1.4 1.2c-3.3 7.2-8.7 14-17.3 14-9.9 0-12.2-9.1-10.1-21.5l13.2-80H10.7zM46.2 159.8H32.6l.2-1.2 3.7-13.8L56.9 19.2l.8-13.6 12.4-2.3-1.4 8.3L55.1 95.3c6.2-19.8 14.8-40.2 27.8-40.2 8.7 0 12.8 10.3 10.3 25.8l-11.3 63.9.4 13.8-.2 1.2H67.9l.2-1.2 3.1-13.6 11.6-65c2.3-11.5-.6-15.3-4.7-15.3-10.3 0-19.2 25.2-26 48.1l-5.2 32-.6 13.8L46.2 159.8zM135.1 141.5c-5.2 11.1-12.4 20.4-23.3 20.4-10.7 0-18.2-8.9-18.2-30.9 0-40.4 24.3-75.9 42.5-75.9 7.8 0 12.2 5.8 12.2 14.4 0 16.5-16.7 36.1-42.1 39.8-.6 5.2-1 10.9-1 16.5 0 20.4 4.7 26.4 12.2 26.4 6.8 0 12-4.7 16.1-11.6L135.1 141.5zM106.6 106.8c19.8-4.3 31.6-21.4 31.6-38.1 0-7-2.3-9.7-5.6-9.7C123.5 59 110.6 78 106.6 106.8z" />
+            </g>
+          </svg>
         </div>
       </div>
-    </section>
+      <div class="h-wrap w-clearfix">
+        <div class="h-block hb">
+          <h2 class="h-head">
+            WEB
+          </h2>
+        </div>
+        <div class="h-block hb-side">
+          <h2 class="h-head">experiences</h2>
+        </div>
+      </div>
+    </div>
+    <div class="h-row">
+      <div class="h-block hb-3">
+        <div class="h-slant w-embed">
+          <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" x="0" y="0" version="1.1" viewBox="0 0 100 177"
+            xml:space="preserve" aria-hidden="true" focusable="false">
+            <defs />
+            <path
+              d="M5 10 C10 8, 15 12, 18 20 L42 75 C44 80, 46 82, 50 82 C54 82, 56 80, 58 75 L82 20 C85 12, 90 8, 95 10 C100 12, 101 18, 98 26 L70 90 C66 100, 58 108, 54 112 L54 155 C54 162, 56 166, 60 168 C56 172, 52 174, 50 174 C48 174, 44 172, 40 168 C44 166, 46 162, 46 155 L46 112 C42 108, 34 100, 30 90 L2 26 C-1 18, 0 12, 5 10 Z"
+              class="st1" />
+            <path
+              d="M15 18 C13 20, 13 24, 15 30 L40 88 C42 94, 46 98, 50 98 C54 98, 58 94, 60 88 L85 30 C87 24, 87 20, 85 18 C83 16, 79 18, 76 24 L54 78 C52 82, 51 84, 50 84 C49 84, 48 82, 46 78 L24 24 C21 18, 17 16, 15 18 Z"
+              class="st1" />
+          </svg>
+        </div>
+      </div>
+      <div class="h-wrap hw w-clearfix">
+        <div class="h-block hb-2">
+          <h1 class="h-head">
+            landing
+          </h1>
+        </div>
+        <div class="h-block hb-side2">
+          <h1 class="h-head">pages</h1>
+        </div>
+      </div>
+    </div>
+    <div
+      class="h-quote-w w-clearfix">
+      <div class="h-quote">
+        &quot;building creative web experiences&quot;
+      </div>
+    </div>
+  </div>
+    <a class="intro-about-cta" href="./pages/about.html">Start explore</a>
+  </div>
   <!-- Latest work featured cards. Rendered as a separate scroll section
        so users on the home hero can see what the portfolio is about
        without navigating to /pages/work.html. Each card links out to the

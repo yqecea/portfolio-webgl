@@ -13,76 +13,49 @@ body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) .latest-wor
   pointer-events: auto !important;
 }
 
+.load.hometoggler,
+.l-over.hometoggler {
+  display: none;
+}
+
+body.intro-load-active .load.hometoggler,
+body.intro-revealing .load.hometoggler {
+  display: flex;
+}
+
+body[data-page="home"].intro-load-active .l-over.hometoggler {
+  z-index: 10000 !important;
+}
+
+body[data-page="home"].intro-load-active .trigger.burgerclickablein.on {
+  z-index: 10001;
+}
+
 .intro-enter {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: max(24px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-
-.primary-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 24px;
-  border: 1px solid rgba(255, 255, 255, .44);
-  border-radius: 999px;
-  background: #205bd1;
-  color: #fff;
-  box-shadow: inset 0 1px 5px rgba(255, 255, 255, .26), 0 3px 8px rgba(0, 0, 0, .3);
-  font: 600 15px/1.2 system-ui, sans-serif;
-  letter-spacing: .01em;
-  text-transform: none;
-  text-decoration: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
   cursor: pointer;
+  pointer-events: auto;
 }
 
-.primary-action:hover {
-  background: #1c50bc;
-  color: #fff;
-  border-color: #b3ceff;
-}
-
-.primary-action:focus-visible,
-.hero-work-link:focus-visible,
+.intro-enter:focus-visible,
+.intro-about-cta:focus-visible,
 .trigger.burgerclickablein:focus-visible,
 .menu-close:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--color-text);
   outline-offset: 4px;
 }
 
-.hero-actions {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
+body.intro-load-active .intro-about-cta,
+body.intro-revealing .intro-about-cta {
+  visibility: hidden;
 }
 
-body[data-page="home"] .hero-actions .intro-about-cta {
-  position: static;
-  min-width: 0;
-  transform: none;
-  backdrop-filter: none;
-  border-color: rgba(255, 255, 255, .44);
-  background: #205bd1;
-  color: white;
-}
-
-.hero-work-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 48px;
-  padding: 0 10px;
-  color: #fff;
-  text-decoration: underline;
-  text-underline-offset: .22em;
-  font: 500 14px/1.2 system-ui, sans-serif;
+.hero-stage {
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .webglholder {
@@ -97,15 +70,15 @@ body[data-page="home"] .hero-actions .intro-about-cta {
 .webgl-static-poster::before {
   content: "";
   position: absolute;
-  top: 47%;
+  top: 50%;
   left: 50%;
-  width: min(61vw, 45svh, 420px);
+  width: min(70vw, 47svh, 460px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: repeating-linear-gradient(157deg, transparent 0 8px, #210f43ad 9px 11px),
-    radial-gradient(circle at 28% 24%, #d5b8ff, #7742ef 34%, #381b83 65%, #17113b 87%);
-  box-shadow: inset -14px -20px 50px #100b31, 0 0 65px #9957f23d;
+  background: repeating-linear-gradient(157deg, transparent 0 8px, color-mix(in srgb, var(--sphere-shadow) 70%, transparent) 9px 11px),
+    radial-gradient(circle at 28% 24%, var(--sphere-highlight), var(--sphere-body) 34%, var(--sphere-mid) 65%, var(--sphere-shadow) 87%);
+  box-shadow: inset -14px -20px 50px var(--ambient-deep), 0 0 65px color-mix(in srgb, var(--color-accent) 24%, transparent);
 }
 
 .webglholder.webgl-fallback canvas {
@@ -182,7 +155,7 @@ body[data-page="home"] .hero-actions .intro-about-cta {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .primary-action, .webglholder, .menu *, .load * {
+  .intro-about-cta, .webglholder, .menu *, .load * {
     animation: none !important;
     transition: none !important;
   }
@@ -248,119 +221,18 @@ body[data-page="work"] .nav-logo img {
   filter: invert(1);
 }
 
-body[data-page="home"] .hero {
-  color: #e2e2dd;
-}
-
-body[data-page="home"] .hero .h-head {
-  color: inherit;
-}
-
-body[data-page="home"].intro-load-active .load.hometoggler,
-body[data-page="home"].intro-revealing .load.hometoggler {
-  display: block;
-  padding: 0;
-}
-
-.intro-copy {
-  position: absolute;
-  z-index: 2;
-  top: 31%;
-  left: clamp(32px, 10vw, 172px);
-  color: #f7f4ff;
-}
-
-.intro-copy p {
-  margin: 0;
-}
-
-.intro-location {
-  font: 500 clamp(13px, 2.1vw, 17px)/1.4 system-ui, sans-serif;
-}
-
-.intro-name {
-  font: 500 clamp(84px, 15vw, 228px)/.83 "Roslindale Display Condensed", Georgia, serif;
-}
-
-.intro-name span {
-  color: #c5abff;
-}
-
-.intro-role {
-  padding-top: .35em;
-  font: 400 clamp(23px, 4vw, 55px)/1.1 "Neue Montreal", system-ui, sans-serif;
-}
-
-@media (max-width: 767px) and (orientation: portrait) {
-  .intro-copy {
-    top: 19%;
-    inset-inline: 20px;
-    text-align: center;
-  }
-
-  body[data-page="home"]:not(.intro-dismissed) .webgl-static-poster::before {
-    top: 61%;
-    left: 50%;
-  }
-
-}
-
-@media (orientation: landscape) and (max-height: 500px) {
-  .intro-copy {
-    top: 24%;
-  }
-
-  .intro-name {
-    font-size: min(18svh, 100px);
-  }
-
-  .intro-enter {
-    bottom: 10px;
-  }
-
-  .hero-actions {
-    padding-bottom: 12px;
-  }
-}
-
-body[data-page="home"] .hero.hero-stage {
-  position: relative;
-  min-height: 100svh;
-  height: auto;
-  align-items: start;
-  padding: 108px clamp(24px, 10vw, 172px) 44px;
-}
-
-.hero-summary {
-  position: relative;
-  z-index: 2;
-  max-width: min(43vw, 580px);
-}
-
-.hero-summary > p {
-  margin: 0 0 8px;
-  color: #d5c8f3;
-  font: 500 16px/1.4 system-ui, sans-serif;
-}
-
-.hero-summary h1 {
-  margin: 0 0 26px;
-  color: #fff;
-  font: 500 clamp(40px, 7vw, 108px)/.96 "Roslindale Display Condensed", Georgia, serif;
-  text-wrap: balance;
-}
-
-body[data-page="home"] .webglholder {
-  left: 35%;
-  width: 65%;
+body[data-page="home"] .hero,
+body[data-page="home"] .hero :is(.h-head, .h-quote),
+.lw-title {
+  color: var(--color-text);
 }
 
 body[data-page="work"] .p-col {
-  color: #f6f2fc;
+  color: var(--color-text);
 }
 
 body[data-page="work"] :is(.p-title, .p-client, .p-tagline, .p-numb, .p-desc) {
-  color: #f6f2fc;
+  color: var(--color-text);
 }
 
 body[data-page="work"] .p-arrow {
@@ -383,15 +255,15 @@ body[data-page="work"] .work-heading {
     width: min(100% - 32px, 520px);
     margin: 0 auto;
     padding-top: 82px;
-    color: #f6f2fc;
+    color: var(--color-text);
     font: 500 clamp(34px, 10vw, 55px)/1 "Roslindale Display Condensed", Georgia, serif;
   }
 
   body[data-page="work"] .p-col.pagelink {
     overflow: hidden;
-    border: 1px solid rgba(232, 218, 255, .25);
+    border: 1px solid var(--color-card-border);
     border-radius: 14px;
-    background: #19143c;
+    background: var(--color-card);
   }
 
   body[data-page="work"] .p-client {
@@ -411,47 +283,5 @@ body[data-page="work"] .work-heading {
 
   body[data-page="work"] .p-side {
     align-self: end;
-  }
-}
-
-@media (max-width: 767px) and (orientation: portrait) {
-  body[data-page="home"] .hero.hero-stage {
-    align-items: center;
-    padding: 100px 20px max(44px, env(safe-area-inset-bottom));
-  }
-
-  body[data-page="home"] .webglholder {
-    left: 0;
-    width: 100%;
-  }
-
-  .hero-summary {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 440px;
-    text-align: center;
-  }
-
-  .hero-summary h1 {
-    font-size: clamp(40px, 11vw, 62px);
-  }
-
-  .hero-actions {
-    flex-wrap: nowrap;
-    margin-top: auto;
-  }
-}
-
-@media (orientation: landscape) and (max-height: 500px) {
-  body[data-page="home"] .hero.hero-stage {
-    padding: 70px 32px 22px;
-  }
-
-  .hero-summary h1 {
-    font-size: min(12svh, 52px);
-    margin-bottom: 14px;
   }
 }

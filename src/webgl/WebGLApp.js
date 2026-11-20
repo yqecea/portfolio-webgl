@@ -295,6 +295,7 @@ export default class WebGLApp {
                 }),
             ]);
             const geometry = new THREE.BufferGeometryLoader().parse(model.geometry);
+            const color = new THREE.Color(getComputedStyle(this.container).getPropertyValue('--sphere-material').trim());
             for (let index = 1; index < this.sliceCount; index += 1) {
                 const y = -1 + 2 * index / this.sliceCount;
                 const radius = Math.sqrt(1 - y * y);
@@ -309,7 +310,7 @@ export default class WebGLApp {
                         u_offset: { value: index },
                         u_sliceNumber: { value: this.sliceCount },
                         u_offsetInt: { value: 2 },
-                        u_color: { value: new THREE.Color(0x5e2ced) },
+                        u_color: { value: color },
                         u_nDet: { value: 25 },
                         u_nRoof: { value: 1.8 },
                         u_nDepth: { value: 0 },

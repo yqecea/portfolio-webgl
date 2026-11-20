@@ -19,8 +19,8 @@ const must = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-must(/<button class="intro-enter primary-action" type="button">/.test(index), 'Home must have a native intro entry button');
-must(/class="intro-about-cta primary-action" href="\.\/pages\/about\.html"/.test(index), 'Home must link to About from the hero');
+must(/<button type="button" class="l-text-w w-clearfix intro-enter"[^>]*>/.test(index), 'Home must have a native intro entry button');
+must(/class="intro-about-cta" href="\.\/pages\/about\.html"/.test(index), 'Home must link to About from the hero');
 must(css.includes('body[data-page="home"].intro-load-active .hero'), 'Home must keep the hero hidden during the intro');
 must(css.includes('transition: none;'), 'css/style.css must keep CSS menu transitions disabled in favor of GSAP-controlled motion');
 must(css.includes('body:not([data-page="home"]) .trigger.burgerclickablein.on'), 'css/style.css must keep the non-home trigger visibility guard');

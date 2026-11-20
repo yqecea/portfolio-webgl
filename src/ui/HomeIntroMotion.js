@@ -2,14 +2,18 @@ export default class HomeIntroMotion {
   constructor(onDismiss) {
     this.onDismiss = onDismiss;
     this.root = document.querySelector('.load.hometoggler');
+    this.prompt = document.querySelector('.intro-enter');
     this.main = document.querySelector('main');
+    this.about = this.main.querySelector('.intro-about-cta');
     this.reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   init() {
     document.body.classList.add('intro-load-active');
     this.main.inert = true;
-    this.root.addEventListener('click', () => this.dismiss({ playSound: true, focus: true }));
+    const enter = () => this.dismiss({ playSound: true, focus: true });
+    this.root.addEventListener('click', enter);
+    this.prompt.addEventListener('click', enter);
     document.querySelector('.skip-to-content').addEventListener('click', () => this.dismiss());
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && document.body.classList.contains('intro-load-active')) {
@@ -17,13 +21,18 @@ export default class HomeIntroMotion {
       }
     });
 
-    const lines = this.root.querySelectorAll('.intro-copy p');
-    if (this.reducedMotion || !window.gsap) return;
+    const lines = this.root.querySelectorAll('.l-head, .l-inner, .l-inner-2');
+    const fills = this.root.querySelectorAll('.text-fill, .text-fill-2');
+    if (this.reducedMotion || !window.gsap) {
+      for (const fill of fills) fill.style.width = '100%';
+      return;
+    }
 
-    this.timeline = gsap.fromTo(lines, { opacity: 0, y: 16 }, {
-      opacity: 1, y: 0, duration: 0.55, stagger: 0.06, ease: 'power3.out',
-      clearProps: 'opacity,transform',
-    });
+    this.timeline = gsap.timeline({ defaults: { ease: 'power3.out', overwrite: 'auto' } })
+      .fromTo(lines, { opacity: 0, yPercent: 105 }, {
+        opacity: 1, yPercent: 0, duration: 0.72, stagger: 0.09, clearProps: 'opacity,transform',
+      })
+      .fromTo(fills, { width: '0%' }, { width: '100%', duration: 0.82, stagger: 0.12, ease: 'power2.out' }, 0.22);
   }
 
   dismiss({ playSound = false, focus = false } = {}) {
@@ -38,14 +47,17 @@ export default class HomeIntroMotion {
     classList.remove('intro-load-active');
     classList.add('intro-dismissed');
 
-    if (focus) document.querySelector('.intro-about-cta').focus({ preventScroll: true });
     this.onDismiss({ playSound });
-
+    const finish = () => {
+      classList.remove('intro-revealing');
+      if (focus) this.about.focus({ preventScroll: true });
+    };
     if (animate) {
-      gsap.to(this.root, {
-        opacity: 0, duration: 0.36, ease: 'power2.out',
-        onComplete: () => classList.remove('intro-revealing'),
+      gsap.fromTo(this.root, { opacity: 1 }, {
+        opacity: 0, scale: 0.985, duration: 0.52, ease: 'power3.inOut', onComplete: finish,
       });
+    } else {
+      finish();
     }
   }
 }

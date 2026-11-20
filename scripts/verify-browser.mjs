@@ -41,11 +41,11 @@ try {
   const open = (page, path) => page.goto(base + path, { waitUntil: 'load', timeout: 16000 });
   const shot = (page, name) => page.screenshot({ path: join(output, name + '.png'), timeout: 8000 });
   const mobile = width => ({ ...devices['Pixel 7'], deviceScaleFactor: 1, viewport: { width, height: 800 } });
-  const enter = page => page.getByRole('button', { name: 'Enter portfolio', exact: true });
+  const enter = page => page.getByRole('button', { name: /click anywhere.*to start/i });
   const openMenu = page => page.getByRole('button', { name: 'Open menu' });
   const ready = page => page.waitForFunction(() => {
-    const intro = document.querySelector('.intro-copy .intro-name');
-    return document.body.classList.contains('intro-load-active') && getComputedStyle(intro).opacity === '1';
+    const fill = document.querySelector('.load .text-fill');
+    return document.body.classList.contains('intro-load-active') && fill.style.width === '100%';
   });
   const noOverflow = async page => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
 
@@ -108,7 +108,8 @@ try {
     assert.equal(await enter(page).evaluate(el => el === document.activeElement), true);
     await shot(page, 'after-desktop-home');
     await page.keyboard.press('Enter');
-    assert.equal(await page.getByRole('link', { name: 'Start exploring' }).evaluate(el => el === document.activeElement), true);
+    await page.waitForFunction(() => !document.body.classList.contains('intro-revealing'));
+    assert.equal(await page.getByRole('link', { name: 'Start explore' }).evaluate(el => el === document.activeElement), true);
     await page.waitForSelector('.webglholder:not(.webgl-fallback) canvas', { state: 'visible' });
     await page.waitForFunction(() => window.soundReactor?.isPlaying());
     await shot(page, 'after-desktop-hero');
@@ -154,6 +155,13 @@ try {
 
       await open(page, '/');
       await ready(page);
+      await openMenu(page).tap();
+      await page.getByRole('link', { name: 'about', exact: true }).waitFor();
+      assert.equal(await page.locator('.trigger.burgerclickablein').getAttribute('aria-expanded'), 'true');
+      report.scenarios.push('mobile menu opener works directly from the full-screen intro');
+
+      await open(page, '/');
+      await ready(page);
       await shot(page, 'after-mobile-home');
       await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
       await enter(page).tap();
@@ -181,7 +189,7 @@ try {
       await page.setViewportSize({ width: 800, height: 360 });
       await open(page, '/');
       await enter(page).tap();
-      await page.getByRole('link', { name: 'View projects' }).tap();
+      await page.getByRole('link', { name: 'See all 10 projects' }).tap();
       await page.waitForURL('**/pages/work.html');
       await noOverflow(page);
       await shot(page, 'after-landscape-work');
@@ -212,7 +220,7 @@ try {
     await open(page, '/');
     await enter(page).tap();
     await page.waitForFunction(() => document.querySelector('.webglholder').dataset.fallbackReason === 'dependency');
-    await page.getByRole('link', { name: 'View projects' }).tap();
+    await page.getByRole('link', { name: 'See all 10 projects' }).tap();
     await page.waitForURL('**/pages/work.html');
     report.scenarios.push('blocked WebGL dependency: static sphere and project link still work');
     report.expectedFaultConsole = report.errors.splice(0);

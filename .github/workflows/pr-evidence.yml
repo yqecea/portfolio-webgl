@@ -1,63 +1,48 @@
 name: PR evidence
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [master]
     types: [opened, reopened, synchronize, edited, ready_for_review]
-  workflow_dispatch:
-    inputs:
-      pr:
-        description: Pull request number to check without publishing a status
-        required: true
-        type: number
 
 permissions:
   contents: read
   pull-requests: read
-  statuses: write
 
 concurrency:
-  group: pr-evidence-${{ github.event_name }}-${{ github.event.pull_request.number || inputs.pr }}
+  group: pr-evidence-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   evidence:
-    name: Verify PR evidence
+    name: pr-evidence
     runs-on: ubuntu-latest
     timeout-minutes: 4
     env:
       GH_TOKEN: ${{ github.token }}
-      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
       PR_HEAD: ${{ github.event.pull_request.head.sha }}
-      ACTION_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
-      - name: Mark current head pending
-        if: github.event_name == 'pull_request_target'
-        run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD" \
-            -f context=pr-evidence -f state=pending -f target_url="$ACTION_URL" \
-            -f description='Checking PR evidence' --silent
-      - name: Check out trusted code
+      - name: Check out the base verifier
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
+          sparse-checkout: scripts/pr-evidence-check.py
+          sparse-checkout-cone-mode: false
+          path: base
+      - name: Check out the verifier on the initial rollout PR
+        if: hashFiles('base/scripts/pr-evidence-check.py') == '' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout: scripts/pr-evidence-check.py
+          sparse-checkout-cone-mode: false
+          path: rollout
       - name: Validate current GitHub evidence
-        id: verify
         run: |
+          verifier=base/scripts/pr-evidence-check.py
+          if [[ ! -f "$verifier" ]]; then verifier=rollout/scripts/pr-evidence-check.py; fi
           url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/pull/$PR_NUMBER"
-          if [[ -n "$PR_HEAD" ]]; then
-            python3 scripts/pr-evidence-check.py --ci --expect-head "$PR_HEAD" "$url"
-          else
-            python3 scripts/pr-evidence-check.py --ci "$url"
-          fi
-      - name: Publish verdict for the head
-        if: ${{ always() && !cancelled() && github.event_name == 'pull_request_target' }}
-        env:
-          RESULT: ${{ steps.verify.outcome }}
-        run: |
-          state=failure
-          if [[ "$RESULT" == success ]]; then state=success; fi
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD" \
-            -f context=pr-evidence -f state="$state" -f target_url="$ACTION_URL" \
-            -f description='See the PR evidence check' --silent
+          python3 "$verifier" --ci --expect-head "$PR_HEAD" "$url"

@@ -1,0 +1,29 @@
+name: PR evidence rollout audit
+
+on:
+  push:
+    branches: [automation/pr-evidence-20261120]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_PR: https://github.com/yqecea/portfolio-webgl/pull/27
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prove good and bad evidence
+        run: python3 -B tests/pr-evidence/test_pr_evidence.py
+      - name: Check the existing PR without updating it
+        run: |
+          status=0
+          python3 scripts/pr-evidence-check.py --ci "$TARGET_PR" || status=$?
+          printf 'Evidence checker exit %s\n' "$status"
+          exit "$status"

@@ -39,7 +39,28 @@ try {
   }
 
   const open = (page, path) => page.goto(base + path, { waitUntil: 'load', timeout: 16000 });
-  const shot = (page, name) => page.screenshot({ path: join(output, name + '.png'), timeout: 8000 });
+  async function shot(page, name, { freezeWebGL = false } = {}) {
+    // Let the compositor capture a rendered frame without competing with SwiftShader.
+    if (freezeWebGL) {
+      await page.evaluate(async () => {
+        const { default: loop } = await import('/src/core/Loop.js');
+        loop.stop();
+        await new Promise(resolve => requestAnimationFrame(resolve));
+      });
+    }
+    try {
+      await page.screenshot({ path: join(output, name + '.png'), timeout: 8000 });
+    } catch (error) {
+      throw new Error(`Could not capture ${name}: ${error.message}`, { cause: error });
+    } finally {
+      if (freezeWebGL) {
+        await page.evaluate(async () => {
+          const { default: loop } = await import('/src/core/Loop.js');
+          loop.start();
+        });
+      }
+    }
+  }
   const mobile = width => ({ ...devices['Pixel 7'], deviceScaleFactor: 1, viewport: { width, height: 800 } });
   const enter = page => page.getByRole('button', { name: /click anywhere.*to start/i });
   const openMenu = page => page.getByRole('button', { name: 'Open menu' });
@@ -112,7 +133,7 @@ try {
     assert.equal(await page.getByRole('link', { name: 'Start explore' }).evaluate(el => el === document.activeElement), true);
     await page.waitForSelector('.webglholder:not(.webgl-fallback) canvas', { state: 'visible' });
     await page.waitForFunction(() => window.soundReactor?.isPlaying());
-    await shot(page, 'after-desktop-hero');
+    await shot(page, 'after-desktop-hero', { freezeWebGL: true });
     await audit(page, 'home');
 
     await open(page, '/work');
@@ -169,7 +190,7 @@ try {
       await page.waitForSelector('.webglholder:not(.webgl-fallback) canvas', { state: 'visible' });
       const canvas = holder.locator('canvas');
       assert.equal(await canvas.evaluate(el => el.width), 360);
-      await shot(page, 'after-mobile-hero');
+      await shot(page, 'after-mobile-hero', { freezeWebGL: true });
 
       const lost = await canvas.evaluate(el => {
         const context = el.getContext('webgl2') || el.getContext('webgl');

@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import io
 import json
@@ -14,6 +15,7 @@ SCRIPT = Path(__file__).resolve().parents[2] / "scripts/pr-evidence-check.py"
 MAIN = runpy.run_path(str(SCRIPT))["main"]
 REPO = "example/site"
 HEAD, BASE = "a" * 40, "b" * 40
+HEAD_BRANCH = "automation/pr-evidence-20261120"
 URL = f"https://github.com/{REPO}/pull/1"
 PNG_ROOT = f"https://raw.githubusercontent.com/{REPO}/{HEAD}/docs/pr-evidence/home"
 PHOTOS = ("before-phone", "after-phone", "before-desktop", "after-desktop")
@@ -40,12 +42,17 @@ method = "Chromium, 390px width, same test data"
 HTML = "\n".join(f'<img src="{PNG_ROOT}/{name}.png">' for name in PHOTOS)
 
 
+def vercel_preview(branch=HEAD_BRANCH, enabled=False, **settings):
+    return {"git": {"deploymentEnabled": {branch: enabled}}, **settings}
+
+
 class EvidenceTest(unittest.TestCase):
     def run_pr(self, body=BODY, html=HTML, files=None, response_error=None,
-               mime="image/png", move_body=False, wrong_size=False):
+               mime="image/png", move_body=False, wrong_size=False, vercel_configs=None):
         files = files if files is not None else [{"filename": "index.html"}]
         pr = {
-            "head": {"sha": HEAD}, "base": {"sha": BASE, "repo": {"full_name": REPO}},
+            "head": {"sha": HEAD, "ref": HEAD_BRANCH, "repo": {"full_name": REPO}},
+            "base": {"sha": BASE, "ref": "main", "repo": {"full_name": REPO, "default_branch": "main"}},
             "body": body, "body_html": html, "changed_files": len(files),
         }
         calls = []
@@ -57,6 +64,14 @@ class EvidenceTest(unittest.TestCase):
                 result = json.dumps([files])
             elif "/compare/" in endpoint:
                 result = BASE
+            elif "/contents/vercel.json?" in endpoint:
+                config = (vercel_configs or {}).get(endpoint.split("ref=")[1])
+                if config is None:
+                    return type("Result", (), {"returncode": 1, "stdout": ""})()
+                result = json.dumps({
+                    "type": "file", "encoding": "base64",
+                    "content": base64.b64encode(json.dumps(config).encode()).decode(),
+                })
             else:
                 updated = move_body and calls.count(endpoint) == 2
                 result = json.dumps(dict(pr, body="changed") if updated else pr)
@@ -128,6 +143,44 @@ class EvidenceTest(unittest.TestCase):
         status, report = self.run_pr(move_body=True)
         self.assertEqual((status, report["verdict"]), (2, "FAIL"))
         self.assertIn("changed during verification", report["errors"][0])
+
+    def test_only_disabling_the_pr_preview_is_not_visual(self):
+        for status, base, head in (
+            ("added", None, vercel_preview(**{"$schema": "https://openapi.vercel.sh/vercel.json"})),
+            ("modified", {"rewrites": []}, vercel_preview(rewrites=[])),
+        ):
+            with self.subTest(status=status):
+                code, report = self.run_pr(
+                    body="", html="", files=[{"filename": "vercel.json", "status": status}],
+                    vercel_configs={BASE: base, HEAD: head},
+                )
+                self.assertEqual((code, report["verdict"], report["visible_files"]), (0, "PASS", []))
+
+    def test_reviewable_vercel_changes_keep_the_evidence_requirement(self):
+        for config in (
+            vercel_preview(branch="main"),
+            vercel_preview(branch="automation/{pr-evidence-20261120,main}"),
+            vercel_preview(enabled=True),
+            vercel_preview(rewrites=[{"source": "/", "destination": "/other"}]),
+            {"git": {"deploymentEnabled": False}},
+            None,
+        ):
+            with self.subTest(config=config):
+                code, report = self.run_pr(
+                    body="", html="", files=[{"filename": "vercel.json", "status": "added"}],
+                    vercel_configs={HEAD: config},
+                )
+                self.assertEqual((code, report["verdict"], report["visible_files"]), (1, "FAIL", ["vercel.json"]))
+
+    def test_moving_the_old_vercel_config_to_docs_still_needs_evidence(self):
+        code, report = self.run_pr(
+            body="", html="", vercel_configs={HEAD: vercel_preview()},
+            files=[
+                {"filename": "vercel.json", "status": "added"},
+                {"filename": "docs/vercel.json", "status": "renamed", "previous_filename": "vercel.json"},
+            ],
+        )
+        self.assertEqual((code, report["verdict"], report["visible_files"]), (1, "FAIL", ["vercel.json"]))
 
 
 if __name__ == "__main__":

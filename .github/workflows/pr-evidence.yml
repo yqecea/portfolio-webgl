@@ -37,9 +37,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-          sparse-checkout: scripts/pr-evidence-check.py
+          sparse-checkout: |
+            scripts/pr-evidence-check.py
+            tests/pr-evidence/test_pr_evidence.py
           sparse-checkout-cone-mode: false
           path: rollout
+      - name: Verify good and bad evidence on the rollout revision
+        if: hashFiles('rollout/tests/pr-evidence/test_pr_evidence.py') != ''
+        run: python3 -B rollout/tests/pr-evidence/test_pr_evidence.py
       - name: Validate current GitHub evidence
         run: |
           verifier=base/scripts/pr-evidence-check.py

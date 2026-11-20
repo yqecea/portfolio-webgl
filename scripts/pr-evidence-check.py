@@ -2,6 +2,7 @@
 """Validate a GitHub PR's visual evidence. Never run code from the PR."""
 
 import argparse
+import base64
 import json
 import re
 import signal
@@ -70,10 +71,80 @@ def pull(repo, number):
     return github(f"repos/{repo}/pulls/{number}", "-H", "Accept: application/vnd.github.full+json")
 
 
-def visible_files(files):
+def merge_base(repo, target, head):
+    commit = github(f"repos/{repo}/compare/{target}...{head}?per_page=1", "--jq", ".merge_base_commit.sha")
+    if not SHA.fullmatch(commit):
+        raise EvidenceError("GitHub did not return a merge-base SHA")
+    return commit
+
+
+def vercel_config(repo, commit):
+    file = github(f"repos/{repo}/contents/vercel.json?ref={commit}")
+    if file.get("type") != "file" or file.get("encoding") != "base64":
+        raise EvidenceError("GitHub did not return vercel.json as a file")
+    config = json.loads(base64.b64decode(file["content"]))
+    if not isinstance(config, dict):
+        raise EvidenceError("vercel.json is not a JSON object")
+    return config
+
+
+def preview_settings(config):
+    git = config.get("git")
+    return git.get("deploymentEnabled") if isinstance(git, dict) else None
+
+
+def without_preview_entry(config, branch):
+    rest = config.copy()
+    if rest.get("$schema") == "https://openapi.vercel.sh/vercel.json":
+        del rest["$schema"]
+    settings = preview_settings(rest)
+    if isinstance(settings, dict):
+        git = rest["git"].copy()
+        other_branches = {key: value for key, value in settings.items() if key != branch}
+        if other_branches:
+            git["deploymentEnabled"] = other_branches
+        else:
+            del git["deploymentEnabled"]
+        if git:
+            rest["git"] = git
+        else:
+            del rest["git"]
+    return rest
+
+
+def nonvisual_vercel_change(repo, file, pr):
+    status = file.get("status")
+    branch = pr["head"]["ref"]
+    base = pr["base"]
+    if (
+        status not in {"added", "modified"}
+        or file.get("previous_filename")
+        or not re.fullmatch(r"[a-zA-Z0-9._/-]+", branch)
+        or branch in {base["ref"], base["repo"]["default_branch"]}
+    ):
+        return False
+
+    head = pr["head"]
+    try:
+        after = vercel_config(head["repo"]["full_name"], head["sha"])
+        settings = preview_settings(after)
+        if not isinstance(settings, dict) or settings.get(branch) is not False:
+            return False
+        before = vercel_config(repo, merge_base(repo, base["sha"], head["sha"])) if status == "modified" else {}
+    except (EvidenceError, ValueError, KeyError):
+        # Unavailable configuration still needs evidence.
+        return False
+    return (
+        json.dumps(without_preview_entry(before, branch), sort_keys=True)
+        == json.dumps(without_preview_entry(after, branch), sort_keys=True)
+    )
+
+
+def visible_files(files, repo, pr):
     return sorted({
         path
         for file in files
+        if file["filename"] != "vercel.json" or not nonvisual_vercel_change(repo, file, pr)
         for path in (file["filename"], file.get("previous_filename"))
         if path and path not in NON_VISUAL_PATHS and not path.startswith(NON_VISUAL_PREFIXES)
     })
@@ -239,7 +310,7 @@ def validate_pr(repo, number, expected_head, download_dir):
     files = [entry for page in pages for entry in page]
     if len(files) != pr["changed_files"] or len({entry["filename"] for entry in files}) != len(files):
         raise EvidenceError("GitHub PR file listing is incomplete or changed during pagination")
-    report["visible_files"] = visible_files(files)
+    report["visible_files"] = visible_files(files, repo, pr)
     if report["visible_files"]:
         validate_visible_pr(repo, body, pr, report, download_dir)
 
@@ -261,10 +332,7 @@ def validate_visible_pr(repo, body, pr, report, download_dir):
         errors.append(str(exc))
         errors.append("Need exact base/head, phone and desktop pairs per screen, interaction evidence, exit codes, metrics and limits")
     else:
-        target = pr["base"]["sha"]
-        compare = github(f"repos/{repo}/compare/{target}...{head}?per_page=1", "--jq", ".merge_base_commit.sha")
-        if not SHA.fullmatch(compare):
-            raise EvidenceError("GitHub did not return a merge-base SHA")
+        compare = merge_base(repo, pr["base"]["sha"], head)
         report["merge_base"] = compare
         failures, media = inspect_manifest(manifest, rendered, prefix, head, compare)
         errors.extend(failures)

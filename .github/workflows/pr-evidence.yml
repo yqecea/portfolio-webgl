@@ -1,0 +1,53 @@
+name: PR evidence
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-evidence-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  evidence:
+    name: pr-evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check out the base verifier
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+          sparse-checkout: scripts/pr-evidence-check.py
+          sparse-checkout-cone-mode: false
+          path: base
+      - name: Check out the verifier on the initial rollout PR
+        if: hashFiles('base/scripts/pr-evidence-check.py') == '' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/pr-evidence-check.py
+            tests/pr-evidence/test_pr_evidence.py
+          sparse-checkout-cone-mode: false
+          path: rollout
+      - name: Verify good and bad evidence on the rollout revision
+        if: hashFiles('rollout/tests/pr-evidence/test_pr_evidence.py') != ''
+        run: python3 -B rollout/tests/pr-evidence/test_pr_evidence.py
+      - name: Validate current GitHub evidence
+        run: |
+          verifier=base/scripts/pr-evidence-check.py
+          if [[ ! -f "$verifier" ]]; then verifier=rollout/scripts/pr-evidence-check.py; fi
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/pull/$PR_NUMBER"
+          python3 "$verifier" --ci --expect-head "$PR_HEAD" "$url"

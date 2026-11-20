@@ -1,6 +1,5 @@
 import loop from './core/Loop.js';
 import stripWebflowIX2InitialStates from './core/WebflowIX2Stripper.js';
-import WebGLApp from './webgl/WebGLApp.js';
 import Menu from './ui/Menu.js';
 import SoundReactor from './audio/SoundReactor.js';
 import SoundToggler from './audio/SoundToggler.js';
@@ -12,16 +11,16 @@ import NativeScrollMotion from './scroll/NativeScrollMotion.js';
 import ElasticLines from './work/ElasticLines.js';
 import AnimationLock from './about/AnimationLock.js';
 import DesktopHorizontalScrollController from './work/DesktopHorizontalScrollController.js';
-import MobileWorkScrollGuard from './work/MobileWorkScrollGuard.js';
 
-const SOUND_URL = '../assets/sound/mainSound.mp3';
-const ROLLOVER_URL = '../assets/sound/rollovers/rol05.mp3';
+const SOUND_URL = '/assets/sound/mainSound.mp3';
+const ROLLOVER_URL = '/assets/sound/rollovers/rol05.mp3';
 
 class App {
   constructor() {
     this.page = null;
     this.isMobile = false;
     this.instances = [];
+    this.motion = matchMedia('(prefers-reduced-motion: reduce)');
 
     this.soundReactor = null;
     this.soundToggler = null;
@@ -71,22 +70,16 @@ class App {
     document.body.classList.remove('menu-open');
   }
 
-  hideRotateOverlayDesktop() {
-    if (this.isMobile) return;
-    const rotateOverlay = document.querySelector('.rotate');
-    if (rotateOverlay) rotateOverlay.style.display = 'none';
-  }
-
   initMenu() {
     const menuContainer = document.querySelector('.burgercontainer');
     if (!menuContainer) return;
 
-    const menu = new Menu();
+    const menu = new Menu(() => this.homeIntro?.dismiss());
     this.instances.push(menu);
   }
 
   initSound() {
-    if (this.isMobile) return;
+    if (this.isMobile || matchMedia('(pointer: coarse)').matches) return;
 
     const enableAnalyser = this.page === 'home';
     this.soundReactor = new SoundReactor(SOUND_URL, { enableAnalyser });
@@ -107,27 +100,13 @@ class App {
     window.soundToggler = this.soundToggler;
 
     this.instances.push(this.soundToggler);
-
-    if (this.page === 'home') {
-      const homeToggler = document.querySelector('.hometoggler');
-      if (!homeToggler) return;
-
-      homeToggler.addEventListener('click', async () => {
-        if (!document.body.classList.contains('intro-dismissed')) return;
-        await this.soundReactor.resumeContextIfNeeded();
-        const started = await this.soundReactor.play({ restore: false });
-        if (started && this.soundToggler) {
-          this.soundToggler.started();
-        }
-      });
-    }
   }
 
   initCursor() {
     const container = document.querySelector('.cursorcontainer');
     if (!container) return;
 
-    if (this.isMobile) {
+    if (this.isMobile || this.motion.matches || matchMedia('(pointer: coarse)').matches) {
       container.classList.add('is-disabled');
       return;
     }
@@ -144,13 +123,14 @@ class App {
   }
 
   initPageTransition() {
+    if (this.motion.matches || this.isMobile || matchMedia('(pointer: coarse)').matches) return;
     const isHome = this.page === 'home';
 
     const transition = new PageTransition({
       initialColor: isHome ? '#FFFF00' : '#FFAAFF',
       clickColor: '#E5E3DC',
       curtainFill: isHome ? '#FFFFFF' : '#0D0D0D',
-      allowOnMobile: true
+      allowOnMobile: false
     });
 
     transition.init({ soundReactor: this.soundReactor });
@@ -160,9 +140,11 @@ class App {
   initHomeIntroMotion() {
     if (this.page !== 'home') return;
 
-    const introMotion = new HomeIntroMotion();
-    const started = introMotion.init();
-    if (started) this.instances.push(introMotion);
+    this.homeIntro = new HomeIntroMotion(({ playSound }) => {
+      if (playSound) this.startIntroSound();
+      if (!this.motion.matches && !navigator.connection?.saveData) this.initWebgl();
+    });
+    this.homeIntro.init();
   }
 
   initNativeScrollMotion() {
@@ -181,16 +163,12 @@ class App {
     if (this.page !== 'work') return;
 
     const scroller = new DesktopHorizontalScrollController();
-    const started = scroller.init();
-    if (started) this.instances.push(scroller);
-
-    const mobileGuard = new MobileWorkScrollGuard();
-    const mobileGuardStarted = mobileGuard.init();
-    if (mobileGuardStarted) this.instances.push(mobileGuard);
+    scroller.init();
+    this.instances.push(scroller);
   }
 
   initWorkElasticLines() {
-    if (this.page !== 'work') return;
+    if (this.page !== 'work' || this.motion.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
     const elastic = new ElasticLines({
       audioUrls: [ROLLOVER_URL]
@@ -208,13 +186,44 @@ class App {
     this.instances.push(animationLock);
   }
 
-  initWebgl() {
-    const webglContainer = document.querySelector('.webglholder');
-    if (!webglContainer) return;
+  async startIntroSound() {
+    if (!this.soundReactor) return;
+    await this.soundReactor.resumeContextIfNeeded();
+    if (await this.soundReactor.play({ restore: false })) this.soundToggler?.started();
+  }
 
-    const webglApp = new WebGLApp();
-    webglApp.init();
-    this.instances.push(webglApp);
+  async initWebgl() {
+    const container = document.querySelector('.webglholder');
+    try {
+      if (this.motion.matches) return;
+      const { default: WebGLApp } = await import('./webgl/WebGLApp.js');
+      if (this.motion.matches) return;
+      const webglApp = new WebGLApp(container, this.motion);
+      webglApp.init();
+      this.instances.push(webglApp);
+    } catch (error) {
+      container.dataset.fallbackReason = 'dependency';
+      console.warn('[WebGL] Static sphere retained', error);
+    }
+  }
+
+  initAudioNotice() {
+    const notice = document.querySelector('.cookie-c');
+    if (!notice || !this.soundReactor) return;
+    try {
+      if (localStorage.getItem('portfolio.audio-notice')) return;
+    } catch {
+      // The notice remains dismissible when storage is unavailable.
+    }
+    notice.hidden = false;
+    notice.querySelector('.confirm').addEventListener('click', () => {
+      notice.hidden = true;
+      try {
+        localStorage.setItem('portfolio.audio-notice', 'seen');
+      } catch {
+        // Dismissal is still effective on this page.
+      }
+    });
   }
 
   init() {
@@ -231,12 +240,12 @@ class App {
     this.setPageFlags();
     this.setEnvironmentFlags();
     this.setupGlobalLifecycle();
-    this.hideRotateOverlayDesktop();
-    this.initMenu();
     this.initSound();
     this.initCursor();
     this.initPageTransition();
     this.initHomeIntroMotion();
+    this.initMenu();
+    this.initAudioNotice();
     this.initLenisSmoothScroll();
     this.initNativeScrollMotion();
 
@@ -244,8 +253,6 @@ class App {
     this.initWorkElasticLines();
 
     this.initAboutAnimationLock();
-    this.initWebgl();
-
     loop.start();
   }
 }

@@ -16,3 +16,6 @@ artifacts/
 evidence/
 audit-*.png
 .playwright-mcp/
+
+# Temporary output from the static build
+.dist-*/

@@ -1,0 +1,287 @@
+/* Portfolio-specific behavior overrides after the archived Webflow export. */
+body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) .load.hometoggler {
+  display: none !important;
+}
+
+body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) {
+  overflow-y: auto !important;
+}
+
+body[data-page="home"]:not(.intro-load-active):not(.intro-revealing) .latest-work {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.load.hometoggler,
+.l-over.hometoggler {
+  display: none;
+}
+
+body.intro-load-active .load.hometoggler,
+body.intro-revealing .load.hometoggler {
+  display: flex;
+}
+
+body[data-page="home"].intro-load-active .l-over.hometoggler {
+  z-index: 10000 !important;
+}
+
+body[data-page="home"].intro-load-active .trigger.burgerclickablein.on {
+  z-index: 10001;
+}
+
+.intro-enter {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.intro-enter:focus-visible,
+.intro-about-cta:focus-visible,
+.trigger.burgerclickablein:focus-visible,
+.menu-close:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+body.intro-load-active .intro-about-cta,
+body.intro-revealing .intro-about-cta {
+  visibility: hidden;
+}
+
+.hero-stage {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.webglholder {
+  height: 100svh;
+}
+
+.webglholder .webgl-static-poster {
+  animation: none;
+  background: none;
+}
+
+.webgl-static-poster::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(70vw, 47svh, 460px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: repeating-linear-gradient(157deg, transparent 0 8px, color-mix(in srgb, var(--sphere-shadow) 70%, transparent) 9px 11px),
+    radial-gradient(circle at 28% 24%, var(--sphere-highlight), var(--sphere-body) 34%, var(--sphere-mid) 65%, var(--sphere-shadow) 87%);
+  box-shadow: inset -14px -20px 50px var(--ambient-deep), 0 0 65px color-mix(in srgb, var(--color-accent) 24%, transparent);
+}
+
+.webglholder.webgl-fallback canvas {
+  visibility: hidden;
+}
+
+.trigger.burgerclickablein {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.menu {
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 991px), (pointer: coarse) {
+  body[data-page="work"] .p-grid.scroller {
+    padding: 20px 16px 32px !important;
+    gap: 18px !important;
+  }
+
+  body[data-page="work"] .p-col.pagelink,
+  body[data-page="work"] .p-inner {
+    min-height: 0 !important;
+  }
+
+  body[data-page="work"] .p-inner {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    height: auto;
+    padding: 0 0 14px !important;
+  }
+
+  body[data-page="work"] .p-shot {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 10;
+    grid-column: 1 / -1;
+    order: 0;
+    margin: 0 0 12px !important;
+  }
+
+  body[data-page="work"] .p-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  body[data-page="work"] .p-numb-w,
+  body[data-page="work"] .elastic {
+    display: none;
+  }
+
+  body[data-page="work"] .p-block,
+  body[data-page="work"] .p-side {
+    position: static !important;
+    width: auto !important;
+    min-width: 0;
+    height: auto !important;
+    padding: 0 12px !important;
+    transform: none !important;
+  }
+
+  body[data-page="work"] .p-title,
+  body[data-page="work"] .p-tagline {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-about-cta, .webglholder, .menu *, .load * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.menu-close[hidden],
+.cookie-c[hidden] {
+  display: none !important;
+}
+
+body.intro-load-active .cookie-c {
+  display: none;
+}
+
+.cookie-c:not([hidden]) {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  gap: 12px;
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #151424;
+}
+
+.cookie-c .cookie-t {
+  font: 14px/1.4 system-ui, sans-serif;
+}
+
+.cookie-c .confirm {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (pointer: coarse) and (min-width: 992px) {
+  html:has(body[data-page="work"]),
+  body[data-page="work"] {
+    height: auto !important;
+    overflow-y: auto !important;
+  }
+
+  body[data-page="work"] .sidescrollbox,
+  body[data-page="work"] .p-grid.scroller {
+    position: relative !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body[data-page="work"] .p-col.pagelink {
+    display: block;
+    width: min(100%, 680px) !important;
+    min-width: 0 !important;
+    height: auto !important;
+    margin: 12px auto;
+  }
+}
+
+body[data-page="home"] .nav-logo img,
+body[data-page="work"] .nav-logo img {
+  filter: invert(1);
+}
+
+body[data-page="home"] .hero,
+body[data-page="home"] .hero :is(.h-head, .h-quote),
+.lw-title {
+  color: var(--color-text);
+}
+
+body[data-page="work"] .p-col {
+  color: var(--color-text);
+}
+
+body[data-page="work"] :is(.p-title, .p-client, .p-tagline, .p-numb, .p-desc) {
+  color: var(--color-text);
+}
+
+body[data-page="work"] .p-arrow {
+  filter: invert(1);
+}
+
+body[data-page="work"] .work-heading {
+  position: absolute;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 991px), (pointer: coarse) {
+  body[data-page="work"] {
+    overflow: visible !important;
+  }
+
+  body[data-page="work"] .work-heading {
+    position: static;
+    clip-path: none;
+    width: min(100% - 32px, 520px);
+    margin: 0 auto;
+    padding-top: 82px;
+    color: var(--color-text);
+    font: 500 clamp(34px, 10vw, 55px)/1 "Roslindale Display Condensed", Georgia, serif;
+  }
+
+  body[data-page="work"] .p-col.pagelink {
+    overflow: hidden;
+    border: 1px solid var(--color-card-border);
+    border-radius: 14px;
+    background: var(--color-card);
+  }
+
+  body[data-page="work"] .p-client {
+    font: 600 12px/1.3 system-ui, sans-serif !important;
+    letter-spacing: .025em;
+  }
+
+  body[data-page="work"] .p-title {
+    font: 500 clamp(24px, 7vw, 36px)/1.03 "Roslindale Display Condensed", Georgia, serif !important;
+  }
+
+  body[data-page="work"] .p-tagline,
+  body[data-page="work"] .p-desc {
+    margin-top: 5px;
+    font: 400 14px/1.35 system-ui, sans-serif;
+  }
+
+  body[data-page="work"] .p-side {
+    align-self: end;
+  }
+}

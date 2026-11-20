@@ -1,5 +1,7 @@
 {
-  "extends": ["html-validate:recommended"],
+  "extends": [
+    "html-validate:recommended"
+  ],
   "rules": {
     "no-inline-style": "off",
     "no-trailing-whitespace": "off",
@@ -17,7 +19,6 @@
     "no-redundant-role": "off",
     "prefer-button": "off",
     "script-type": "off",
-    "void-style": "off",
-    "close-order": "off"
+    "void-style": "off"
   }
 }

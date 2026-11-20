@@ -2,18 +2,28 @@
   "name": "portfolio-webgl",
   "version": "1.0.0",
   "private": true,
-  "description": "Static WebGL portfolio. Verification baseline only - no build step.",
+  "description": "Static WebGL portfolio with browser verification.",
   "scripts": {
-    "lint:html": "html-validate \"index.html\" \"pages/**/*.html\"",
-    "check:js": "node --check src/main.js && find src -name '*.js' -exec node --check {} \\;",
+    "lint:html": "html-validate index.html 404.html \"pages/**/*.html\"",
+    "check:js": "find src scripts -name \"*.js\" -o -name \"*.mjs\" | xargs -n 1 node --check",
     "check:cdn-sri": "node scripts/check-cdn-sri.mjs",
     "check:csp-dead-urls": "node scripts/check-csp-dead-urls.mjs",
     "check:ui-contracts": "node scripts/check-ui-contracts.mjs",
-    "verify": "npm run check:js && npm run lint:html && npm run check:cdn-sri && npm run check:csp-dead-urls && npm run check:ui-contracts",
-    "lint:links": "linkinator https://yqecea-portfolio.web.app --skip '^(https?://(?!yqecea-portfolio\\.web\\.app|niccolomiranda|chiaraluzzana|aitu-halogens|inko|overprint|ciridae|kazakhstan-unesco|oysana|requiem|vent|zero-to-infinity|aipay-landing))'"
+    "verify": "./check.sh",
+    "lint:links": "node scripts/check-external-links.mjs",
+    "check:static": "npm run check:js && npm run lint:html && npm run check:cdn-sri && npm run check:csp-dead-urls && npm run check:ui-contracts",
+    "check:browser": "node scripts/verify-browser.mjs",
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "precheck:browser": "npm run build",
+    "predev": "npm run build"
   },
   "devDependencies": {
-    "html-validate": "^8.0.0",
-    "linkinator": "^7.6.1"
+    "@axe-core/playwright": "4.14.0",
+    "html-validate": "11.21.1",
+    "playwright": "1.65.1"
+  },
+  "engines": {
+    "node": ">=24.12.0"
   }
 }

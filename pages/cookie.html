@@ -5,24 +5,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-  <meta name="description" content="Cookie policy for yusuf.bio — how cookies and tracking are used on this site." />
+  <meta name="description" content="How this portfolio remembers audio preferences in the browser." />
   <meta name="theme-color" content="#0a0a0a" />
   <meta name="color-scheme" content="dark" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Yusuf — Cookie Policy" />
-  <meta property="og:description" content="Cookie policy for yusuf.bio — how cookies and tracking are used on this site." />
+  <meta property="og:description" content="How this portfolio remembers audio preferences in the browser." />
   <meta property="og:url" content="https://yqecea-portfolio.web.app/pages/cookie.html" />
   <link rel="canonical" href="https://yqecea-portfolio.web.app/pages/cookie.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Yusuf — Cookie Policy" />
-  <meta name="twitter:description" content="Cookie policy for yusuf.bio — how cookies and tracking are used on this site." />
+  <meta name="twitter:description" content="How this portfolio remembers audio preferences in the browser." />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://uploads-ssl.webflow.com" crossorigin />
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
   <title>Cookie Policy</title>
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/portfolio.css" />
   <style>
     .cookie-page {
       min-height: 100vh;
@@ -59,24 +58,24 @@
       This portfolio stores basic browser data to keep audio playback state between page transitions.
     </p>
     <p>
-      By clicking OK below, you consent to the use of these cookies/local storage values for experience continuity.
+      Playback preferences use browser storage on this device. The portfolio does not use tracking cookies.
     </p>
     <a class="cookie-back" href="../index.html">Back to Home</a>
   </main>
 
-  <a rel="noopener" aria-label="trigger" href="#" class="trigger burgerclickablein w-inline-block"></a>
+  <button type="button" class="trigger burgerclickablein w-inline-block" aria-label="Open menu" aria-controls="site-menu" aria-expanded="false"></button>
   <div class="trigger burgerclickableout"></div>
   <nav class="nav">
-    <a targetcolor="#0D0D0D" rel="noopener" aria-label="logo" href="../index.html"
+    <a targetcolor="#0D0D0D" rel="noopener" aria-label="Yusuf — Home" href="../index.html"
       class="nav-logo pagelink w-inline-block">
       <div class="logo w-embed">
         <img src="../logo.svg" alt="Y" />
       </div>
     </a>
     <div class="nav-trigger">
-      <a href="#" class="menu-prompt burgerclickablein w-inline-block"><span class="menu-prompt-text">MENU —</span><span class="menu-prompt-line"></span></a>
+      <div class="menu-prompt burgerclickablein" aria-hidden="true"><span class="menu-prompt-text">MENU —</span><span class="menu-prompt-line"></span></div>
       <div class="nav-menu burgercontainer">
-        <div class="menu">
+        <div class="menu" id="site-menu">
           <div class="menu-grid w-clearfix">
             <div class="menu-col">
               <div class="menu-item m1">
@@ -96,7 +95,7 @@
                   <div class="menu-no">II</div>
                 </div>
                 <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
-                  data-w-id="7f415ce8-136e-436c-c678-47a776f3bb9f" href="./work.html"
+                  data-w-id="7f415ce8-136e-436c-c678-47a776f3bb9f" href="/pages/work.html"
                   class="menu-li menulink w-inline-block">
                   <h2 class="m-head">work</h2>
                 </a>
@@ -107,7 +106,7 @@
                   <div class="menu-no">III</div>
                 </div>
                 <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
-                  data-w-id="7f415ce8-136e-436c-c678-47a776f3bba7" href="./about.html"
+                  data-w-id="7f415ce8-136e-436c-c678-47a776f3bba7" href="/pages/about.html"
                   class="menu-li menulink w-inline-block">
                   <h2 class="m-head">about</h2>
                 </a>
@@ -117,7 +116,7 @@
               <div class="menu-asw asw2 w-clearfix">
                 <div class="menu-as">
                   <a rel="noopener" draggable="false" targetcolor="#E5E3DC"
-                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="./contact.html" aria-current="page"
+                    data-w-id="7f415ce8-136e-436c-c678-47a776f3bbb2" href="/pages/contact.html"
                     class="menu-ti menulink w--current">Contact</a>
                 </div>
               </div>
@@ -129,9 +128,6 @@
   </nav>
   <button type="button" class="sound soundtoggler w-inline-block" aria-label="Toggle sound" aria-pressed="false"></button>
   <div class="cursor cursorcontainer"></div>
-  <div class="rotate">
-    <div class="text-block-9">Rotate your device, please.</div>
-  </div>
 
   <script type="module" src="../src/main.js"></script>
 </body>

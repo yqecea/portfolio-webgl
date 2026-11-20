@@ -47,9 +47,11 @@ export default class SoundReactor {
     }
 
     this.ctx = new AudioContextCtor();
-    this.audio = new Audio(this.url);
+    this.audio = new Audio();
+    this.audio.preload = 'none';
     this.audio.loop = true;
     this.audio.crossOrigin = 'anonymous';
+    this.audio.src = this.url;
 
     if (!this.enableAnalyser) return;
 
